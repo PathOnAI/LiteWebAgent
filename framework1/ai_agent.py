@@ -18,7 +18,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     filename='app.log',
-    filemode='a'  # 'a' for append mode, so it doesn't overwrite the log file on each run
+    filemode='w'
 )
 
 # Create a logger for the main module
