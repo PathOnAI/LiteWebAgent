@@ -1,0 +1,4 @@
+Navigate to https://www.google.com/
+Click on the 'Sign in' button
+Enter 'balajirw10@gmail.com' in the email field
+Enter 'D4c3b2a1#' in the password field

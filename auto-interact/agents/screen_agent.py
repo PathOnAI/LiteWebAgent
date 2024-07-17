@@ -200,6 +200,9 @@ class ScreenAgent:
            elements = await page.locator("test").all()
            await elements[0].click()
 
+           Remember to target <input> elements when trying to enter text! Remember to read the HTML itself and focus on it. Remember, you don't need to click on
+           input elements to fill them, you can directly fill().
+
            Don't use networkidle as a load state to wait for, instead use domcontentloaded
 
             An example output (for formatting, etc) is 
