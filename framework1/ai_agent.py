@@ -17,12 +17,30 @@ import logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    filename='log.txt',
-    filemode='w'
+    filename='app.log',
+    filemode='a'  # 'a' for append mode, so it doesn't overwrite the log file on each run
 )
 
-# Create a logger
+# Create a logger for the main module
 logger = logging.getLogger(__name__)
+
+# You can also set up a console handler if you want to see logs in the console
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+logging.getLogger('').addHandler(console_handler)
+
+def write_to_file(file_path: str, text: str, encoding: str = "utf-8") -> str:
+    try:
+        directory = os.path.dirname(file_path)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+        with open(file_path, "w", encoding=encoding) as f:
+            f.write(text)
+        return "File written successfully."
+    except Exception as error:
+        return f"Error: {error}"
 def run_python_script(script_name):
     try:
         result = subprocess.run(
@@ -34,7 +52,7 @@ def run_python_script(script_name):
 
 from navigation_control_agent import use_navigation_control_agent, navigation_control
 from search_redirect_agent import use_search_redirect_agent, search_and_redirect
-
+from find_click_agent import use_find_click_agent, find_and_click
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -47,16 +65,37 @@ import time
 import inspect
 from bs4 import BeautifulSoup
 
-# driver = get_driver()
-# response = use_navigation_control_agent("Go to url: https://huggingface.co/docs/peft/index, scroll down and Scan the whole page")
-# print(response)
-# response = use_search_click_agent("(1) Go to Google.com, and search dining table amazon, and click on amazon, (2) go to amazon.com, and search dining table")
-# print(response)
-# quit_driver()
-
-
 
 tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "write_to_file",
+            "description": "Write string content to a file.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "file_path": {
+                        "type": "string",
+                        "description": "Full file name with path where the content will be written."
+                    },
+                    "text": {
+                        "type": "string",
+                        "description": "Text content to be written into the file."
+                    },
+                    "encoding": {
+                        "type": "string",
+                        "default": "utf-8",
+                        "description": "Encoding to use for writing the file. Defaults to 'utf-8'."
+                    }
+                },
+                "required": [
+                    "file_path",
+                    "text"
+                ]
+            }
+        }
+    },
     {
         "type": "function",
         "function": {
@@ -98,6 +137,25 @@ tools = [
     {
         "type": "function",
         "function": {
+            "name": "use_find_click_agent",
+            "description": "Find corresponding interactable element based on the target phrase, and click",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "The task description to be sent to the API."
+                    }
+                },
+                "required": [
+                    "query"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "run_python_script",
             "description": "Execute a Python script in a subprocess.",
             "parameters": {
@@ -120,7 +178,9 @@ client = OpenAI()
 available_tools = {
             "use_navigation_control_agent": use_navigation_control_agent,
             "use_search_redirect_agent": use_search_redirect_agent,
-            "run_python_script": run_python_script
+            "run_python_script": run_python_script,
+            "write_to_file": write_to_file,
+            "use_find_click_agent": use_find_click_agent
         }
 
 def use_ai_agent(query):
@@ -135,18 +195,22 @@ def use_ai_agent(query):
 
 def main():
     from workflow_agent import WorkflowAgent
-    workflow = WorkflowAgent()
-    workflow.set_goal('Go to Google.com, and search dining table amazon, and click on amazon')
-    workflow_dict = workflow.propose_action()
-    workflow_string = json.dumps(workflow_dict)
-    print(workflow_string)
+    queries = ['Go to Google.com, and search dining table amazon, and click on amazon',
+               'On https://huggingface.co/docs/peft/index, find and click quicktour of PEFT',
+               'On https://huggingface.co/docs/peft/index, find and click quicktour of PEFT, extract the content of the page and save it as content.txt']
+    for query in queries:
+        workflow = WorkflowAgent()
+        workflow.set_goal(query)
+        workflow_dict = workflow.propose_action()
+        workflow_string = json.dumps(workflow_dict)
+        print(workflow_string)
 
-    #
-    try:
-        response = use_ai_agent(workflow_string)
-        print(response)
-    finally:
-        quit_driver()
+        #
+        try:
+            response = use_ai_agent(workflow_string)
+            print(response)
+        finally:
+            quit_driver()
 
 if __name__ == "__main__":
     main()

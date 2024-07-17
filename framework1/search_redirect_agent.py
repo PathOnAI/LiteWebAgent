@@ -32,6 +32,9 @@ from selenium.webdriver.remote.webdriver import WebDriver
 import psutil
 from driver_manager import get_driver
 from utils import *
+import logging
+# Get a logger for this module
+logger = logging.getLogger(__name__)
 
 
 def save_html_to_cache(url, html_content):
@@ -115,9 +118,6 @@ import requests
 import os
 import json
 _ = load_dotenv()
-# Initialize logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 from langchain_community.tools.tavily_search import TavilySearchResults
 
 

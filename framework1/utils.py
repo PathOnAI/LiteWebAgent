@@ -11,8 +11,10 @@ import requests
 import os
 import json
 # Initialize logging
-logging.basicConfig(level=logging.INFO)
+import logging
+# Get a logger for this module
 logger = logging.getLogger(__name__)
+
 class Message(BaseModel):
     role: str
     content: str
