@@ -161,84 +161,11 @@ client = OpenAI()
 available_tools = {
             "navigation_control": navigation_control,
         }
-def process_tool_calls(tool_calls):
-    tool_call_responses: list[str] = []
-    logger.info("Number of function calls: %i", len(tool_calls))
-    for _index, tool_call in enumerate(tool_calls):
-        tool_call_id = tool_call.id
-        function_name = tool_call.function.name
-        function_args = json.loads(tool_call.function.arguments)
-
-        function_to_call = available_tools.get(function_name)
-
-        function_response: str | None = None
-        try:
-            function_response = function_to_call(**function_args)
-            logger.info('function name: %s, function args: %s, function response: %s', function_name, function_args,
-                        function_response)
-            tool_response_message = ToolResponseMessage(
-                tool_call_id=tool_call_id,
-                role="tool",
-                name=function_name,
-                content=str(function_response),
-            )
-            #print(_index, tool_response_message)
-            tool_call_responses.append(tool_response_message)
-        except Exception as e:
-            function_response = f"Error while calling function <{function_name}>: {e}"
-
-    return tool_call_responses
-
-
-def send_completion_request(messages: list = None, tools: list = None, depth = 0) -> dict:
-    if depth >= 8:
-        return None
-
-    if tools is None:
-        response = client.chat.completions.create(
-            model="gpt-4o", messages=messages
-        )
-        logger.info('depth: %s, response: %s', depth, response)
-        # message = AssistantMessage(**response.choices[0].message.model_dump())
-        message = AssistantMessage(**response.choices[0].message.model_dump())
-        messages.append(message)
-        return response
-
-    response = client.chat.completions.create(
-        model="gpt-4o", messages=messages, tools=tools, tool_choice="auto"
-    )
-
-    tool_calls = response.choices[0].message.tool_calls
-    if tool_calls is None:
-        logger.info('depth: %s, response: %s', depth, response)
-        message = AssistantMessage(**response.choices[0].message.model_dump())
-        messages.append(message)
-        return response
-
-    logger.info('depth: %s, response: %s', depth, response)
-    tool_calls = [
-        ToolCall(id=call.id, function=call.function, type=call.type)
-        for call in response.choices[0].message.tool_calls
-    ]
-    tool_call_message = ToolCallMessage(
-        content=response.choices[0].message.content, role=response.choices[0].message.role, tool_calls=tool_calls
-    )
-
-    messages.append(tool_call_message)
-    tool_responses = process_tool_calls(tool_calls)
-    messages.extend(tool_responses)
-    return send_completion_request(messages, tools, depth + 1)
-
-def send_prompt(messages, content: str):
-    messages.append(Message(role="user", content=content))
-    return send_completion_request(messages, tools, 0)
-
-
 
 def use_navigation_control_agent(description):
     messages = [Message(role="system",
                         content="You are a smart web search agent to perform task for customers")]
-    send_prompt(messages, description)
+    send_prompt(client, messages, description, tools, available_tools)
     return messages[-1].content
 
 # response = use_navigation_control_agent("Go to url: https://huggingface.co/docs/peft/index, scroll down and Scan the whole page")
