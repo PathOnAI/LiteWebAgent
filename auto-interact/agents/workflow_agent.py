@@ -16,6 +16,11 @@ def create_step_functions(step_dict: dict):
         return -1
 
     return get_step_description, get_step_number
+
+def append_to_file(file_path, text):
+    with open(file_path, 'a') as file:
+        file.write(text + '\n')
+
 class WorkflowAgent:
     def __init__(self, path: str = 'cache'):
         self.config = {
@@ -43,10 +48,11 @@ class WorkflowAgent:
                 HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
                 HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
             },
-                system_instruction="You are a workflow generator that outputs results in JSON. The output is a JSON object where the keys are numbers and their values are the instructions. For example\n\n{\n1: 'Open door',\n2: 'Walk through door',\n3: 'Clean up mess'\n}"
+                system_instruction="You are a workflow generator that outputs results in JSON. The output is a JSON object where the keys are numbers and their values are the instructions. Be sure to never repeat steps. For example\n\n{\n1: 'Open door',\n2: 'Walk through door',\n3: 'Clean up mess'\n}"
             )}
 
         self.webpage_path = f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/cache/{path}.txt'
+        self.steps_path = f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/cache/steps.txt'
 
         self.workflow = None
 
@@ -69,6 +75,38 @@ class WorkflowAgent:
         }
 
         return self
+    
+    def propose_resolution(self, template: str = 'cache'):
+        with open(f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/cache/{template}.txt', 'r+', encoding="utf-8") as f:
+            content = f.read()
+
+        with open(self.steps_path, 'r') as file:
+            lines = file.readlines()
+        
+        lines = [line.strip() for line in lines]
+
+        template = f"""
+        Your goal is to determine a workflow for a given task, that can be performed by a browser automation agent in a sequence of tasks. You will be given \
+        the current HTML page and a list of the previous steps that have been done successfully. \
+        You are to generate a set of instructions to complete the remainder goal. REMEMBER TO USE THE HTML CODE FOR CONTEXT, AND PLANNING FURTHER STEPS
+
+        Goal: {self.workflow.get('overall_goal')}
+        Finished Steps: {', '.join(lines)}
+
+        HTML Page Code: {content}
+        """
+
+        response = self.models.get('workflow').generate_content(template)
+
+        self.workflow: dict[str, str] = {
+            **json.loads(response.text),
+            'finished_steps': [],
+            'current_step': '',
+            'overall_goal': self.workflow.get('overall_goal'),
+        }
+
+        return self
+
 
     def propose_action(self):
         # with open(self.webpage_path, 'r+') as f:
@@ -92,7 +130,7 @@ class WorkflowAgent:
             return None
 
         print(self.workflow)
-
+        append_to_file(self.steps_path, self.workflow.get('current_step'))
         return self.workflow.get('current_step')
 
 

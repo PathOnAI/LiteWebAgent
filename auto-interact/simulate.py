@@ -15,14 +15,18 @@ async def search_test(page):
 async def simulate():
     page = PageAgent('new_agent')
 
-    await page.build(ViewMode.headful)
+    await page.build(ViewMode.headful, stealth=True)
     await page.newPage()
 
     screen = ScreenAgent(page.current_page)
     execute = ExecuteAgent(page.current_page)
     workflow = WorkflowAgent()
 
-    workflow.set_goal('add a random dining table from amazon to my cart')
+    workflow.set_goal("""
+    log into my gmail account and send an email to grand.hunter.dark.15@gmail.com with Subject of 'Test' \
+    and content of "This is a test email"
+    , my username is balajirw10@gmail.com and my password is D4c3b2a1#
+    """)
 
     screen.set_url('https://www.google.com')
     await screen.read_page(navigate=True)
@@ -35,16 +39,17 @@ async def simulate():
             break
 
         cache_dir = await screen.build_action(step)
-        await execute.load(cache_dir).call()
+
+        try:
+            await execute.load(cache_dir).call()
+        except:
+            print('Auto-Resolved')
+            workflow.propose_resolution()
 
         await asyncio.sleep(3)
 
 
     await asyncio.sleep(10)
-        
-
-
-    # await page.goto('https://www.google.com', wait_until='domcontentloaded')
     
     
 
