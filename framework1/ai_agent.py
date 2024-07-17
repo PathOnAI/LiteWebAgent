@@ -181,84 +181,11 @@ available_tools = {
             "use_search_redirect_agent": use_search_redirect_agent,
             "run_python_script": run_python_script
         }
-def process_tool_calls(tool_calls):
-    tool_call_responses: list[str] = []
-    for _index, tool_call in enumerate(tool_calls):
-        tool_call_id = tool_call.id
-        function_name = tool_call.function.name
-        function_args = json.loads(tool_call.function.arguments)
-
-        function_to_call = available_tools.get(function_name)
-
-        function_response: str | None = None
-        try:
-            function_response = function_to_call(**function_args)
-            tool_response_message = ToolResponseMessage(
-                tool_call_id=tool_call_id,
-                role="tool",
-                name=function_name,
-                content=str(function_response),
-            )
-            #print(_index, tool_response_message)
-            tool_call_responses.append(tool_response_message)
-        except Exception as e:
-            function_response = f"Error while calling function <{function_name}>: {e}"
-
-    return tool_call_responses
-
-
-def send_completion_request(messages: list = None, tools: list = None, depth = 0) -> dict:
-    if depth >= 8:
-        return None
-
-    if tools is None:
-        response = client.chat.completions.create(
-            model="gpt-4o", messages=messages
-        )
-        logger.info('depth: %s, response: %s', depth, response)
-        # message = AssistantMessage(**response.choices[0].message.model_dump())
-        message = AssistantMessage(**response.choices[0].message.model_dump())
-        messages.append(message)
-        return response
-
-    response = client.chat.completions.create(
-        model="gpt-4o", messages=messages, tools=tools, tool_choice="auto"
-    )
-    ##
-    # import pdb; pdb.set_trace()
-
-
-    tool_calls = response.choices[0].message.tool_calls
-    if tool_calls is None:
-        logger.info('depth: %s, response: %s', depth, response)
-        message = AssistantMessage(**response.choices[0].message.model_dump())
-        messages.append(message)
-        return response
-
-    logger.info('depth: %s, response: %s', depth, response)
-    tool_calls = [
-        ToolCall(id=call.id, function=call.function, type=call.type)
-        for call in response.choices[0].message.tool_calls
-    ]
-    tool_call_message = ToolCallMessage(
-        content=response.choices[0].message.content, role=response.choices[0].message.role, tool_calls=tool_calls
-    )
-
-    messages.append(tool_call_message)
-    tool_responses = process_tool_calls(tool_calls)
-    messages.extend(tool_responses)
-    return send_completion_request(messages, tools, depth + 1)
-
-
-def send_prompt(messages, content: str):
-    messages.append(Message(role="user", content=content))
-    return send_completion_request(messages, tools, 0)
-
 
 def use_ai_agent(query):
     messages = [Message(role="system",
                         content="You are a smart research assistant. Use the search engine to look up information.")]
-    send_prompt(messages, query)
+    send_prompt(client, messages, query, tools, available_tools)
     print(messages)
     return messages[-1].content
 
