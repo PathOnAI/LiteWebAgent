@@ -219,6 +219,7 @@ available_tools = {
         }
 def process_tool_calls(tool_calls):
     tool_call_responses: list[str] = []
+    logger.info("Number of function calls: %i", len(tool_calls))
     for _index, tool_call in enumerate(tool_calls):
         tool_call_id = tool_call.id
         function_name = tool_call.function.name
@@ -229,6 +230,7 @@ def process_tool_calls(tool_calls):
         function_response: str | None = None
         try:
             function_response = function_to_call(**function_args)
+            logger.info('function name: %s, function args: %s, function response: %s', function_name, function_args, function_response)
             tool_response_message = ToolResponseMessage(
                 tool_call_id=tool_call_id,
                 role="tool",
