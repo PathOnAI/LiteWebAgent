@@ -10,6 +10,9 @@ import inspect
 from bs4 import BeautifulSoup
 from driver_manager import get_driver
 from utils import *
+import logging
+# Get a logger for this module
+logger = logging.getLogger(__name__)
 
 # Global driver variable
 # global driver
@@ -124,9 +127,7 @@ import requests
 import os
 import json
 _ = load_dotenv()
-# Initialize logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+
 from langchain_community.tools.tavily_search import TavilySearchResults
 
 tools = [
