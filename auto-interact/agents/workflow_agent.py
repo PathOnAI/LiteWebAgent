@@ -17,14 +17,11 @@ def create_step_functions(step_dict: dict):
 
     return get_step_description, get_step_number
 
-def append_to_file(file_path, text):
-    with open(file_path, 'a') as file:
-        file.write(text + '\n')
 
 class WorkflowAgent:
     def __init__(self, path: str = 'cache'):
         self.config = {
-            "temperature": 0.2,
+            "temperature": 0.8,
             "top_p": 0.95,
             "top_k": 64,
             "max_output_tokens": 8192,
@@ -76,27 +73,39 @@ class WorkflowAgent:
 
         return self
     
-    def propose_resolution(self, template: str = 'cache'):
+    def propose_resolution(self, template: str = 'cache', code_path: str = ''):
         with open(f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/cache/{template}.txt', 'r+', encoding="utf-8") as f:
             content = f.read()
 
         with open(self.steps_path, 'r') as file:
             lines = file.readlines()
+
+        with open(code_path, 'r') as file:
+            code = file.read()
         
         lines = [line.strip() for line in lines]
 
+        uploaded_file = genai.upload_file(path=f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/cache/snapshot.png', display_name='__')
+
         template = f"""
         Your goal is to determine a workflow for a given task, that can be performed by a browser automation agent in a sequence of tasks. You will be given \
-        the current HTML page and a list of the previous steps that have been done successfully. \
-        You are to generate a set of instructions to complete the remainder goal. REMEMBER TO USE THE HTML CODE FOR CONTEXT, AND PLANNING FURTHER STEPS
+        the current HTML page, a snapshot of the screen, and a list of the previous steps that have been done successfully, as well as the failed step\
+        and the failed code. Ensure that no steps are repeated! Remember to modify workflow as needed\
+        so that the overall goal is accomplished. 
+
+        You are to generate a set of instructions to complete the remainder goal. REMEMBER TO USE THE HTML CODE AND SNAPSHOT FOR CONTEXT, AND PLANNING FURTHER STEPS
 
         Goal: {self.workflow.get('overall_goal')}
         Finished Steps: {', '.join(lines)}
+        Failed Step: {self.workflow.get('current_step')}
 
         HTML Page Code: {content}
         """
 
-        response = self.models.get('workflow').generate_content(template)
+        print(f"")
+
+        response = self.models.get('workflow').generate_content([uploaded_file, template])
+        
 
         self.workflow: dict[str, str] = {
             **json.loads(response.text),
@@ -130,7 +139,7 @@ class WorkflowAgent:
             return None
 
         print(self.workflow)
-        append_to_file(self.steps_path, self.workflow.get('current_step'))
+
         return self.workflow.get('current_step')
 
 

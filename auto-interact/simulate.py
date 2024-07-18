@@ -8,9 +8,9 @@ from agents.workflow_agent import WorkflowAgent
 
 from imports import *
 
-async def search_test(page):
-    await page.fill("#twotabsearchtextbox", "dining table")
-    await page.click("#nav-search-submit-button")
+def append_to_file(file_path, text):
+    with open(file_path, 'a') as file:
+        file.write(text + '\n')
 
 async def simulate():
     page = PageAgent('new_agent')
@@ -42,9 +42,10 @@ async def simulate():
 
         try:
             await execute.load(cache_dir).call()
+            append_to_file(f'{os.path.dirname(os.path.abspath(__file__))}/cache/steps.txt', step)
         except:
             print('Auto-Resolved')
-            workflow.propose_resolution()
+            workflow.propose_resolution(code_path=f'{screen.function_root}{cache_dir}.py')
 
         await asyncio.sleep(3)
 
