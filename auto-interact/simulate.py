@@ -23,13 +23,14 @@ async def simulate():
     workflow = WorkflowAgent()
 
     workflow.set_goal("""
-    log into my gmail account and send an email to grand.hunter.dark.15@gmail.com with Subject of 'Test' \
-    and content of "This is a test email"
-    , my username is balajirw10@gmail.com and my password is D4c3b2a1#
+    log into my discord account, email is izzyelwood37@gmail.com and password is IzzyColon2024
+    and then send message "Sent By Agent haha" to Airborn
     """)
 
     screen.set_url('https://www.google.com')
     await screen.read_page(navigate=True)
+
+    failed = False
 
     while True:
         await screen.read_page(navigate=False)
@@ -37,14 +38,19 @@ async def simulate():
 
         if step is None:
             break
-
-        cache_dir = await screen.build_action(step)
+        
+        if failed:
+            cache_dir = await screen.build_action(step, code_path=f'{screen.function_root}{cache_dir}.py')
+        else:
+            cache_dir = await screen.build_action(step)
 
         try:
             await execute.load(cache_dir).call()
             append_to_file(f'{os.path.dirname(os.path.abspath(__file__))}/cache/steps.txt', step)
+            failed = False
         except:
             print('Auto-Resolved')
+            failed = True
             workflow.propose_resolution(code_path=f'{screen.function_root}{cache_dir}.py')
 
         await asyncio.sleep(3)
