@@ -3,5 +3,4 @@ undetected-playwright
 openai
 watchdog
 python-dotenv
-lavague
 google-generativeai

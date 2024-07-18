@@ -86,7 +86,6 @@ class ScreenAgent:
         self.current_url = self.page.url
 
         try:
-
             main_content = await self.page.evaluate('''() => {
                 let main = document.querySelector('main');
                 if (!main) {
@@ -167,7 +166,8 @@ class ScreenAgent:
 
             with open(self.webpage_path, 'w+', encoding="utf-8") as f:
                 f.write(clean_text(main_content))
-
+        finally:
+            await self.page.screenshot(path=f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/cache/snapshot.png', full_page=True)
         return self
     
     def _remove_code_markers(self, text: str):
@@ -201,7 +201,7 @@ class ScreenAgent:
            await elements[0].click()
 
            Remember to target <input> elements when trying to enter text! Remember to read the HTML itself and focus on it. Remember, you don't need to click on
-           input elements to fill them, you can directly fill().
+           input elements to fill them, you can directly fill(). Be sure to use the HTML itself to generate the code, so that the generated playwright python code will work.
 
            Don't use networkidle as a load state to wait for, instead use domcontentloaded
 
