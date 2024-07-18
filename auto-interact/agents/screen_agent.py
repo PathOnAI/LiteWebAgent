@@ -178,14 +178,32 @@ class ScreenAgent:
         return text
     
     
-    async def build_action(self, action: str):
-        with open(self.webpage_path, 'r+', encoding='utf-8') as f:
+    async def build_action(self, action: str, code_path: str | None = None):
+        with open(self.webpage_path, 'a+', encoding='utf-8') as f:
+            f.seek(0)
             webpage_content = f.read()
+
+        if code_path:
+            with open(code_path, 'r') as file:
+                code = file.read()
+        
+        uploaded_file = genai.upload_file(path=f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/cache/snapshot.png', display_name='__')
+
+        if code_path:
+            _inject_1 = f"""
+            Not Working Code: {code}
+            """
+            _inject_2 = 'and previously generated not working code by you'
+        else:
+            _inject_2, _inject_1 = '', ''
 
         template = f"""
             HTML Code: {webpage_content}
+            Page Snapshot: {uploaded_file}
 
-            Using the HTML above for {self.current_url}, write a python playwright code function that takes a SINGLE argument of a playwright Page object and {action}. 
+            {_inject_1}
+
+            Using the HTML and Page Snapshot {_inject_2} above for {self.current_url}, write a python playwright code function that takes a SINGLE argument of a playwright Page object and {action}. 
             Output ONLY the function with proper indents, nothing else. Do NOT use type annotations. Make sure that the playwright code is as specific and accurate as possible.
 
            ALSO, wait_for_navigation IS NOT A VALID PLAYWRIGHT FUNCTION
@@ -200,10 +218,12 @@ class ScreenAgent:
            elements = await page.locator("test").all()
            await elements[0].click()
 
+           Avoid using css selectors like >, instead just target elements specifically using id or class or names or etc
+
            Remember to target <input> elements when trying to enter text! Remember to read the HTML itself and focus on it. Remember, you don't need to click on
            input elements to fill them, you can directly fill(). Be sure to use the HTML itself to generate the code, so that the generated playwright python code will work.
 
-           Don't use networkidle as a load state to wait for, instead use domcontentloaded
+           Don't use networkidle as a load state to wait for, instead use domcontentloaded. No going to other tabs.
 
             An example output (for formatting, etc) is 
             ```python\nasync def search_test(page):\n    await page.fill(\"#APjFqb\", \"cows\")\n    await page.click(\"input[name='btnK']\")\n```

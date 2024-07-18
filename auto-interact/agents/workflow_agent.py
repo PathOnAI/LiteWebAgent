@@ -77,7 +77,8 @@ class WorkflowAgent:
         with open(f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/cache/{template}.txt', 'r+', encoding="utf-8") as f:
             content = f.read()
 
-        with open(self.steps_path, 'r') as file:
+        with open(self.steps_path, 'a+') as file:
+            file.seek(0)
             lines = file.readlines()
 
         with open(code_path, 'r') as file:
