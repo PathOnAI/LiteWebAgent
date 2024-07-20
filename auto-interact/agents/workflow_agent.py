@@ -103,8 +103,6 @@ class WorkflowAgent:
         HTML Page Code: {content}
         """
 
-        print(f"")
-
         response = self.models.get('workflow').generate_content([uploaded_file, template])
         
 

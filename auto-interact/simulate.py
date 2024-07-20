@@ -23,8 +23,7 @@ async def simulate():
     workflow = WorkflowAgent()
 
     workflow.set_goal("""
-    log into my discord account, email is izzyelwood37@gmail.com and password is IzzyColon2024
-    and then send message "Sent By Agent haha" to Airborn
+    put a random dining table in my cart on amazon
     """)
 
     screen.set_url('https://www.google.com')
@@ -40,7 +39,8 @@ async def simulate():
             break
         
         if failed:
-            cache_dir = await screen.build_action(step, code_path=f'{screen.function_root}{cache_dir}.py')
+            # cache_dir = await screen.build_action(step, code_path=f'{screen.function_root}{cache_dir}.py')
+            cache_dir = await screen.build_action(step)
         else:
             cache_dir = await screen.build_action(step)
 
