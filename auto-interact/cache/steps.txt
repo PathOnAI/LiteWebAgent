@@ -1,3 +1,2 @@
-Navigate to https://accounts.google.com/ServiceLogin?hl=en&passive=true&continue=https://www.google.com/&ec=GAZAmgQ
-Click element with text 'Sign in'
-Type "izzyelwood37@gmail.com" into the "Email or phone" field
+Navigate to "amazon.com" from the Google homepage
+Search for "dining table"
