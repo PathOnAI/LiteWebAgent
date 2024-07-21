@@ -1,21 +1,19 @@
 import gymnasium as gym
 import browsergym.core  # register the openended task as a gym environment
-
-import dataclasses
-from dotenv import load_dotenv
-_ = load_dotenv()
-from browsergym.experiments import Agent, AbstractAgentArgs
 from browsergym.core.action.highlevel import HighLevelActionSet
 from browsergym.core.action.python import PythonActionSet
 from browsergym.utils.obs import flatten_axtree_to_str
+from browsergym.core.chat import Chat
 import gymnasium as gym
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from typing import Optional
 from PIL import Image
-from browsergym.core.chat import Chat
 import logging
 from logging.handlers import RotatingFileHandler
+import dataclasses
+from dotenv import load_dotenv
+_ = load_dotenv()
 
 
 # Configure logging
