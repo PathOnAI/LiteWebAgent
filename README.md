@@ -14,7 +14,7 @@ repo owners: Danni (Danqing) Zhang (danqing.zhang.personal@gmail.com), and Balaj
 * Balaji to finish the auto-interact framework and record videos [done, 07/19]
 * Danni to add example of using a self-defined web agent with browsergym openended environment [done, 07/21]
 * Danni and Balaji to consolidate the two frameworks into one [ddl: 07/24]
-* integrate the web agent framework with browsergym environment [ddl: 07/2y]
+* integrate the web agent framework with browsergym environment [ddl: 07/28]
 
 ### (2) Paper plan
 * Balaji's research plan of bounding html [TBD]
