@@ -44,17 +44,27 @@ class ReaderAgent:
         response = self.model.generate_content(template)
 
         data = json.loads(response.text)
-        self.write_webpage_info(data, 'data.txt')
 
+        self.write_webpage_info([data], 'data.txt')
 
-    def write_webpage_info(self, webpage_info_list, filename):
+    def clean_webpage_info(self, filename):
         """
-        Writes a list of webpage info objects to a text file.
+        Appends a list of webpage info objects to a text file.
         
         :param webpage_info_list: List of dictionaries containing webpage info
         :param filename: Name of the file to write to
         """
-        with open(filename, 'w') as file:
+        with open(filename, 'w+') as file:
+            file.write('')
+
+    def write_webpage_info(self, webpage_info_list, filename):
+        """
+        Appends a list of webpage info objects to a text file.
+        
+        :param webpage_info_list: List of dictionaries containing webpage info
+        :param filename: Name of the file to write to
+        """
+        with open(filename, 'a') as file:
             for info in webpage_info_list:
                 json_string = json.dumps(info)
                 file.write(json_string + '\n')

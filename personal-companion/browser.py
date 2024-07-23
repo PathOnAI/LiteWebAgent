@@ -2,6 +2,7 @@ import asyncio
 import os
 from enum import Enum
 from datetime import datetime
+import time
 from playwright.async_api import async_playwright, Page, Route
 import base64
 from undetected_playwright import Malenia
@@ -49,6 +50,7 @@ class InteractFlow:
         self.last_url = ''
         self.last_screenshot_hash = ''
         self.reader = ReaderAgent()
+        self.reader.clean_webpage_info()
 
         return self
 
@@ -64,8 +66,9 @@ class InteractFlow:
 
     async def start_monitoring(self):
         # Set up event listeners
-        self.current_page.on("load", self.on_load)
-        self.current_page.on("framenavigated", self.on_frame_navigated)
+        # self.current_page.on("load", self.on_load)
+        # self.current_page.on("framenavigated", self.on_frame_navigated)
+        self.current_page.on("domcontentloaded", self.on_content_loaded)
 
         while not self._stop_event.is_set():
             await self.check_and_save_content()
@@ -105,12 +108,17 @@ class InteractFlow:
     async def on_load(self, event):
         await self.check_and_save_content()
 
+    async def on_content_loaded(self, event):
+        await self.check_and_save_content()
+
     async def on_frame_navigated(self, frame):
         if frame == self.current_page.main_frame:
             await self.check_and_save_content()
 
     async def check_and_save_content(self):
-        main_content = await self.current_page.evaluate('''() => {
+        for x in range (0, 4):
+            try:
+                main_content = await self.current_page.evaluate('''() => {
                 let main = document.querySelector('main');
                 if (!main) {
                     main = document.body;  
@@ -145,12 +153,17 @@ class InteractFlow:
 
                 return clone.innerHTML;
             }''')
-        
-        is_sim, raw_sim = self.html_similarity(self.last_screenshot_hash, main_content)
+                is_sim, raw_sim = self.html_similarity(self.last_screenshot_hash, main_content)
 
-        if not is_sim:
-            self.last_screenshot_hash = main_content
-            self.reader.read_schema(self.last_screenshot_hash)
+                if not is_sim:
+                    self.last_screenshot_hash = main_content
+                    self.reader.read_schema(self.last_screenshot_hash)
+                break
+            except:
+                time.sleep(0.75)
+        
+        
+       
 
 
     async def save_screenshot(self, screenshot_data):
