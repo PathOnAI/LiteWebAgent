@@ -30,13 +30,13 @@ class ReaderAgent:
         webpage code in JSON format. The output should be a JSON object with the following format
         {
             name: 'Name of Webpage',
-            description: 'Detailed description of the website, 1-2 paragraphs',
+            description: 'Detailed description of the website's contents, such as what is on the webpage, ordering, etc, 1-2 paragraphs',
             venture_guess: 'Venture a guess at what the user could be doing on the website'
         }
         """
         )
 
-    def read_schema(self, content: str):
+    def read_schema(self, content: str, filepath):
         template = f"""
         Webpage HTML Content: {content}
         """
@@ -45,9 +45,10 @@ class ReaderAgent:
 
         data = json.loads(response.text)
 
-        self.write_webpage_info([data], 'data.txt')
+        ReaderAgent.write_webpage_info([data], f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/{filepath}')
 
-    def clean_webpage_info(self, filename):
+    @staticmethod
+    def clean_webpage_info(filename):
         """
         Appends a list of webpage info objects to a text file.
         
@@ -57,7 +58,8 @@ class ReaderAgent:
         with open(filename, 'w+') as file:
             file.write('')
 
-    def write_webpage_info(self, webpage_info_list, filename):
+    @staticmethod
+    def write_webpage_info(webpage_info_list, filename):
         """
         Appends a list of webpage info objects to a text file.
         
@@ -69,7 +71,8 @@ class ReaderAgent:
                 json_string = json.dumps(info)
                 file.write(json_string + '\n')
 
-    def read_webpage_info(self, filename):
+    @staticmethod
+    def read_webpage_info(filename):
         """
         Reads webpage info objects from a text file.
         
@@ -77,7 +80,7 @@ class ReaderAgent:
         :return: List of dictionaries containing webpage info
         """
         webpage_info_list = []
-        with open(filename, 'r') as file:
+        with open(f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/{filename}', 'r') as file:
             for line in file:
                 info = json.loads(line.strip())
                 webpage_info_list.append(info)
