@@ -10,7 +10,8 @@ import difflib
 from bs4 import BeautifulSoup
 import re
 
-from reader import ReaderAgent
+from agents.reader import ReaderAgent
+from agents.tracker import TrackerAgent
 
 from dotenv import load_dotenv
 
@@ -48,9 +49,12 @@ class InteractFlow:
         self.output_dir = output_dir
         self.interval = interval
         self.last_url = ''
-        self.last_screenshot_hash = ''
+        self.last_webpage_data = ['placeholder_content']
         self.reader = ReaderAgent()
-        self.reader.clean_webpage_info()
+        self.tracker = TrackerAgent()
+        self.steps = {}
+
+        ReaderAgent.clean_webpage_info('ephemeral_cache/path.txt')
 
         return self
 
@@ -66,9 +70,7 @@ class InteractFlow:
 
     async def start_monitoring(self):
         # Set up event listeners
-        # self.current_page.on("load", self.on_load)
-        # self.current_page.on("framenavigated", self.on_frame_navigated)
-        self.current_page.on("domcontentloaded", self.on_content_loaded)
+        self.current_page.on("networkidle", self.on_content_loaded)
 
         while not self._stop_event.is_set():
             await self.check_and_save_content()
@@ -80,22 +82,18 @@ class InteractFlow:
         await self.p.stop()
 
         return self
-    
+        
     def html_similarity(self, html1, html2, threshold=0.9):
         def clean_html(html):
             try:
-                # Use 'html.parser' which is more lenient
                 soup = BeautifulSoup(html, 'html.parser')
-                # Extract text, including from script and style tags
                 for script in soup(["script", "style"]):
                     script.extract()
                 text = soup.get_text()
-                # Normalize whitespace
                 text = re.sub(r'\s+', ' ', text).strip()
                 return text
             except Exception as e:
                 print(f"Warning: Error parsing HTML: {e}")
-                # If parsing fails, return the original string with basic cleaning
                 return re.sub(r'\s+', ' ', html).strip()
 
         text1 = clean_html(html1)
@@ -105,15 +103,9 @@ class InteractFlow:
 
         return similarity >= threshold, similarity
 
-    async def on_load(self, event):
-        await self.check_and_save_content()
-
     async def on_content_loaded(self, event):
         await self.check_and_save_content()
 
-    async def on_frame_navigated(self, frame):
-        if frame == self.current_page.main_frame:
-            await self.check_and_save_content()
 
     async def check_and_save_content(self):
         for x in range (0, 4):
@@ -153,32 +145,23 @@ class InteractFlow:
 
                 return clone.innerHTML;
             }''')
-                is_sim, raw_sim = self.html_similarity(self.last_screenshot_hash, main_content)
+                is_sim, _ = self.html_similarity(self.last_webpage_data[-1], main_content)
 
                 if not is_sim:
-                    self.last_screenshot_hash = main_content
-                    self.reader.read_schema(self.last_screenshot_hash)
+                    self.last_webpage_data.append(main_content)
+                    self.reader.read_schema(self.last_webpage_data[-1], 'ephemeral_cache/path.txt')
+
+
+                    steps: dict = self.tracker.track(filepath='ephemeral_cache/path.txt')
+
+                    if steps.get('should_jump_in') and steps.get('goal_known'):
+                        self.steps = steps
+                        self._stop_event.set()
                 break
             except:
                 time.sleep(0.75)
         
-        
-       
 
-
-    async def save_screenshot(self, screenshot_data):
-        current_url = self.current_page.url
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-        filename = f"frame_{self.frame_count:05d}_{timestamp}.png"
-        path = os.path.join('screenshots', filename)
-
-        with open(path, "wb") as f:
-            f.write(base64.b64decode(screenshot_data))
-        self.frame_count += 1
-
-        if current_url != self.last_url:
-            print(f"URL changed to: {current_url}")
-            self.last_url = current_url
 
     async def lock(self):
         try:
@@ -186,16 +169,5 @@ class InteractFlow:
         except KeyboardInterrupt:
             print("Closing browser...")
         finally:
-            await self.close()
-
-
-async def main():
-    flow = InteractFlow()
-    await flow.build(ViewMode.headful, interval=1)
-    await flow.newPage('first')
-    await flow.start_monitoring()
-    await flow.lock()
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
+            # await self.close()
+            return self.current_page
