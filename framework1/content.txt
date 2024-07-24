@@ -1,1 +1,111 @@
-[Placeholder text for the content of 'Quicktour of PEFT' page. To fully extract, please provide a JavaScript or Python script that can scrape the content from the web page.]
+## PEFT Quicktour
+
+PEFT offers parameter-efficient methods for finetuning large pretrained models. Instead of finetuning all parameters for each task, which is costly and impractical due to the enormous number of parameters, PEFT allows training fewer prompt parameters or using reparametrization methods like low-rank adaptation (LoRA).
+
+### Train
+
+Each PEFT method is defined by a `PeftConfig` class that stores the parameters for building a `PeftModel`. Here's an example of training with LoRA:
+
+1. **Configuration**:
+    ```python
+    from peft import LoraConfig, TaskType
+
+    peft_config = LoraConfig(
+        task_type=TaskType.SEQ_2_SEQ_LM, 
+        inference_mode=False, 
+        r=8, 
+        lora_alpha=32, 
+        lora_dropout=0.1
+    )
+    ```
+
+2. **Loading Base Model**:
+    ```python
+    from transformers import AutoModelForSeq2SeqLM
+
+    model = AutoModelForSeq2SeqLM.from_pretrained("bigscience/mt0-large")
+    ```
+
+3. **Wrapping Base Model**:
+    ```python
+    from peft import get_peft_model
+
+    model = get_peft_model(model, peft_config)
+    model.print_trainable_parameters()
+    ```
+    Output:
+    ```
+    trainable params: 2359296 || all params: 1231940608 || trainable%: 0.19151053100118282
+    ```
+
+4. **Training**:
+    ```python
+    from transformers import TrainingArguments, Trainer
+
+    training_args = TrainingArguments(
+        output_dir="your-name/bigscience/mt0-large-lora",
+        learning_rate=1e-3,
+        per_device_train_batch_size=32,
+        per_device_eval_batch_size=32,
+        num_train_epochs=2,
+        weight_decay=0.01,
+        evaluation_strategy="epoch",
+        save_strategy="epoch",
+        load_best_model_at_end=True,
+    )
+
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=tokenized_datasets["train"],
+        eval_dataset=tokenized_datasets["test"],
+        tokenizer=tokenizer,
+        data_collator=data_collator,
+        compute_metrics=compute_metrics,
+    )
+    trainer.train()
+    ```
+
+### Save Model
+
+After training:
+```python
+model.save_pretrained("output_dir")
+
+# To save to Hugging Face Hub
+from huggingface_hub import notebook_login
+notebook_login()
+model.push_to_hub("your-name/bigscience/mt0-large-lora")
+```
+The trained model only contains additional PEFT weights, making storage efficient.
+
+### Inference
+
+Load and use PEFT-trained models for inference:
+```python
+from peft import AutoPeftModelForCausalLM
+from transformers import AutoTokenizer
+import torch
+
+model = AutoPeftModelForCausalLM.from_pretrained("ybelkada/opt-350m-lora")
+tokenizer = AutoTokenizer.from_pretrained("facebook/opt-350m")
+model = model.to("cuda")
+model.eval()
+
+inputs = tokenizer("Preheat the oven to 350 degrees and place the cookie dough", return_tensors="pt")
+outputs = model.generate(input_ids=inputs["input_ids"].to("cuda"), max_new_tokens=50)
+print(tokenizer.batch_decode(outputs.detach().cpu().numpy(), skip_special_tokens=True)[0])
+```
+
+For unsupported tasks:
+```python
+from peft import AutoPeftModel
+
+model = AutoPeftModel.from_pretrained("smangrul/openai-whisper-large-v2-LORA-colab")
+```
+
+### Next Steps
+
+Try out other PEFT methods like prompt tuning with similar steps: prepare a `PeftConfig`, create a `PeftModel`, and train it. Explore task guides for specific tasks such as semantic segmentation, multilingual automatic speech recognition, DreamBooth, and token classification.
+
+For more details and guides, visit the [PEFT documentation](https://huggingface.co/docs/transformers/main).
