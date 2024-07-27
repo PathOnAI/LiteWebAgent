@@ -96,7 +96,7 @@ class ScreenAgent:
         elements = await page.locator("test").all()
         await elements[0].click()
 
-        Avoid using css selectors like >, instead just target elements specifically using id or class or names or etc
+        Avoid using css selectors like >, instead just target elements specifically using id or class ONLY, DO NOT USE JSNAME.
 
         Remember to target <input> elements when trying to enter text! Remember to read the HTML itself and focus on it. Remember, you don't need to click on
         input elements to fill them, you can directly fill(). Be sure to use the HTML itself to generate the code, so that the generated playwright python code will work.
