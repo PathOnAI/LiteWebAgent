@@ -15,13 +15,13 @@ async def simulate():
     screen.set_url('https://mail.google.com')
     await screen.read_page(navigate=True)
 
-    cache_dir = await screen.build_action('enter email as grand.hunter.dark.15@gmail.com and then press the next button')
+    cache_dir = await screen.build_action('enter email as ______ and then press the next button')
     await execute.load(cache_dir).call()
-    await asyncio.sleep(5)
+    await asyncio.sleep(10)
 
-    cache_dir = await screen.build_action('enter the password as Grandhunter15 and press the login button')
+    cache_dir = await screen.build_action('enter the password as ______ and press the login button')
     await execute.load(cache_dir).call()
-    await asyncio.sleep(5)
+    await asyncio.sleep(10)
 
     cache_dir = await screen.build_action('press the compose button')
     await execute.load(cache_dir).call()
