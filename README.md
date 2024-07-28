@@ -1,5 +1,8 @@
-# WebAgent
+# LiteWebAgent
 repo owners: Danni (Danqing) Zhang (danqing.zhang.personal@gmail.com), and Balaji Rama (balajirw10@gmail.com)
+
+<a href='https://discord.gg/aUJcsgPQ'><img src='https://img.shields.io/badge/Community-Discord-8A2BE2'></a>
+
 
 ## auto-interact demo
 * Loom Url: https://www.loom.com/share/e01a236428b74de59c1f645fa86a575f?sid=72e2e51c-13c0-4ac3-82a1-dff59635e8d0
