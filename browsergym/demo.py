@@ -194,13 +194,13 @@ class DemoAgentArgs(AbstractAgentArgs):
     internal states of the agent.
     """
 
-    model_name: str = "gpt-3.5-turbo"
+    model_name: str = "gpt-4o-mini"
 
     def make_agent(self):
         return DemoAgent(model_name=self.model_name)
 
 
-agent_args = DemoAgentArgs(model_name="gpt-4o")
+agent_args = DemoAgentArgs(model_name="gpt-4o-mini")
 demo_agent = agent_args.make_agent()
 env = env_args.make_env(action_mapping=demo_agent.action_set.to_python_code)  # Replace None with your action mapping if needed
 step_info = StepInfo()
