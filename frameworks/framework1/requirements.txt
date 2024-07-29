@@ -1,0 +1,8 @@
+playwright
+undetected-playwright
+openai
+watchdog
+python-dotenv
+lavague
+selenium==4.22.0
+webdriver-manager==4.0.1
