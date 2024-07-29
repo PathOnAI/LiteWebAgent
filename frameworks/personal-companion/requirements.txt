@@ -1,0 +1,8 @@
+playwright
+undetected-playwright
+openai
+watchdog
+python-dotenv
+google-generativeai
+beautifulsoup4
+lxml
