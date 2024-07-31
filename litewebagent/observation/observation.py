@@ -7,9 +7,9 @@ import PIL.Image
 import pkgutil
 import re
 
-from observation.constants import BROWSERGYM_ID_ATTRIBUTE as BID_ATTR
-from observation.constants import BROWSERGYM_VISIBILITY_ATTRIBUTE as VIS_ATTR
-from observation.constants import BROWSERGYM_SETOFMARKS_ATTRIBUTE as SOM_ATTR
+from .constants import BROWSERGYM_ID_ATTRIBUTE as BID_ATTR
+from .constants import BROWSERGYM_VISIBILITY_ATTRIBUTE as VIS_ATTR
+from .constants import BROWSERGYM_SETOFMARKS_ATTRIBUTE as SOM_ATTR
 
 MARK_FRAMES_MAX_TRIES = 3
 
