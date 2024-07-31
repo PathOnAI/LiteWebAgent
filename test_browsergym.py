@@ -1,8 +1,8 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from agent_creation.constants import TEXT_MAX_LENGTH, BROWSERGYM_ID_ATTRIBUTE, EXTRACT_OBS_MAX_TRIES
-from agent_creation.observation import (
+from observation.constants import TEXT_MAX_LENGTH, BROWSERGYM_ID_ATTRIBUTE, EXTRACT_OBS_MAX_TRIES
+from observation.observation import (
     _pre_extract,
     _post_extract,
     extract_screenshot,
@@ -17,8 +17,8 @@ from dotenv import load_dotenv
 _ = load_dotenv()
 
 
-from agent_creation.litewebagent.playwright_manager import get_page
-from browsergym.core.action.highlevel import HighLevelActionSet
+from litewebagent.playwright_manager import get_page
+from action.highlevel import HighLevelActionSet
 action_set = HighLevelActionSet(
         #subsets=["chat", "bid"],  # define a subset of the action space
         subsets = ["chat", "infeas", "bid", "coord", "nav", "tab"],
@@ -93,7 +93,7 @@ def take_action(page, goal):
     print(action)
     code = action_set.to_python_code(action)
     # print(code)
-    from agent_creation.action.base import execute_python_code
+    from action.base import execute_python_code
     try:
         execute_python_code(
                         code,
