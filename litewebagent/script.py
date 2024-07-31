@@ -302,39 +302,6 @@ def send_msg_to_user(text: str):
 
 
 
-def go_back():
-    """
-    Navigate to the previous page in history.
-
-    Examples:
-        go_back()
-    """
-    page.go_back()
-
-
-
-def go_forward():
-    """
-    Navigate to the next page in history.
-
-    Examples:
-        go_forward()
-    """
-    page.go_forward()
-
-
-
-def goto(url: str):
-    """
-    Navigate to a url.
-
-    Examples:
-        goto('http://www.example.com')
-    """
-    page.goto(url)
-
-
-
 def scroll(delta_x: float, delta_y: float):
     """
     Scroll horizontally and vertically. Amounts in pixels, positive for right or down scrolling, negative for left or up scrolling. Dispatches a wheel event.
@@ -347,218 +314,186 @@ def scroll(delta_x: float, delta_y: float):
 
 
 
-def mouse_move(x: float, y: float):
+def fill(bid: str, value: str):
     """
-    Move the mouse to a location. Uses absolute client coordinates in pixels.
-    Dispatches a mousemove event.
+    Fill out a form field. It focuses the element and triggers an input event with the entered text.
+    It works for <input>, <textarea> and [contenteditable] elements.
 
     Examples:
-        mouse_move(65.2, 158.5)
+        fill('237', 'example value')
+        fill('45', "multi-line\\nexample")
+        fill('a12', "example with \\"quotes\\"")
     """
+    elem = get_elem_by_bid(page, bid, demo_mode != "off")
+    add_demo_mode_effects(page, elem, bid, demo_mode=demo_mode, move_cursor=False)
     if demo_mode != "off":
-        smooth_move_visual_cursor_to(page, x, y)
-    page.mouse.move(x, y)
+        elem.clear()
+        delay = max(2000 / len(value), 10)
+        elem.type(value, delay=delay)
+    else:
+        elem.fill(value, timeout=500)
 
 
 
-def mouse_up(x: float, y: float, button: Literal["left", "middle", "right"] = "left"):
+def select_option(bid: str, options: str | list[str]):
     """
-    Move the mouse to a location then release a mouse button. Dispatches
-    mousemove and mouseup events.
+    Select one or multiple options in a <select> element. You can specify
+    option value or label to select. Multiple options can be selected.
 
     Examples:
-        mouse_up(250, 120)
-        mouse_up(47, 252, 'right')
+        select_option('a48', "blue")
+        select_option('c48', ["red", "green", "blue"])
     """
-    if demo_mode != "off":
-        smooth_move_visual_cursor_to(page, x, y)
-        highlight_by_box(page, {"x": x, "y": y, "width": 1, "height": 1})
-    page.mouse.move(x, y)
-    page.mouse.up(button=button)
+    elem = get_elem_by_bid(page, bid, demo_mode != "off")
+    add_demo_mode_effects(page, elem, bid, demo_mode=demo_mode, move_cursor=False)
+    elem.select_option(options, timeout=500)
 
 
 
-def mouse_down(x: float, y: float, button: Literal["left", "middle", "right"] = "left"):
+def click(
+    bid: str,
+    button: Literal["left", "middle", "right"] = "left",
+    modifiers: list[Literal["Alt", "Control", "Meta", "Shift"]] = [],
+):
     """
-    Move the mouse to a location then press and hold a mouse button. Dispatches
-    mousemove and mousedown events.
+    Click an element.
 
     Examples:
-        mouse_down(140.2, 580.1)
-        mouse_down(458, 254.5, 'middle')
+        click('a51')
+        click('b22', button="right")
+        click('48', button="middle", modifiers=["Shift"])
     """
-    if demo_mode != "off":
-        smooth_move_visual_cursor_to(page, x, y)
-        highlight_by_box(page, {"x": x, "y": y, "width": 1, "height": 1})
-    page.mouse.move(x, y)
-    page.mouse.down(button=button)
+    elem = get_elem_by_bid(page, bid, demo_mode != "off")
+    add_demo_mode_effects(page, elem, bid, demo_mode=demo_mode, move_cursor=True)
+    elem.click(button=button, modifiers=modifiers, timeout=500)
 
 
 
-def mouse_click(x: float, y: float, button: Literal["left", "middle", "right"] = "left"):
+def dblclick(
+    bid: str,
+    button: Literal["left", "middle", "right"] = "left",
+    modifiers: list[Literal["Alt", "Control", "Meta", "Shift"]] = [],
+):
     """
-    Move the mouse to a location and click a mouse button. Dispatches mousemove,
-    mousedown and mouseup events.
+    Double click an element.
 
     Examples:
-        mouse_click(887.2, 68)
-        mouse_click(56, 712.56, 'right')
+        dblclick('12')
+        dblclick('ca42', button="right")
+        dblclick('178', button="middle", modifiers=["Shift"])
     """
-    if demo_mode != "off":
-        smooth_move_visual_cursor_to(page, x, y)
-        highlight_by_box(page, {"x": x, "y": y, "width": 1, "height": 1})
-    page.mouse.click(x, y, button=button)
+    elem = get_elem_by_bid(page, bid, demo_mode != "off")
+    add_demo_mode_effects(page, elem, bid, demo_mode=demo_mode, move_cursor=True)
+    elem.dblclick(button=button, modifiers=modifiers, timeout=500)
 
 
 
-def mouse_dblclick(x: float, y: float, button: Literal["left", "middle", "right"] = "left"):
+def hover(bid: str):
     """
-    Move the mouse to a location and double click a mouse button. Dispatches
-    mousemove, mousedown and mouseup events.
+    Hover over an element.
 
     Examples:
-        mouse_dblclick(5, 236)
-        mouse_dblclick(87.5, 354, 'right')
+        hover('b8')
     """
+    elem = get_elem_by_bid(page, bid, demo_mode != "off")
     if demo_mode != "off":
-        smooth_move_visual_cursor_to(page, x, y)
-        highlight_by_box(page, {"x": x, "y": y, "width": 1, "height": 1})
-    page.mouse.dblclick(x, y, button=button)
+        box = elem.bounding_box()
+        if box:
+            center_x, center_y = box["x"] + box["width"] / 2, box["y"] + box["height"] / 2
+            smooth_move_visual_cursor_to(page, center_x, center_y)
+    elem.hover(timeout=500)
 
 
 
-def mouse_drag_and_drop(from_x: float, from_y: float, to_x: float, to_y: float):
+def press(bid: str, key_comb: str):
     """
-    Drag and drop from a location to a location. Uses absolute client
-    coordinates in pixels. Dispatches mousemove, mousedown and mouseup
-    events.
+    Focus the matching element and press a combination of keys. It accepts
+    the logical key names that are emitted in the keyboardEvent.key property
+    of the keyboard events: Backquote, Minus, Equal, Backslash, Backspace,
+    Tab, Delete, Escape, ArrowDown, End, Enter, Home, Insert, PageDown, PageUp,
+    ArrowRight, ArrowUp, F1 - F12, Digit0 - Digit9, KeyA - KeyZ, etc. You can
+    alternatively specify a single character you'd like to produce such as "a"
+    or "#". Following modification shortcuts are also supported: Shift, Control,
+    Alt, Meta.
 
     Examples:
-        mouse_drag_and_drop(10.7, 325, 235.6, 24.54)
+        press('88', 'Backspace')
+        press('a26', 'Control+a')
+        press('a61', 'Meta+Shift+t')
     """
-    if demo_mode != "off":
-        x, y = from_x, from_y
-        smooth_move_visual_cursor_to(page, x, y)
-        highlight_by_box(page, {"x": x, "y": y, "width": 1, "height": 1})
-    page.mouse.move(from_x, from_y)
+    elem = get_elem_by_bid(page, bid, demo_mode != "off")
+    add_demo_mode_effects(page, elem, bid, demo_mode=demo_mode, move_cursor=False)
+    elem.press(key_comb, timeout=500)
+
+
+
+def focus(bid: str):
+    """
+    Focus the matching element.
+
+    Examples:
+        focus('b455')
+    """
+    elem = get_elem_by_bid(page, bid, demo_mode != "off")
+    add_demo_mode_effects(page, elem, bid, demo_mode=demo_mode, move_cursor=False)
+    elem.focus(timeout=500)
+
+
+
+def clear(bid: str):
+    """
+    Clear the input field.
+
+    Examples:
+        clear('996')
+    """
+    elem = get_elem_by_bid(page, bid, demo_mode != "off")
+    add_demo_mode_effects(page, elem, bid, demo_mode=demo_mode, move_cursor=False)
+    elem.clear(timeout=500)
+
+
+
+def drag_and_drop(from_bid: str, to_bid: str):
+    """
+    Perform a drag & drop. Hover the element that will be dragged. Press
+    left mouse button. Move mouse to the element that will receive the
+    drop. Release left mouse button.
+
+    Examples:
+        drag_and_drop('56', '498')
+    """
+    from_elem = get_elem_by_bid(page, from_bid, demo_mode != "off")
+    add_demo_mode_effects(page, from_elem, from_bid, demo_mode=demo_mode, move_cursor=True)
+    from_elem.hover(timeout=500)
     page.mouse.down()
-    if demo_mode != "off":
-        x, y = to_x, to_y
-        smooth_move_visual_cursor_to(page, x, y)
-        highlight_by_box(page, {"x": x, "y": y, "width": 1, "height": 1})
-    page.mouse.move(to_x, to_y)
+
+    to_elem = get_elem_by_bid(page, to_bid, demo_mode != "off")
+    add_demo_mode_effects(page, to_elem, to_bid, demo_mode=demo_mode, move_cursor=True)
+    to_elem.hover(timeout=500)
     page.mouse.up()
 
 
 
-def mouse_upload_file(x: float, y: float, file: str | list[str]):
+def upload_file(bid: str, file: str | list[str]):
     """
-    Click a location and wait for a "filechooser" event, then select one
+    Click an element and wait for a "filechooser" event, then select one
     or multiple input files for upload. Relative file paths are resolved
     relative to the current working directory. An empty list clears the
     selected files.
 
     Examples:
-        mouse_upload_file(132.1, 547, "my_receipt.pdf")
-        mouse_upload_file(328, 812, ["/home/bob/Documents/image.jpg", "/home/bob/Documents/file.zip"])
+        upload_file("572", "my_receipt.pdf")
+        upload_file("63", ["/home/bob/Documents/image.jpg", "/home/bob/Documents/file.zip"])
     """
-    if demo_mode != "off":
-        smooth_move_visual_cursor_to(page, x, y)
-        highlight_by_box(page, {"x": x, "y": y, "width": 1, "height": 1})
+    elem = get_elem_by_bid(page, bid, demo_mode != "off")
+    add_demo_mode_effects(page, elem, bid, demo_mode=demo_mode, move_cursor=True)
 
     with page.expect_file_chooser() as fc_info:
-        page.mouse.click(x, y)
+        elem.click(timeout=500)
 
     file_chooser = fc_info.value
     file_chooser.set_files(file)
 
 
 
-def keyboard_down(key: str):
-    """
-    Press and holds a keyboard key. Dispatches a keydown event. Accepts the
-    logical key names that are emitted in the keyboardEvent.key property of
-    the keyboard events: Backquote, Minus, Equal, Backslash, Backspace, Tab,
-    Delete, Escape, ArrowDown, End, Enter, Home, Insert, PageDown, PageUp,
-    ArrowRight, ArrowUp, F1 - F12, Digit0 - Digit9, KeyA - KeyZ, etc. You can
-    alternatively specify a single character such as "a" or "#".
-
-    Examples:
-        keyboard_up('Shift')
-        keyboard_up('c')
-    """
-    page.keyboard.down(key)
-
-
-
-def keyboard_up(key: str):
-    """
-    Release a keyboard key. Dispatches a keyup event. Accepts the logical
-    key names that are emitted in the keyboardEvent.key property of the
-    keyboard events: Backquote, Minus, Equal, Backslash, Backspace, Tab,
-    Delete, Escape, ArrowDown, End, Enter, Home, Insert, PageDown, PageUp,
-    ArrowRight, ArrowUp, F1 - F12, Digit0 - Digit9, KeyA - KeyZ, etc.
-    You can alternatively specify a single character you'd like to produce
-    such as "a" or "#".
-
-    Examples:
-        keyboard_up('Shift')
-        keyboard_up('c')
-    """
-    page.keyboard.up(key)
-
-
-
-def keyboard_press(key: str):
-    """
-    Press a combination of keys. Accepts the logical key names that are
-    emitted in the keyboardEvent.key property of the keyboard events:
-    Backquote, Minus, Equal, Backslash, Backspace, Tab, Delete, Escape,
-    ArrowDown, End, Enter, Home, Insert, PageDown, PageUp, ArrowRight,
-    ArrowUp, F1 - F12, Digit0 - Digit9, KeyA - KeyZ, etc. You can
-    alternatively specify a single character you'd like to produce such
-    as "a" or "#". Following modification shortcuts are also supported:
-    Shift, Control, Alt, Meta.
-
-    Examples:
-        keyboard_press('Backspace')
-        keyboard_press('Control+a')
-        keyboard_press('Meta+Shift+t')
-        page.keyboard.press("PageDown")
-    """
-    page.keyboard.press(key)
-
-
-
-def keyboard_type(text: str):
-    """
-    Types a string of text through the keyboard. Sends a keydown, keypress/input,
-    and keyup event for each character in the text. Modifier keys DO NOT affect
-    keyboard_type. Holding down Shift will not type the text in upper case.
-
-    Examples:
-        keyboard_type('Hello world!')
-    """
-    if demo_mode:
-        delay = max(2000 / len(text), 10)
-    else:
-        delay = None
-    page.keyboard.type(text, delay=delay)
-
-
-
-def keyboard_insert_text(text: str):
-    """
-    Insert a string of text in the currently focused element. Dispatches only input
-    event, does not emit the keydown, keyup or keypress events. Modifier keys DO NOT
-    affect keyboard_insert_text. Holding down Shift will not type the text in upper
-    case.
-
-    Examples:
-        keyboard_insert_text('Hello world!')
-    """
-    page.keyboard.insert_text(text)
-
-
-
-goto('https://www.amazon.com')
+click('230')

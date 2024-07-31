@@ -142,10 +142,15 @@ def take_action(context, page, goal, agent_type):
 
 
 
+
+
 goal = "open a new tab, go to amazon"
 take_action(context, page, goal, ["tab", "nav"])
+## TODO: now we have a new page? extract the page?
 
 
+
+## the agent is still working on the original page
 goal = "search dining table"
 take_action(context, page, goal, ["bid"])
 
@@ -161,6 +166,9 @@ take_action(context, page, goal, ["bid"])
 
 goal = "go to amazon, and scroll down"
 take_action(context, page, goal, ["nav", "coord"])
+
+
+
 
 
 
