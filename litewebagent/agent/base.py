@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
 
-from action.base import AbstractActionSet
-from action.highlevel import HighLevelActionSet
+from litewebagent.action.base import AbstractActionSet
+from litewebagent.action.highlevel import HighLevelActionSet
 from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
 
 

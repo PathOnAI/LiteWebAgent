@@ -1,8 +1,8 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from observation.constants import TEXT_MAX_LENGTH, BROWSERGYM_ID_ATTRIBUTE, EXTRACT_OBS_MAX_TRIES
-from observation.observation import (
+from litewebagent.observation.constants import TEXT_MAX_LENGTH, BROWSERGYM_ID_ATTRIBUTE, EXTRACT_OBS_MAX_TRIES
+from litewebagent.observation.observation import (
     _pre_extract,
     _post_extract,
     extract_screenshot,
@@ -17,7 +17,8 @@ from dotenv import load_dotenv
 _ = load_dotenv()
 
 
-from litewebagent.playwright_manager import get_page
+
+from playwright_manager import get_page
 from action.highlevel import HighLevelActionSet
 action_set = HighLevelActionSet(
         #subsets=["chat", "bid"],  # define a subset of the action space
