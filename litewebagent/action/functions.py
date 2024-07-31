@@ -484,7 +484,21 @@ def go_forward():
     page.go_forward()
 
 
-# https://playwright.dev/python/docs/api/class-browsercontext#browser-context-new-page
+# # https://playwright.dev/python/docs/api/class-browsercontext#browser-context-new-page
+# def new_tab():
+#     """
+#     Open a new tab. It will become the active one.
+#
+#     Examples:
+#         new_tab()
+#     """
+#     global page
+#     # set the new page as the active page
+#     page = page.context.new_page()
+#     # trigger the callback that sets this page as active in browsergym
+#     page.locate("html").dispatch_event("pageshow")
+
+
 def new_tab():
     """
     Open a new tab. It will become the active one.
@@ -492,12 +506,12 @@ def new_tab():
     Examples:
         new_tab()
     """
-    global page
-    # set the new page as the active page
-    page = page.context.new_page()
+    global page, context
+    # Create a new page in the existing context
+    page = context.new_page()
     # trigger the callback that sets this page as active in browsergym
-    page.locate("html").dispatch_event("pageshow")
-
+    page.evaluate("() => document.documentElement.dispatchEvent(new Event('pageshow'))")
+    return page
 
 # https://playwright.dev/python/docs/api/class-page#page-close
 def tab_close():
