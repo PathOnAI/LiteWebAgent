@@ -18,29 +18,57 @@ _ = load_dotenv()
 
 
 
-from playwright_manager import get_page
-from action.highlevel import HighLevelActionSet
-action_set = HighLevelActionSet(
-        #subsets=["chat", "bid"],  # define a subset of the action space
-        subsets = ["chat", "infeas", "bid", "coord", "nav", "tab"],
+
+
+from openai import OpenAI
+
+openai_client = OpenAI()
+from playwright.sync_api import sync_playwright
+
+# playwright_driver = sync_playwright().start()
+# browser = playwright_driver.chromium.launch(headless=False)  # Set headless to False
+# page = browser.new_page()
+# print(page)
+# page.goto("https://www.google.com")
+# print(page)
+
+
+playwright_driver = sync_playwright().start()
+browser = playwright_driver.chromium.launch(headless=False)
+
+# Create a new context
+context = browser.new_context()
+
+# Open initial page and navigate to Google
+page = context.new_page()
+print(page)
+page.goto("https://www.google.com")
+print(page)
+
+def write_to_file(file_path: str, text: str, encoding: str = "utf-8") -> str:
+    try:
+        directory = os.path.dirname(file_path)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+        with open(file_path, "w", encoding=encoding) as f:
+            f.write(text)
+        return "File written successfully."
+    except Exception as error:
+        return f"Error: {error}"
+
+def take_action(context, page, goal, agent_type):
+    from playwright_manager import get_page
+    from action.highlevel import HighLevelActionSet
+    subsets=["chat"]
+    subsets.extend(agent_type)
+    action_set = HighLevelActionSet(
+        # subsets=["chat", "bid"],  # define a subset of the action space
+        subsets= subsets,
         # subsets=["chat", "bid", "coord"] # allow the agent to also use x,y coordinates
         strict=False,  # less strict on the parsing of the actions
         multiaction=True,  # enable to agent to take multiple actions at once
         demo_mode="default",  # add visual effects
     )
-
-from openai import OpenAI
-
-openai_client = OpenAI()
-
-
-
-page = get_page()
-print(page)
-page.goto("https://www.google.com")
-print(page)
-
-def take_action(page, goal):
     _pre_extract(page)
     dom = extract_dom_snapshot(page)
     # print(dom)
@@ -96,20 +124,44 @@ def take_action(page, goal):
     # print(code)
     from action.base import execute_python_code
     try:
+        write_to_file("script.py", code)
         execute_python_code(
                         code,
                         page,
+                        context,
                         send_message_to_user=None,
                         report_infeasible_instructions=None,
                     )
+
     except Exception as e:
-        last_action_error = f"{type(e).__name__}: {e}"
+        last_action_error = f"{type(e).__name__}: {str(e)}"
         print(last_action_error)
 
 
+
+
+
+
+goal = "open a new tab, go to amazon"
+take_action(context, page, goal, ["tab", "nav"])
+
+
 goal = "search dining table"
-take_action(page, goal)
+take_action(context, page, goal, ["bid"])
+
 goal = "search dining table"
-take_action(page, goal)
+take_action(context, page, goal, ["bid"])
+
 goal = "search dining table"
-take_action(page, goal)
+take_action(context, page, goal, ["bid"])
+
+goal = "search dining table"
+take_action(context, page, goal, ["bid"])
+
+
+goal = "go to amazon, and scroll down"
+take_action(context, page, goal, ["nav", "coord"])
+
+
+
+
