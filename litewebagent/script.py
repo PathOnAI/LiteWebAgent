@@ -743,4 +743,4 @@ def keyboard_insert_text(text: str):
 
 
 
-click('255')
+click('648')
