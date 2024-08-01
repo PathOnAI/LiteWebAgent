@@ -1,1 +1,16 @@
-Extracted main content from the 'Quicktour of PEFT' page.
+# Quicktour of PEFT
+
+PEFT (Parameter-Efficient Fine-Tuning) is designed to make fine-tuning large language models more efficient. The page outlines the need for PEFT, provides a practical example with a Q&A model, and details the steps involved in implementing PEFT.
+
+## Key Points
+- **Necessity of PEFT**: Fine-tuning large models can be resource-intensive. PEFT aims to alleviate this by tuning a smaller number of parameters.
+- **Implementing PEFT**: One can fine-tune a model by freezing most parameters and updating a smaller set of layers.
+
+## Practical Example
+- **Train a Q&A Model**: The page provides an example using the Hugging Face Transformers library to train a Q&A model with PEFT.
+  - **Loading Pre-trained Model**: How to load a pre-trained language model.
+  - **Freezing Layers**: Instructions on freezing the majority of the model layers.
+  - **Fine-tuning**: Steps for fine-tuning specific layers of the model.
+
+## Summary
+PEFT provides a means to fine-tune models in a more resource-efficient way by reducing the number of trainable parameters.

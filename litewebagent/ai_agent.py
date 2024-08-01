@@ -53,13 +53,14 @@ def run_python_script(script_name):
 from navigation_control_agent import use_navigation_control_agent, navigation_control
 from search_redirect_agent import use_search_redirect_agent, search_and_redirect
 from find_click_agent import use_find_click_agent, find_and_click
+from browsergym_agent import use_browsergym_agent
 
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+# from selenium import webdriver
+# from selenium.webdriver.chrome.service import Service
+# from webdriver_manager.chrome import ChromeDriverManager
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.support import expected_conditions as EC
 from urllib.parse import urlparse
 import time
 import inspect
@@ -172,6 +173,25 @@ tools = [
             }
         }
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "use_browsergym_agent",
+            "description": "Perform a general web browsing behavior, not covered by other functions, including navigation, creating new tabs, moving to a new page",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "The task description describing what web browsing it is doing"
+                    }
+                },
+                "required": [
+                    "description"
+                ]
+            }
+        }
+    },
 ]
 
 client = OpenAI()
@@ -180,7 +200,8 @@ available_tools = {
             "use_search_redirect_agent": use_search_redirect_agent,
             "run_python_script": run_python_script,
             "write_to_file": write_to_file,
-            "use_find_click_agent": use_find_click_agent
+            "use_find_click_agent": use_find_click_agent,
+            "use_browsergym_agent": use_browsergym_agent,
         }
 
 def use_ai_agent(query):
@@ -195,10 +216,11 @@ def use_ai_agent(query):
 
 def main():
     from workflow_agent import WorkflowAgent
-    queries = [
-               'Go to Google.com, and search dining table amazon, and click on amazon',
-               'On https://huggingface.co/docs/peft/index, find and click quicktour of PEFT',
-               'On https://huggingface.co/docs/peft/index, find and click quicktour of PEFT, extract the content of the page and save it as content.txt']
+    queries = ["go to amazon.com"]
+    # queries = [
+    #            'Go to Google.com, and search dining table amazon, and click on amazon',
+    #            'On https://huggingface.co/docs/peft/index, find and click quicktour of PEFT',
+    #            'On https://huggingface.co/docs/peft/index, find and click quicktour of PEFT, extract the content of the page and save it as content.txt']
     for query in queries:
         workflow = WorkflowAgent()
         workflow.set_goal(query)

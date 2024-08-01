@@ -16,7 +16,7 @@ from litewebagent.observation.observation import (
 from dotenv import load_dotenv
 import playwright
 _ = load_dotenv()
-
+import time
 import logging
 logging.basicConfig(
     level=logging.INFO,
@@ -56,7 +56,7 @@ def write_to_file(file_path: str, text: str, encoding: str = "utf-8") -> str:
 
 def send_completion_request(messages, agent_type, depth: int = 0):
     if depth >= 8:
-        return None
+        return "retry upper bound, task failed"
     # print(messages)
     # import pdb; pdb.set_trace()
     context = get_context()
@@ -92,7 +92,7 @@ def send_completion_request(messages, agent_type, depth: int = 0):
                     f"An error occured while extracting the dom and axtree. Retrying ({retries_left}/{EXTRACT_OBS_MAX_TRIES} tries left).\n{repr(e)}"
                 )
                 # post-extract cleanup (aria-roledescription attribute)
-                _post_extract(self.page)
+                _post_extract(page)
                 time.sleep(0.5)
                 continue
             else:
@@ -101,11 +101,11 @@ def send_completion_request(messages, agent_type, depth: int = 0):
 
 
 
-    _pre_extract(page)
-    dom = extract_dom_snapshot(page)
-    axtree = extract_merged_axtree(page)
-    focused_element_bid = extract_focused_element_bid(page)
-    extra_properties = extract_dom_extra_properties(dom)
+    # _pre_extract(page)
+    # dom = extract_dom_snapshot(page)
+    # axtree = extract_merged_axtree(page)
+    # focused_element_bid = extract_focused_element_bid(page)
+    # extra_properties = extract_dom_extra_properties(dom)
     _post_extract(page)
     from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
     dom_txt = flatten_dom_to_str(dom),
@@ -174,20 +174,20 @@ def send_completion_request(messages, agent_type, depth: int = 0):
 #
 
 
-## the agent is still working on the original page
-goal = "just go to amazon"
-system_msg = f"""\
-    # Instructions
-    Review the current state of the page and all other information to find the best
-    possible next action to accomplish your goal. Your answer will be interpreted
-    and executed by a program, make sure to follow the formatting instructions.
-
-    # Goal:
-    {goal}"""
-messages = [{"role": "system", "content": system_msg}]
-response = send_completion_request(messages, ["bid", "nav", "coord"], 0)
-print("XXXXXXXXXXXXXXXX the response is XXXXXXXXXXXXXXXX:\n")
-print(response)
+# ## the agent is still working on the original page
+# goal = "just go to amazon"
+# system_msg = f"""\
+#     # Instructions
+#     Review the current state of the page and all other information to find the best
+#     possible next action to accomplish your goal. Your answer will be interpreted
+#     and executed by a program, make sure to follow the formatting instructions.
+#
+#     # Goal:
+#     {goal}"""
+# messages = [{"role": "system", "content": system_msg}]
+# response = send_completion_request(messages, ["bid", "nav", "coord"], 0)
+# print("XXXXXXXXXXXXXXXX the response is XXXXXXXXXXXXXXXX:\n")
+# print(response)
 
 
 # goal = "hello!"
@@ -204,6 +204,38 @@ print(response)
 # print("XXXXXXXXXXXXXXXX the response is XXXXXXXXXXXXXXXX:\n")
 # print(response)
 
+
+def use_browsergym_agent(description):
+    # goal = "just go to amazon"
+    system_msg = f"""\
+        # Instructions
+        Review the current state of the page and all other information to find the best
+        possible next action to accomplish your goal. Your answer will be interpreted
+        and executed by a program, make sure to follow the formatting instructions.
+
+        # Goal:
+        {description}"""
+    messages = [{"role": "system", "content": system_msg}]
+    response = send_completion_request(messages, ["bid", "nav", "coord"], 0)
+    print("XXXXXXXXXXXXXXXX the response is XXXXXXXXXXXXXXXX:\n")
+    print(response)
+    return response
+
+def main():
+    use_browsergym_agent("just go to amazon")
+    # try:
+    #     # Example usage of the navigation control agent
+    #     description = "Go to url: https://huggingface.co/docs/peft/index, scroll down and Scan the whole page"
+    #     response = use_navigation_control_agent(description)
+    #     print("Navigation Control Agent Response:")
+    #     print(response)
+    # finally:
+    #     # Make sure to close the Playwright instance when done
+    #     from playwright_manager import close_playwright
+    #     close_playwright()
+
+if __name__ == "__main__":
+    main()
 
 
 
