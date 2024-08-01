@@ -14,36 +14,33 @@ from litewebagent.observation.observation import (
 )
 
 from dotenv import load_dotenv
+import playwright
 _ = load_dotenv()
 
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("log.txt", mode="w"),
+        logging.StreamHandler()
+    ]
+)
 
+# Create a logger
+logger = logging.getLogger(__name__)
 
 
 
 from openai import OpenAI
 
 openai_client = OpenAI()
-from playwright.sync_api import sync_playwright
-
-# playwright_driver = sync_playwright().start()
-# browser = playwright_driver.chromium.launch(headless=False)  # Set headless to False
-# page = browser.new_page()
-# print(page)
-# page.goto("https://www.google.com")
-# print(page)
-
-
-playwright_driver = sync_playwright().start()
-browser = playwright_driver.chromium.launch(headless=False)
-
-# Create a new context
-context = browser.new_context()
-
-# Open initial page and navigate to Google
-page = context.new_page()
-print(page)
+from playwright_manager import get_browser, get_context, get_page
+from action.highlevel import HighLevelActionSet
+browser = get_browser()
+context = get_context()
+page = get_page()
 page.goto("https://www.google.com")
-print(page)
 
 def write_to_file(file_path: str, text: str, encoding: str = "utf-8") -> str:
     try:
@@ -56,43 +53,64 @@ def write_to_file(file_path: str, text: str, encoding: str = "utf-8") -> str:
     except Exception as error:
         return f"Error: {error}"
 
-def take_action(context, page, goal, agent_type):
-    from playwright_manager import get_page
-    from action.highlevel import HighLevelActionSet
+
+def send_completion_request(messages, agent_type, depth: int = 0):
+    if depth >= 8:
+        return None
+    # print(messages)
+    # import pdb; pdb.set_trace()
+    context = get_context()
+    page = get_page()
     subsets=["chat"]
     subsets.extend(agent_type)
     action_set = HighLevelActionSet(
-        # subsets=["chat", "bid"],  # define a subset of the action space
         subsets= subsets,
-        # subsets=["chat", "bid", "coord"] # allow the agent to also use x,y coordinates
         strict=False,  # less strict on the parsing of the actions
         multiaction=True,  # enable to agent to take multiple actions at once
         demo_mode="default",  # add visual effects
     )
+    for retries_left in reversed(range(EXTRACT_OBS_MAX_TRIES)):
+        try:
+            # pre-extraction, mark dom elements (set bid, set dynamic attributes like value and checked)
+            _pre_extract(page)
+
+            dom = extract_dom_snapshot(page)
+            axtree = extract_merged_axtree(page)
+            focused_element_bid = extract_focused_element_bid(page)
+            extra_properties = extract_dom_extra_properties(dom)
+        except (playwright.sync_api.Error, MarkingError) as e:
+            err_msg = str(e)
+            # try to add robustness to async events (detached / deleted frames)
+            if retries_left > 0 and (
+                    "Frame was detached" in err_msg
+                    or "Frame with the given frameId is not found" in err_msg
+                    or "Execution context was destroyed" in err_msg
+                    or "Frame has been detached" in err_msg
+                    or "Cannot mark a child frame without a bid" in err_msg
+            ):
+                logger.warning(
+                    f"An error occured while extracting the dom and axtree. Retrying ({retries_left}/{EXTRACT_OBS_MAX_TRIES} tries left).\n{repr(e)}"
+                )
+                # post-extract cleanup (aria-roledescription attribute)
+                _post_extract(self.page)
+                time.sleep(0.5)
+                continue
+            else:
+                raise e
+        break
+
+
+
     _pre_extract(page)
     dom = extract_dom_snapshot(page)
-    # print(dom)
     axtree = extract_merged_axtree(page)
     focused_element_bid = extract_focused_element_bid(page)
     extra_properties = extract_dom_extra_properties(dom)
-    # print(axtree)
-    # print(focused_element_bid)
-    # print(extra_properties)
-    # post-extraction cleanup of temporary info in dom
     _post_extract(page)
     from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
     dom_txt = flatten_dom_to_str(dom),
     axtree_txt = flatten_axtree_to_str(axtree)
 
-
-    system_msg = f"""\
-    # Instructions
-    Review the current state of the page and all other information to find the best
-    possible next action to accomplish your goal. Your answer will be interpreted
-    and executed by a program, make sure to follow the formatting instructions.
-    
-    # Goal:
-    {goal}"""
 
     prompt = f"""\
     
@@ -111,17 +129,20 @@ def take_action(context, page, goal, agent_type):
     """
 
     # query OpenAI model
+    temp_messages = messages.copy()
+    temp_messages.append({"role": "user", "content": prompt})
+    # print(temp_messages)
     response = openai_client.chat.completions.create(
         model= "gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": system_msg},
-            {"role": "user", "content": prompt},
-        ],
+        messages=temp_messages
     )
     action = response.choices[0].message.content
     print(action)
+    if 'send_msg_to_user' in action:
+        return action
+    if 'noop' in action:
+        return "task finished"
     code = action_set.to_python_code(action)
-    # print(code)
     from action.base import execute_python_code
     try:
         write_to_file("script.py", code)
@@ -132,10 +153,13 @@ def take_action(context, page, goal, agent_type):
                         send_message_to_user=None,
                         report_infeasible_instructions=None,
                     )
-
+        messages.append({"role": "assistant", "content": action+"succeeded"})
     except Exception as e:
         last_action_error = f"{type(e).__name__}: {str(e)}"
+        print("error is:\n")
         print(last_action_error)
+        messages.append({"role": "assistant", "content": action + last_action_error})
+    return send_completion_request(messages, agent_type, depth+1)
 
 
 
@@ -144,30 +168,41 @@ def take_action(context, page, goal, agent_type):
 
 
 
-goal = "open a new tab, go to amazon"
-take_action(context, page, goal, ["tab", "nav"])
-## TODO: now we have a new page? extract the page?
-
+# goal = "open a new tab, go to amazon"
+# take_action(goal, ["tab", "nav"])
+# ## TODO: now we have a new page? extract the page?
+#
 
 
 ## the agent is still working on the original page
-goal = "search dining table"
-take_action(context, page, goal, ["bid"])
+goal = "just go to amazon"
+system_msg = f"""\
+    # Instructions
+    Review the current state of the page and all other information to find the best
+    possible next action to accomplish your goal. Your answer will be interpreted
+    and executed by a program, make sure to follow the formatting instructions.
 
-goal = "search dining table"
-take_action(context, page, goal, ["bid"])
-
-goal = "search dining table"
-take_action(context, page, goal, ["bid"])
-
-goal = "search dining table"
-take_action(context, page, goal, ["bid"])
-
-
-goal = "go to amazon, and scroll down"
-take_action(context, page, goal, ["nav", "coord"])
+    # Goal:
+    {goal}"""
+messages = [{"role": "system", "content": system_msg}]
+response = send_completion_request(messages, ["bid", "nav", "coord"], 0)
+print("XXXXXXXXXXXXXXXX the response is XXXXXXXXXXXXXXXX:\n")
+print(response)
 
 
+# goal = "hello!"
+# system_msg = f"""\
+#     # Instructions
+#     Review the current state of the page and all other information to find the best
+#     possible next action to accomplish your goal. Your answer will be interpreted
+#     and executed by a program, make sure to follow the formatting instructions.
+#
+#     # Goal:
+#     {goal}"""
+# messages = [{"role": "system", "content": system_msg}]
+# response = send_completion_request(messages, ["bid", "nav", "coord"], 0)
+# print("XXXXXXXXXXXXXXXX the response is XXXXXXXXXXXXXXXX:\n")
+# print(response)
 
 
 

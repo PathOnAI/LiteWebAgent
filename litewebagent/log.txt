@@ -1,0 +1,22 @@
+2024-07-31 22:06:32,419 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-31 22:06:37,572 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '8ED0D12D593E06822D0A8A8ECA54CB3F'
+2024-07-31 22:06:38,357 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '8ED0D12D593E06822D0A8A8ECA54CB3F'
+2024-07-31 22:06:41,989 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-31 22:06:46,505 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-31 22:06:47,895 - litewebagent.observation.observation - WARNING - Frame marking: not all elements have been visited by the intersection_observer after 1000 ms
+2024-07-31 22:06:48,219 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '7F05ABBD04808D452E732314158DFDEE'
+2024-07-31 22:06:48,220 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '6048EF8AF2FB36EC5E56E340C40714B7'
+2024-07-31 22:06:48,221 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId 'BD39C245C04741B5721B47E89C5DF262'
+2024-07-31 22:06:49,565 - litewebagent.observation.observation - WARNING - Frame marking: not all elements have been visited by the intersection_observer after 1000 ms
+2024-07-31 22:06:49,874 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '7F05ABBD04808D452E732314158DFDEE'
+2024-07-31 22:06:49,875 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '6048EF8AF2FB36EC5E56E340C40714B7'
+2024-07-31 22:06:49,876 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId 'BD39C245C04741B5721B47E89C5DF262'
+2024-07-31 22:06:53,397 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-31 22:06:58,647 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-31 22:07:03,244 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-31 22:07:10,295 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-31 22:07:10,816 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '283DE9AF20F59ACBA49795CA2ADAF88C'
+2024-07-31 22:07:10,818 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '5693B303A9F1AA8AB127E1DD8CD99AC5'
+2024-07-31 22:07:11,314 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '283DE9AF20F59ACBA49795CA2ADAF88C'
+2024-07-31 22:07:11,315 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '5693B303A9F1AA8AB127E1DD8CD99AC5'
+2024-07-31 22:07:14,491 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
