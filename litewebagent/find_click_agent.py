@@ -7,6 +7,7 @@ import logging
 from utils import *
 
 logger = logging.getLogger(__name__)
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 def simple_similarity(a, b):
     """A very simple similarity measure based on common words."""
