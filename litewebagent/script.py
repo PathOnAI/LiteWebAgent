@@ -743,4 +743,4 @@ def keyboard_insert_text(text: str):
 
 
 
-click('648')
+goto('https://www.amazon.com')

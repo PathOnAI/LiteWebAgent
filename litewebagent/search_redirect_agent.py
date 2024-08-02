@@ -44,7 +44,6 @@ import re
 def search_and_redirect(initial_url, search_keywords, click_url=None):
     page = get_page()
     try:
-        # Navigate to the initial URL
         if page.url != initial_url:
             page.goto(initial_url)
         cached_html = load_html_from_cache(initial_url)
@@ -135,12 +134,9 @@ def main():
         # Example usage of the search and redirect agent
         tasks = ["Go to amazon.com and search dining table", "Go to Google.com, and search dining table amazon", "Go to Google.com, and search dining table amazon, and click on amazon"]
         for description in tasks:
-                #"Go to Google.com, and search dining table amazon, and click on amazon"
-                #"(1) Go to Google.com, and search dining table amazon, and click on amazon, (2) go to amazon.com, and search dining table"
-            # "Go to amazon.com and search dining table"
             response = use_search_redirect_agent(description)
             print("Search and Redirect Agent Response:")
-        print(response)
+            print(response)
     finally:
         # Make sure to close the Playwright instance when done
         from playwright_manager import close_playwright

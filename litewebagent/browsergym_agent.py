@@ -57,8 +57,7 @@ def write_to_file(file_path: str, text: str, encoding: str = "utf-8") -> str:
 def send_completion_request(messages, agent_type, depth: int = 0):
     if depth >= 8:
         return "retry upper bound, task failed"
-    # print(messages)
-    # import pdb; pdb.set_trace()
+
     context = get_context()
     page = get_page()
     subsets=["chat"]
@@ -71,7 +70,6 @@ def send_completion_request(messages, agent_type, depth: int = 0):
     )
     for retries_left in reversed(range(EXTRACT_OBS_MAX_TRIES)):
         try:
-            # pre-extraction, mark dom elements (set bid, set dynamic attributes like value and checked)
             _pre_extract(page)
 
             dom = extract_dom_snapshot(page)
@@ -99,13 +97,6 @@ def send_completion_request(messages, agent_type, depth: int = 0):
                 raise e
         break
 
-
-
-    # _pre_extract(page)
-    # dom = extract_dom_snapshot(page)
-    # axtree = extract_merged_axtree(page)
-    # focused_element_bid = extract_focused_element_bid(page)
-    # extra_properties = extract_dom_extra_properties(dom)
     _post_extract(page)
     from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
     dom_txt = flatten_dom_to_str(dom),
@@ -162,49 +153,6 @@ def send_completion_request(messages, agent_type, depth: int = 0):
     return send_completion_request(messages, agent_type, depth+1)
 
 
-
-
-
-
-
-
-# goal = "open a new tab, go to amazon"
-# take_action(goal, ["tab", "nav"])
-# ## TODO: now we have a new page? extract the page?
-#
-
-
-# ## the agent is still working on the original page
-# goal = "just go to amazon"
-# system_msg = f"""\
-#     # Instructions
-#     Review the current state of the page and all other information to find the best
-#     possible next action to accomplish your goal. Your answer will be interpreted
-#     and executed by a program, make sure to follow the formatting instructions.
-#
-#     # Goal:
-#     {goal}"""
-# messages = [{"role": "system", "content": system_msg}]
-# response = send_completion_request(messages, ["bid", "nav", "coord"], 0)
-# print("XXXXXXXXXXXXXXXX the response is XXXXXXXXXXXXXXXX:\n")
-# print(response)
-
-
-# goal = "hello!"
-# system_msg = f"""\
-#     # Instructions
-#     Review the current state of the page and all other information to find the best
-#     possible next action to accomplish your goal. Your answer will be interpreted
-#     and executed by a program, make sure to follow the formatting instructions.
-#
-#     # Goal:
-#     {goal}"""
-# messages = [{"role": "system", "content": system_msg}]
-# response = send_completion_request(messages, ["bid", "nav", "coord"], 0)
-# print("XXXXXXXXXXXXXXXX the response is XXXXXXXXXXXXXXXX:\n")
-# print(response)
-
-
 def use_browsergym_agent(description):
     # goal = "just go to amazon"
     system_msg = f"""\
@@ -223,16 +171,6 @@ def use_browsergym_agent(description):
 
 def main():
     use_browsergym_agent("just go to amazon")
-    # try:
-    #     # Example usage of the navigation control agent
-    #     description = "Go to url: https://huggingface.co/docs/peft/index, scroll down and Scan the whole page"
-    #     response = use_navigation_control_agent(description)
-    #     print("Navigation Control Agent Response:")
-    #     print(response)
-    # finally:
-    #     # Make sure to close the Playwright instance when done
-    #     from playwright_manager import close_playwright
-    #     close_playwright()
 
 if __name__ == "__main__":
     main()
