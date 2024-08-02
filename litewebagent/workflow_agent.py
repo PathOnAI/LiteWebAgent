@@ -129,6 +129,7 @@ def main():
     workflow.set_goal('add a random dining table from amazon to my cart')
 
     step = workflow.propose_action()
+    print(step)
 
 if __name__ == "__main__":
     main()
