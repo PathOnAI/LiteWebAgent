@@ -54,64 +54,51 @@ def write_to_file(file_path: str, text: str, encoding: str = "utf-8") -> str:
         return f"Error: {error}"
 
 
-def send_completion_request(messages, agent_type, depth: int = 0):
-    if depth >= 8:
-        return "retry upper bound, task failed"
-
-    context = get_context()
-    page = get_page()
-    subsets=["chat"]
+def take_action(context, page, goal, agent_type):
+    from playwright_manager import get_page
+    from action.highlevel import HighLevelActionSet
+    subsets = ["chat"]
     subsets.extend(agent_type)
     action_set = HighLevelActionSet(
-        subsets= subsets,
+        subsets=subsets,
         strict=False,  # less strict on the parsing of the actions
         multiaction=True,  # enable to agent to take multiple actions at once
         demo_mode="default",  # add visual effects
     )
-    for retries_left in reversed(range(EXTRACT_OBS_MAX_TRIES)):
-        try:
-            _pre_extract(page)
-
-            dom = extract_dom_snapshot(page)
-            axtree = extract_merged_axtree(page)
-            focused_element_bid = extract_focused_element_bid(page)
-            extra_properties = extract_dom_extra_properties(dom)
-        except (playwright.sync_api.Error, MarkingError) as e:
-            err_msg = str(e)
-            # try to add robustness to async events (detached / deleted frames)
-            if retries_left > 0 and (
-                    "Frame was detached" in err_msg
-                    or "Frame with the given frameId is not found" in err_msg
-                    or "Execution context was destroyed" in err_msg
-                    or "Frame has been detached" in err_msg
-                    or "Cannot mark a child frame without a bid" in err_msg
-            ):
-                logger.warning(
-                    f"An error occured while extracting the dom and axtree. Retrying ({retries_left}/{EXTRACT_OBS_MAX_TRIES} tries left).\n{repr(e)}"
-                )
-                # post-extract cleanup (aria-roledescription attribute)
-                _post_extract(page)
-                time.sleep(0.5)
-                continue
-            else:
-                raise e
-        break
-
+    _pre_extract(page)
+    dom = extract_dom_snapshot(page)
+    # print(dom)
+    axtree = extract_merged_axtree(page)
+    focused_element_bid = extract_focused_element_bid(page)
+    extra_properties = extract_dom_extra_properties(dom)
+    # print(axtree)
+    # print(focused_element_bid)
+    # print(extra_properties)
+    # post-extraction cleanup of temporary info in dom
     _post_extract(page)
     from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
     dom_txt = flatten_dom_to_str(dom),
     axtree_txt = flatten_axtree_to_str(axtree)
 
+    system_msg = f"""\
+    # Instructions
+    Review the current state of the page and all other information to find the best
+    possible next action to accomplish your goal. Your answer will be interpreted
+    and executed by a program, make sure to follow the formatting instructions.
+
+    Provide ONLY ONE action. Do not suggest multiple actions or a sequence of actions.
+    # Goal:
+    {goal}"""
 
     prompt = f"""\
-    
+
     # Current Accessibility Tree:
     {axtree_txt}
-    
-    
+
+
     # Action Space
     {action_set.describe(with_long_description=False, with_examples=True)}
-    
+
     Here is an example with chain of thought of a valid action when clicking on a button:
     "
     In order to accomplish my goal I need to click on the button with bid 12
@@ -120,61 +107,34 @@ def send_completion_request(messages, agent_type, depth: int = 0):
     """
 
     # query OpenAI model
-    temp_messages = messages.copy()
-    temp_messages.append({"role": "user", "content": prompt})
-    # print(temp_messages)
     response = openai_client.chat.completions.create(
-        model= "gpt-4o-mini",
-        messages=temp_messages
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": system_msg},
+            {"role": "user", "content": prompt},
+        ],
     )
     action = response.choices[0].message.content
     print(action)
-    if 'send_msg_to_user' in action:
-        return action
-    if 'noop' in action:
-        return "task finished"
     code = action_set.to_python_code(action)
+    # print(code)
     from action.base import execute_python_code
     try:
         write_to_file("script.py", code)
         execute_python_code(
-                        code,
-                        page,
-                        context,
-                        send_message_to_user=None,
-                        report_infeasible_instructions=None,
-                    )
-        messages.append({"role": "assistant", "content": action+"succeeded"})
+            code,
+            page,
+            context,
+            send_message_to_user=None,
+            report_infeasible_instructions=None,
+        )
+
     except Exception as e:
         last_action_error = f"{type(e).__name__}: {str(e)}"
-        print("error is:\n")
         print(last_action_error)
-        messages.append({"role": "assistant", "content": action + last_action_error})
-    return send_completion_request(messages, agent_type, depth+1)
 
 
-def use_browsergym_agent(description):
-    # goal = "just go to amazon"
-    system_msg = f"""\
-        # Instructions
-        Review the current state of the page and all other information to find the best
-        possible next action to accomplish your goal. Your answer will be interpreted
-        and executed by a program, make sure to follow the formatting instructions.
-
-        # Goal:
-        {description}"""
-    messages = [{"role": "system", "content": system_msg}]
-    response = send_completion_request(messages, ["bid", "nav", "coord"], 0)
-    print("XXXXXXXXXXXXXXXX the response is XXXXXXXXXXXXXXXX:\n")
-    print(response)
-    return response
-
-def main():
-    use_browsergym_agent("just go to amazon")
-
-if __name__ == "__main__":
-    main()
-
-
-
-
+goal = "search dining table"
+take_action(context, page, goal, ["bid"])
+goal = "click google search"
+take_action(context, page, goal, ["bid"])
