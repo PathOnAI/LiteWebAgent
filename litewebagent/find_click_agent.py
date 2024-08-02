@@ -122,10 +122,6 @@ def use_find_click_agent(description):
     send_prompt(client, messages, description, tools, available_tools)
     return messages[-1].content
 
-# response = use_search_click_agent("(1) Go to Google.com, and search dining table amazon, and click on amazon, (2) go to amazon.com, and search dining table")
-# print(response)
-# driver.quit()
-
 def main():
     try:
         # Example usage of the search and click agent
