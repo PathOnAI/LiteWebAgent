@@ -217,10 +217,6 @@ def use_ai_agent(query):
 def main():
     from workflow_agent import WorkflowAgent
     queries = ['Go to Google.com, and search dining table amazon, and click on amazon', "go to amazon.com"]
-    # queries = [
-    #            'Go to Google.com, and search dining table amazon, and click on amazon',
-    #            'On https://huggingface.co/docs/peft/index, find and click quicktour of PEFT',
-    #            'On https://huggingface.co/docs/peft/index, find and click quicktour of PEFT, extract the content of the page and save it as content.txt']
     for query in queries:
         workflow = WorkflowAgent()
         workflow.set_goal(query)

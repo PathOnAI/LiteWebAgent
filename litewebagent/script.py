@@ -496,4 +496,37 @@ def upload_file(bid: str, file: str | list[str]):
 
 
 
-click('248')
+def go_back():
+    """
+    Navigate to the previous page in history.
+
+    Examples:
+        go_back()
+    """
+    page.go_back()
+
+
+
+def go_forward():
+    """
+    Navigate to the next page in history.
+
+    Examples:
+        go_forward()
+    """
+    page.go_forward()
+
+
+
+def goto(url: str):
+    """
+    Navigate to a url.
+
+    Examples:
+        goto('http://www.example.com')
+    """
+    page.goto(url)
+
+
+
+goto('https://www.amazon.com')
