@@ -1,24 +1,2 @@
-2024-08-02 15:37:05,978 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2024-08-02 15:37:08,664 - litewebagent.observation.observation - WARNING - Frame marking: not all elements have been visited by the intersection_observer after 1000 ms
-2024-08-02 15:37:08,938 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId 'A36724E2DF7C05CFD2B45B859F146522'
-2024-08-02 15:37:08,939 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '3B44855C255D5A7E46EFDB152E000AA8'
-2024-08-02 15:37:08,940 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId 'A768050FF489C182E55CE42DEC5DC2D3'
-2024-08-02 15:37:11,907 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2024-08-02 15:37:13,123 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '44B168BBC92FBB76C391191F574582DA'
-2024-08-02 15:37:13,124 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId 'C47B63DE96B779E037F245128177DDEF'
-2024-08-02 15:37:13,126 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId 'A07E9A039FC3432DECFF3BDFD522D5DE'
-2024-08-02 15:37:15,414 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2024-08-02 15:37:16,503 - __main__ - WARNING - An error occured while extracting the dom and axtree. Retrying (4/5 tries left).
-Error('Protocol error (Accessibility.getFullAXTree): Frame with the given frameId is not found.')
-2024-08-02 15:37:17,502 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId 'E1EE4766CB04B3252C9446A7CE52A0E2'
-2024-08-02 15:37:17,504 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId 'E65396E6CFD614844F85062AE249C86A'
-2024-08-02 15:37:19,865 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2024-08-02 15:37:20,808 - __main__ - WARNING - An error occured while extracting the dom and axtree. Retrying (4/5 tries left).
-MarkingError('Cannot mark a child frame without a bid.')
-2024-08-02 15:37:21,872 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '4D19F4F6A029E4EE15C98740D0BA2ACA'
-2024-08-02 15:37:21,873 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId '34C1549B7E46CCA2DEF545D058EEB5E8'
-2024-08-02 15:37:24,483 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2024-08-02 15:37:25,710 - __main__ - WARNING - An error occured while extracting the dom and axtree. Retrying (4/5 tries left).
-Error('Protocol error (Accessibility.getFullAXTree): Frame with the given frameId is not found.')
-2024-08-02 15:37:26,699 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId 'C137400F6748A126E18A9E056B80810E'
-2024-08-02 15:37:26,700 - litewebagent.observation.observation - WARNING - Extracted AXTree does not contain frameId 'DD2E3424B3448A340A422B826C6CD507'
+2024-08-02 16:01:50,151 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-08-02 16:01:54,277 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
