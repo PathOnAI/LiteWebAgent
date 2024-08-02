@@ -14,6 +14,7 @@ from litewebagent.observation.observation import (
 )
 
 from dotenv import load_dotenv
+from utils import *
 import playwright
 _ = load_dotenv()
 import time
@@ -42,22 +43,23 @@ context = get_context()
 page = get_page()
 page.goto("https://www.google.com")
 
-def write_to_file(file_path: str, text: str, encoding: str = "utf-8") -> str:
-    try:
-        directory = os.path.dirname(file_path)
-        if directory:
-            os.makedirs(directory, exist_ok=True)
-        with open(file_path, "w", encoding=encoding) as f:
-            f.write(text)
-        return "File written successfully."
-    except Exception as error:
-        return f"Error: {error}"
+# def write_to_file(file_path: str, text: str, encoding: str = "utf-8") -> str:
+#     try:
+#         directory = os.path.dirname(file_path)
+#         if directory:
+#             os.makedirs(directory, exist_ok=True)
+#         with open(file_path, "w", encoding=encoding) as f:
+#             f.write(text)
+#         return "File written successfully."
+#     except Exception as error:
+#         return f"Error: {error}"
 
 
-def take_action(context, page, goal, agent_type):
-    from playwright_manager import get_page
-    from action.highlevel import HighLevelActionSet
+def take_action(goal):
+    context = get_context()
+    page = get_page()
     subsets = ["chat"]
+    agent_type = ["bid", "nav"]
     subsets.extend(agent_type)
     action_set = HighLevelActionSet(
         subsets=subsets,
@@ -67,14 +69,9 @@ def take_action(context, page, goal, agent_type):
     )
     _pre_extract(page)
     dom = extract_dom_snapshot(page)
-    # print(dom)
     axtree = extract_merged_axtree(page)
     focused_element_bid = extract_focused_element_bid(page)
     extra_properties = extract_dom_extra_properties(dom)
-    # print(axtree)
-    # print(focused_element_bid)
-    # print(extra_properties)
-    # post-extraction cleanup of temporary info in dom
     _post_extract(page)
     from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
     dom_txt = flatten_dom_to_str(dom),
@@ -115,12 +112,12 @@ def take_action(context, page, goal, agent_type):
         ],
     )
     action = response.choices[0].message.content
-    print(action)
+    # print(action)
     code = action_set.to_python_code(action)
     # print(code)
     from action.base import execute_python_code
     try:
-        write_to_file("script.py", code)
+        # write_to_file("script.py", code)
         execute_python_code(
             code,
             page,
@@ -128,13 +125,76 @@ def take_action(context, page, goal, agent_type):
             send_message_to_user=None,
             report_infeasible_instructions=None,
         )
+        return action + "task succeeded"
 
     except Exception as e:
         last_action_error = f"{type(e).__name__}: {str(e)}"
         print(last_action_error)
+        return action + "task failed with action" + last_action_error
 
 
-goal = "search dining table"
-take_action(context, page, goal, ["bid"])
-goal = "click google search"
-take_action(context, page, goal, ["bid"])
+# goal = "search dining table"
+# response = take_action(goal)
+# print(response)
+# goal = "click google search"
+# response = take_action(goal)
+# print(response)
+# goal = "go to amazon.com"
+# response = take_action(goal)
+# print(response)
+
+
+from dotenv import load_dotenv
+from openai import OpenAI
+import os
+_ = load_dotenv()
+
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "take_action",
+            "description": "Perform a web navigation task.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "goal": {
+                        "type": "string",
+                        "description": "The description of the web navigation task"
+                    },
+                },
+                "required": [
+                    "goal",
+                ]
+            }
+        }
+    }
+]
+
+client = OpenAI()
+available_tools = {
+    "take_action": take_action,
+}
+
+def use_browsergym_agent(description):
+    messages = [Message(role="system",
+                        content="You are a smart web search agent to perform search and click task for customers")]
+    send_prompt(client, messages, description, tools, available_tools)
+    return messages[-1].content
+
+
+def main():
+    try:
+        # Example usage of the search and redirect agent
+        tasks = ["(1) search dining table, (2) click google search, (3) go to amazon.com"]
+        for description in tasks:
+            response = use_browsergym_agent(description)
+            print("Search and Redirect Agent Response:")
+            print(response)
+    finally:
+        # Make sure to close the Playwright instance when done
+        from playwright_manager import close_playwright
+        close_playwright()
+
+if __name__ == "__main__":
+    main()

@@ -1,2 +1,16 @@
-2024-08-02 16:01:50,151 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2024-08-02 16:01:54,277 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-08-02 16:34:48,998 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-08-02 16:34:49,006 - utils - INFO - depth: 0, response: ChatCompletion(id='chatcmpl-9rw5I6Prxno6MTqZwUv04SnzyBvOu', choices=[Choice(finish_reason='tool_calls', index=0, logprobs=None, message=ChatCompletionMessage(content=None, role='assistant', function_call=None, tool_calls=[ChatCompletionMessageToolCall(id='call_A2Tbwnv9nK894TgYxq8SvgeJ', function=Function(arguments='{"goal": "search dining table"}', name='take_action'), type='function'), ChatCompletionMessageToolCall(id='call_8wHQffke5hbDiXnu2KNKWK0q', function=Function(arguments='{"goal": "click google search"}', name='take_action'), type='function'), ChatCompletionMessageToolCall(id='call_o1P11p1LBsLfCsdItxM23zXl', function=Function(arguments='{"goal": "go to amazon.com"}', name='take_action'), type='function')]))], created=1722641688, model='gpt-4o-2024-05-13', object='chat.completion', system_fingerprint='fp_c832e4513b', usage=CompletionUsage(completion_tokens=65, prompt_tokens=89, total_tokens=154))
+2024-08-02 16:34:49,008 - utils - INFO - Number of function calls: 3
+2024-08-02 16:34:50,425 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-08-02 16:34:53,621 - utils - INFO - function name: take_action, function args: {'goal': 'search dining table'}, function response: To search for a dining table, I need to fill the search input field with the query "dining table" and submit it. 
+
+```fill('112', 'dining table')```task succeeded
+2024-08-02 16:34:54,636 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-08-02 16:34:56,580 - utils - INFO - function name: take_action, function args: {'goal': 'click google search'}, function response: In order to accomplish my goal I need to click on the button for "Google Search" which has the bid 248. 
+```click("248")```task succeeded
+2024-08-02 16:34:57,487 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-08-02 16:34:58,104 - utils - INFO - function name: take_action, function args: {'goal': 'go to amazon.com'}, function response: In order to accomplish my goal of going to amazon.com, I will perform the following action:
+
+```goto('https://www.amazon.com')```task succeeded
+2024-08-02 16:34:59,272 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-08-02 16:34:59,274 - utils - INFO - depth: 1, response: ChatCompletion(id='chatcmpl-9rw5SdWji1tGZqd4PHOnVUpz554nS', choices=[Choice(finish_reason='stop', index=0, logprobs=None, message=ChatCompletionMessage(content='All the steps have been completed successfully:\n1. Searched for "dining table".\n2. Clicked on "Google Search".\n3. Navigated to Amazon.com.\n\nIs there anything specific you would like to do next?', role='assistant', function_call=None, tool_calls=None))], created=1722641698, model='gpt-4o-2024-05-13', object='chat.completion', system_fingerprint='fp_3cd8b62c3b', usage=CompletionUsage(completion_tokens=47, prompt_tokens=281, total_tokens=328))
