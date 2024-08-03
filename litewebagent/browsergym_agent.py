@@ -43,17 +43,6 @@ context = get_context()
 page = get_page()
 page.goto("https://www.google.com")
 
-# def write_to_file(file_path: str, text: str, encoding: str = "utf-8") -> str:
-#     try:
-#         directory = os.path.dirname(file_path)
-#         if directory:
-#             os.makedirs(directory, exist_ok=True)
-#         with open(file_path, "w", encoding=encoding) as f:
-#             f.write(text)
-#         return "File written successfully."
-#     except Exception as error:
-#         return f"Error: {error}"
-
 
 def take_action(goal):
     context = get_context()
@@ -133,16 +122,6 @@ def take_action(goal):
         return action + "task failed with action" + last_action_error
 
 
-# goal = "search dining table"
-# response = take_action(goal)
-# print(response)
-# goal = "click google search"
-# response = take_action(goal)
-# print(response)
-# goal = "go to amazon.com"
-# response = take_action(goal)
-# print(response)
-
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -186,7 +165,7 @@ def use_browsergym_agent(description):
 def main():
     try:
         # Example usage of the search and redirect agent
-        tasks = ["(1) search dining table, (2) click google search, (3) go to amazon.com"]
+        tasks = ["(1) search dining table, (2) click google search, (3) go to amazon.com, (4) search dining table, (5) click search"]
         for description in tasks:
             response = use_browsergym_agent(description)
             print("Search and Redirect Agent Response:")
