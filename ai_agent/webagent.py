@@ -23,6 +23,7 @@ _ = load_dotenv()
 
 openai_client = OpenAI()
 from ai_agent.action.highlevel import HighLevelActionSet
+from ai_agent.playwright_manager import PlaywrightManager
 from ai_agent.playwright_manager import get_browser, get_context, get_page, playwright_manager
 from ai_agent.utils import *
 
@@ -32,7 +33,7 @@ from urllib.parse import urlparse
 import time
 import inspect
 from bs4 import BeautifulSoup
-from ai_agent.playwright_manager import get_page
+# from ai_agent.playwright_manager import get_page
 import logging
 from ai_agent.utils import *
 
@@ -363,13 +364,25 @@ def use_web_agent(description, model_name="gpt-4o-mini"):
 
 
 def main():
+    browser = get_browser()
+    context = get_context()
     page = get_page()
     playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
 
-    page.goto("https://www.amazon.com/s?k=dining+table&crid=1FQ2714L2KJLK&sprefix=dining+tabl%2Caps%2C235&ref=nb_sb_noss_2")
-    description = "Scan the whole page to extract product names"
-    response = use_web_agent(description, "gpt-4o-mini")
-    print(response)
+    # page.goto("https://www.amazon.com/s?k=dining+table&crid=1FQ2714L2KJLK&sprefix=dining+tabl%2Caps%2C235&ref=nb_sb_noss_2")
+    # description = "Scan the whole page to extract product names"
+    # response = use_web_agent(description, "gpt-4o-mini")
+    # print(response)
+    page.goto("https://www.airbnb.com")
+    tasks = [
+        "(1) enter the 'San Francisco' as destination,"]
+
+    combined_tasks = "\n".join(tasks)
+    for description in tasks:
+        print(description)
+        response = use_web_agent(description)
+        print(response)
+        return response
 
 if __name__ == "__main__":
     main()
