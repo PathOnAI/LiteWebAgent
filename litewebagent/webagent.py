@@ -1,8 +1,8 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from ai_agent.observation.constants import TEXT_MAX_LENGTH, BROWSERGYM_ID_ATTRIBUTE, EXTRACT_OBS_MAX_TRIES
-from ai_agent.observation.observation import (
+from litewebagent.observation.constants import TEXT_MAX_LENGTH, BROWSERGYM_ID_ATTRIBUTE, EXTRACT_OBS_MAX_TRIES
+from litewebagent.observation.observation import (
     _pre_extract,
     _post_extract,
     extract_screenshot,
@@ -22,20 +22,20 @@ _ = load_dotenv()
 
 
 openai_client = OpenAI()
-from ai_agent.action.highlevel import HighLevelActionSet
-from ai_agent.playwright_manager import PlaywrightManager
-from ai_agent.playwright_manager import get_browser, get_context, get_page, playwright_manager
-from ai_agent.utils import *
-
+from litewebagent.action.highlevel import HighLevelActionSet
+from litewebagent.playwright_manager import PlaywrightManager
+from litewebagent.playwright_manager import get_browser, get_context, get_page, playwright_manager
+from litewebagent.utils import *
+from litewebagent.osagent import write_to_file
+from litewebagent.action.base import execute_python_code
 
 from playwright.sync_api import sync_playwright
 from urllib.parse import urlparse
 import time
 import inspect
 from bs4 import BeautifulSoup
-# from ai_agent.playwright_manager import get_page
 import logging
-from ai_agent.utils import *
+from litewebagent.utils import *
 
 logging.basicConfig(
     level=logging.INFO,
@@ -209,8 +209,7 @@ def take_action(goal, agent_type):
         # Execute the action
         try:
             code = action_set.to_python_code(action)
-            from ai_agent.osagent import write_to_file
-            from ai_agent.action.base import execute_python_code
+
 
             logger.info("Executing action script")
             execute_python_code(
@@ -328,8 +327,6 @@ def select_dropdown_options(goal):
         # Execute the action
         try:
             code = action_set.to_python_code(action)
-            from ai_agent.osagent import write_to_file
-            from ai_agent.action.base import execute_python_code
 
             logger.info("Executing action script")
             execute_python_code(

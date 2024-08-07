@@ -21,18 +21,20 @@ cp .env.example .env
 ```
 
 ### (2) QuickStart
-```bash
-cd litewebagent
-python ai_agent.py
+Then log into your clickup account and close the browser to save the authetication information in state.json file
+
 ```
-You can also run other sub-web agents by
-```bash
-python browsergym_agent.py
-python find_click_agent.py
-python navigation_control_agent.py
-python search_redirect_agent.py
-python workflow_agent.py
+cd litewebagent/playground
+python persist_state.py
 ```
+
+Then run tests, or run the webagent file
+```
+python -m litewebagent.clickup_test
+python -m litewebagent.frontend_test
+python -m litewebagent.webagent
+```
+
 
 
 

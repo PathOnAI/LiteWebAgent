@@ -20,7 +20,7 @@ logging.basicConfig(
 
 # Create a logger
 logger = logging.getLogger(__name__)
-from ai_agent.utils import *
+from litewebagent.utils import *
 
 def execute_shell_command(command):
     try:
