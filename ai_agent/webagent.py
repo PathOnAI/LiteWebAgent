@@ -258,6 +258,123 @@ def take_action(goal, agent_type):
         logger.error(f"Task failed: {error_msg}")
         return f"Task failed: {error_msg}"
 
+
+
+def select_dropdown_options(goal):
+    try:
+        # Setup
+        context = get_context()
+        page = get_page()
+        action_set = HighLevelActionSet(
+            subsets=['coord', 'bid'],
+            strict=False,
+            multiaction=True,
+            demo_mode="default"
+        )
+
+        # Extract page information
+        _pre_extract(page)
+        dom = extract_dom_snapshot(page)
+        axtree = extract_merged_axtree(page)
+        focused_element_bid = extract_focused_element_bid(page)
+        extra_properties = extract_dom_extra_properties(dom)
+        _post_extract(page)
+
+        # Import necessary utilities
+        from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
+
+        # Flatten DOM and accessibility tree
+        dom_txt = flatten_dom_to_str(dom)
+        axtree_txt = flatten_axtree_to_str(axtree)
+
+        # Prepare messages for AI model
+        system_msg = f"""
+        # Instructions
+        Review the current state of the page and all other information to find the best
+        possible next action to accomplish your goal. Your answer will be interpreted
+        and executed by a program, make sure to follow the formatting instructions.
+
+        Provide ONLY ONE action. Do not suggest multiple actions or a sequence of actions.
+        # Goal:
+        {goal}"""
+
+        prompt = f"""
+        # Current Accessibility Tree:
+        {axtree_txt}
+
+        # Action Space
+        {action_set.describe(with_long_description=False, with_examples=True)}
+
+        Here is an example with chain of thought of a valid action when clicking on a button:
+        "
+        In order to accomplish my goal I need to click on the button with bid 12
+        ```click("12")```
+        "
+        """
+
+        # Query OpenAI model
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_msg},
+                {"role": "user", "content": prompt},
+            ],
+        )
+
+        action = response.choices[0].message.content
+
+        # Execute the action
+        try:
+            code = action_set.to_python_code(action)
+            from ai_agent.osagent import write_to_file
+            from ai_agent.action.base import execute_python_code
+
+            logger.info("Executing action script")
+            execute_python_code(
+                code,
+                page,
+                context,
+                send_message_to_user=None,
+                report_infeasible_instructions=None,
+            )
+            _pre_extract(page)
+            dom = extract_dom_snapshot(page)
+            axtree = extract_merged_axtree(page)
+            focused_element_bid = extract_focused_element_bid(page)
+            extra_properties = extract_dom_extra_properties(dom)
+            _post_extract(page)
+            prompt = f"""
+            After we take the example,
+            # Accessibility Tree is updated as:
+            {axtree_txt}
+
+            # the original goal:
+            {goal}
+
+            Is the goal finished now? provide answer and explanation
+            """
+
+            # Query OpenAI model
+            response = openai_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "user", "content": prompt},
+                ],
+            )
+
+            feedback = response.choices[0].message.content
+
+            return f"The action is: {action} - the result is: {feedback}"
+        except Exception as e:
+            last_action_error = f"{type(e).__name__}: {str(e)}"
+            logger.error(f"Action execution failed: {last_action_error}")
+            return f"{action} - Task failed with action error: {last_action_error}"
+
+    except Exception as e:
+        error_msg = f"{type(e).__name__}: {str(e)}"
+        logger.error(f"Task failed: {error_msg}")
+        return f"Task failed: {error_msg}"
+
 def upload_file(goal):
     response = take_action(goal, ["file"])
     return response
@@ -324,6 +441,25 @@ tools = [
                 ]
             },
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "select_dropdown_options",
+            "description": "select dropdown option",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "instruction": {
+                        "type": "string",
+                        "description": "The description of how to select dropdown",
+                    }
+                },
+                "required": [
+                    "instruction"
+                ]
+            },
+        }
     }
 ]
 
@@ -332,6 +468,7 @@ available_tools = {
     "navigation": navigation,
     "upload_file": upload_file,
     "scan_page_extract_information": scan_page_extract_information,
+    "select_dropdown_options": select_dropdown_options,
 }
 
 def use_web_agent(description, model_name="gpt-4o-mini"):
