@@ -220,14 +220,16 @@ def take_action(goal, agent_type):
                 send_message_to_user=None,
                 report_infeasible_instructions=None,
             )
+            page = get_page()
             _pre_extract(page)
             dom = extract_dom_snapshot(page)
             axtree = extract_merged_axtree(page)
+            axtree_txt = flatten_axtree_to_str(axtree)
             focused_element_bid = extract_focused_element_bid(page)
             extra_properties = extract_dom_extra_properties(dom)
             _post_extract(page)
             prompt = f"""
-            After we take the example,
+            After we take action {action},
             # Accessibility Tree is updated as:
             {axtree_txt}
 
@@ -337,14 +339,16 @@ def select_dropdown_options(goal):
                 send_message_to_user=None,
                 report_infeasible_instructions=None,
             )
+            page = get_page()
             _pre_extract(page)
             dom = extract_dom_snapshot(page)
             axtree = extract_merged_axtree(page)
+            axtree_txt = flatten_axtree_to_str(axtree)
             focused_element_bid = extract_focused_element_bid(page)
             extra_properties = extract_dom_extra_properties(dom)
             _post_extract(page)
             prompt = f"""
-            After we take the example,
+            After we take action {action},
             # Accessibility Tree is updated as:
             {axtree_txt}
 
