@@ -6,10 +6,10 @@ import json
 async def save_login():
     terminated = False
     async with async_playwright() as p:
-        browser = await p.firefox.launch(headless=False)
+        browser = await p.chromium.launch(headless=False)
         context = await browser.new_context()
         page = await context.new_page()
-        await page.goto('https://www.amazon.com')
+        await page.goto('https://www.clickup.com')
 
         print("Browser opened. Close the browser window to save the storage state.")
 

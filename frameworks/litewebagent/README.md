@@ -13,15 +13,7 @@ Create .env file
 cp env.example .env
 ```
 
-install pandoc
-```
-brew install pandoc
-```
-
 Update the API keys in the `.env` file
-
 ```
-python resume_test.py
-python airbnb_test.py
-python amazon_test.py
+python ai_agent.py
 ```

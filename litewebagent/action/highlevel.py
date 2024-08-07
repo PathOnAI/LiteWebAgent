@@ -56,7 +56,7 @@ BID_ACTIONS = [
     # These are not really needed and might pollute the action space, doing more harm than good
     # check,
     # uncheck,
-    select_option,
+    # select_option,
     click,
     dblclick,
     hover,
@@ -66,6 +66,14 @@ BID_ACTIONS = [
     drag_and_drop,
     upload_file,
 ]
+
+FILE_ACTIONS = [
+    upload_file,
+]
+
+# SELECT_OPTION_ACTIONS = [
+#     select_option,
+# ]
 
 COORD_ACTIONS = [
     scroll,
@@ -139,6 +147,10 @@ class HighLevelActionSet(AbstractActionSet):
                         allowed_actions.extend(CHAT_ACTIONS)
                     case "infeas":
                         allowed_actions.extend(INFEAS_ACTIONS)
+                    # case "select_option":
+                    #     allowed_actions.extend(SELECT_OPTION_ACTIONS)
+                    case "file":
+                        allowed_actions.extend(FILE_ACTIONS)
                     case "bid":
                         allowed_actions.extend(BID_ACTIONS)
                     case "coord":
@@ -333,6 +345,136 @@ Only a single action can be provided at once."""
         # function definitions
         python_code += self.python_includes
 
+        # # Add new functions
+        python_code += """
+def extract_code(text):
+    # Split the text by triple backticks
+    parts = text.split('```')
+
+    # Check if we have at least one pair of triple backticks
+    if len(parts) >= 3:
+        # Return the content between the first pair of triple backticks
+        return parts[1].strip()
+    else:
+        return "No code found between triple backticks"
+
+
+def highlight_element_by_bid(page: playwright.sync_api.Page, bid: str, text: str):
+    \"\"\"
+    Highlights an element on the page by drawing a large bounding box around it
+    and displaying custom text.
+
+    Args:
+        page: The Playwright page object.
+        bid: The browser ID of the element to highlight.
+        text: The custom text to display above the highlighted element.
+    \"\"\"
+    # Get the element using the bid
+    elem = get_elem_by_bid(page, bid)
+
+    # Get the bounding box of the element
+    box = elem.bounding_box()
+
+    if box:
+        # Calculate enlarged box dimensions (50% larger)
+        padding = min(box['width'], box['height']) * 0.25  # 25% padding
+        enlarged_box = {
+            'x': box['x'] - padding,
+            'y': box['y'] - padding,
+            'width': box['width'] + padding * 2,
+            'height': box['height'] + padding * 2
+        }
+
+         # Load custom fonts from Google Fonts
+        page.evaluate(\"\"\"
+            (() => {
+                const link = document.createElement('link');
+                link.href = 'https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&family=Roboto:wght@400;700&family=Hind+Siliguri:wght@400;700&display=swap';
+                link.rel = 'stylesheet';
+                document.head.appendChild(link);
+            })()
+        \"\"\")
+
+        # Create a larger highlight with custom text
+        page.evaluate(
+            \"\"\"
+            ([box, text]) => {
+                const overlay = document.createElement('div');
+                document.body.appendChild(overlay);
+                overlay.setAttribute('style', `
+                    all: initial;
+                    position: fixed;
+                    border: 2px solid #79bd9a;
+                    borderRadius: 10px;
+                    boxShadow: 0 0 0 4000px rgba(0, 0, 0, 0.1);
+                    left: ${box.x}px;
+                    top: ${box.y}px;
+                    width: ${box.width}px;
+                    height: ${box.height}px;
+                    z-index: 2147483646;
+                    pointerEvents: none;
+                `);
+
+                const textElement = document.createElement('div');
+                textElement.textContent = text;
+                textElement.setAttribute('style', `
+                    position: absolute;
+                    top: -40px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background-color: #79bd9a;
+                    color: white;
+                    padding: 8px 10px;
+                    border-radius: 10px;
+                    fontFamily: Roboto, Raleway, Hind Siliguri;
+                    fontSize: 16px;
+                    fontWeight: bold;
+                `);
+                overlay.appendChild(textElement);
+
+                setTimeout(() => {
+                    document.body.removeChild(overlay);
+                }, 5000);  // Remove after 5 seconds
+            }
+            \"\"\",
+            [enlarged_box, text]
+        )
+
+        # Wait for the highlight to be visible
+        page.wait_for_timeout(5000)  # Wait for 5 seconds
+
+def extract_bid_from_action(action: str) -> str:
+    \"\"\"
+    Extracts the bid from the action string.
+
+    Args:
+        action: The action string containing the bid.
+
+    Returns:
+        The extracted bid as a string.
+    \"\"\"
+    import re
+
+    # Use regex to find the bid within the single quotes
+    print(action)
+    match = re.search(r"'(\\w+)'", action)
+    if match:
+        return match.group(1)
+    else:
+        raise ValueError("No bid found in the action string")
+
+# Modified execute_action function
+def execute_action(action: str):
+    # Extract the bid from the action
+    extracted_code = extract_code(action)
+    bid = extract_bid_from_action(extracted_code)
+
+    # Highlight the element
+    highlight_element_by_bid(page, bid, action)
+        """
+        python_code += """\n"""
+        python_code += f'action="""{highlevel_code}"""\n'
+        python_code += """execute_action(action)\n"""
         # function calls
         for function_name, function_args in function_calls:
             if function_name not in self.action_set:

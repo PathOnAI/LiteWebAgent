@@ -1,5 +1,5 @@
-from ai_agent.playwright_manager import get_browser, get_context, get_page, playwright_manager
-
+from litewebagent.playwright_manager import PlaywrightManager
+from litewebagent.playwright_manager import get_browser, get_context, get_page, playwright_manager
 from dotenv import load_dotenv
 import playwright
 _ = load_dotenv()
@@ -17,8 +17,8 @@ logging.basicConfig(
 # Create a logger
 logger = logging.getLogger(__name__)
 
-from ai_agent.webagent import use_web_agent
-from ai_agent.osagent import use_os_agent
+from litewebagent.webagent import use_web_agent
+from litewebagent.osagent import use_os_agent
 
 def driver_main(q):
     start = time.time()
@@ -42,22 +42,26 @@ def main():
     # for description in tasks:
     #     response = use_browsergym_agent(description)
     #     print(response)
-
+    # from playwright_manager import PlaywrightManager
     browser = get_browser()
+    # browser = await p.firefox.launch(headless=False)
     context = get_context()
-    page = get_page()
+    # context = get_context()
+    page = playwright_manager.get_page()
     playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
 
-    page.goto("https://www.airbnb.com")
+    page.goto("https://www.clickup.com")
+    # page.wait_for_timeout(5000)  # Wait for 5 seconds after navigation
+
     tasks = [
-        "(1) enter the 'San Francisco' as destination,"]
+        "Click on Dashboards"]
 
     combined_tasks = "\n".join(tasks)
     for description in tasks:
         print(description)
         response = use_web_agent(description)
         print(response)
-        return response
+    # return response
 
 if __name__ == "__main__":
     main()
