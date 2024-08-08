@@ -18,10 +18,16 @@ pip install seeact
 * take action
   * https://github.com/OSU-NLP-Group/SeeAct/blob/main/seeact_package/seeact/agent.py#L403
 
-## TODO
+## screenshot TODO
+* take screenshot
+* pass screenshot to prompt
 * get_interactive_elements_with_playwright
   * need to be associated with axtree
   * def screenshots_som(self):
     * return self.get_screenshots(som=True)
 * show on frontend
-* take screenshot
+
+
+## workflow TODO
+* action generation and action grounding
+  * since we have action generation, we don't need workflow, planning?

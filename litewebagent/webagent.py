@@ -49,6 +49,13 @@ logging.basicConfig(
 # Create a logger
 logger = logging.getLogger(__name__)
 # "extract all product names of the website screenshot"
+
+import base64
+
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+
 def scan_page_extract_information(instruction):
     page = get_page()
     import time
@@ -156,6 +163,9 @@ def take_action(goal, agent_type):
         )
 
         # Extract page information
+        # screenshot = extract_screenshot(page)
+        screenshot_path=os.path.join(os.getcwd(), 'litewebagent','screenshots', 'screenshot.png')
+        page.screenshot(path=screenshot_path)
         _pre_extract(page)
         dom = extract_dom_snapshot(page)
         axtree = extract_merged_axtree(page)
@@ -188,19 +198,35 @@ def take_action(goal, agent_type):
         # Action Space
         {action_set.describe(with_long_description=False, with_examples=True)}
 
+        # Screenshot
+        The image provided is a screenshot of the current application state, corresponding to the Accessibility Tree above.
+
         Here is an example with chain of thought of a valid action when clicking on a button:
         "
         In order to accomplish my goal I need to click on the button with bid 12
         ```click("12")```
         "
+
+        Please analyze the screenshot and the Accessibility Tree to determine the next appropriate action. Refer to visual elements from the screenshot if relevant to your decision.
         """
 
         # Query OpenAI model
+        base64_image = encode_image(screenshot_path)
         response = openai_client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": system_msg},
-                {"role": "user", "content": prompt},
+                {"role": "user",
+                 "content": [
+                     {"type": "text", "text": prompt},
+                     {"type": "image_url",
+                      "image_url": {
+                          "url": f"data:image/jpeg;base64,{base64_image}",
+                          "detail": "high"
+                      }
+                      }
+                 ]
+                 },
             ],
         )
 
@@ -220,6 +246,7 @@ def take_action(goal, agent_type):
                 report_infeasible_instructions=None,
             )
             page = get_page()
+            page.screenshot(path=screenshot_path)
             _pre_extract(page)
             dom = extract_dom_snapshot(page)
             axtree = extract_merged_axtree(page)
@@ -227,22 +254,37 @@ def take_action(goal, agent_type):
             focused_element_bid = extract_focused_element_bid(page)
             extra_properties = extract_dom_extra_properties(dom)
             _post_extract(page)
+            base64_image = encode_image(screenshot_path)
             prompt = f"""
-            After we take action {action},
+            After we take action {action}, a screenshot was captured.
+
+            # Screenshot description:
+            The image provided is a screenshot of the application state after the action was performed.
+
             # Accessibility Tree is updated as:
             {axtree_txt}
 
-            # the original goal:
+            # The original goal:
             {goal}
 
-            Is the goal finished now? provide answer and explanation
+            Based on the screenshot and the updated Accessibility Tree, is the goal finished now? Provide an answer and explanation, referring to visual elements from the screenshot if relevant.
             """
 
             # Query OpenAI model
             response = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4o",
                 messages=[
-                    {"role": "user", "content": prompt},
+                    {"role": "user",
+                     "content": [
+                         {"type": "text", "text": prompt},
+                         {"type": "image_url",
+                          "image_url": {
+                              "url": f"data:image/jpeg;base64,{base64_image}",
+                              "detail": "high"
+                          }
+                          }
+                     ]
+                     },
                 ],
             )
 
@@ -261,120 +303,120 @@ def take_action(goal, agent_type):
 
 
 
-def select_dropdown_options(goal):
-    try:
-        # Setup
-        context = get_context()
-        page = get_page()
-        action_set = HighLevelActionSet(
-            subsets=['coord', 'bid'],
-            strict=False,
-            multiaction=True,
-            demo_mode="default"
-        )
-
-        # Extract page information
-        _pre_extract(page)
-        dom = extract_dom_snapshot(page)
-        axtree = extract_merged_axtree(page)
-        focused_element_bid = extract_focused_element_bid(page)
-        extra_properties = extract_dom_extra_properties(dom)
-        _post_extract(page)
-
-        # Import necessary utilities
-        from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
-
-        # Flatten DOM and accessibility tree
-        dom_txt = flatten_dom_to_str(dom)
-        axtree_txt = flatten_axtree_to_str(axtree)
-
-        # Prepare messages for AI model
-        system_msg = f"""
-        # Instructions
-        Review the current state of the page and all other information to find the best
-        possible next action to accomplish your goal. Your answer will be interpreted
-        and executed by a program, make sure to follow the formatting instructions.
-
-        Provide ONLY ONE action. Do not suggest multiple actions or a sequence of actions.
-        # Goal:
-        {goal}"""
-
-        prompt = f"""
-        # Current Accessibility Tree:
-        {axtree_txt}
-
-        # Action Space
-        {action_set.describe(with_long_description=False, with_examples=True)}
-
-        Here is an example with chain of thought of a valid action when clicking on a button:
-        "
-        In order to accomplish my goal I need to click on the button with bid 12
-        ```click("12")```
-        "
-        """
-
-        # Query OpenAI model
-        response = openai_client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_msg},
-                {"role": "user", "content": prompt},
-            ],
-        )
-
-        action = response.choices[0].message.content
-
-        # Execute the action
-        try:
-            code = action_set.to_python_code(action)
-
-            logger.info("Executing action script")
-            execute_python_code(
-                code,
-                page,
-                context,
-                send_message_to_user=None,
-                report_infeasible_instructions=None,
-            )
-            page = get_page()
-            _pre_extract(page)
-            dom = extract_dom_snapshot(page)
-            axtree = extract_merged_axtree(page)
-            axtree_txt = flatten_axtree_to_str(axtree)
-            focused_element_bid = extract_focused_element_bid(page)
-            extra_properties = extract_dom_extra_properties(dom)
-            _post_extract(page)
-            prompt = f"""
-            After we take action {action},
-            # Accessibility Tree is updated as:
-            {axtree_txt}
-
-            # the original goal:
-            {goal}
-
-            Is the goal finished now? provide answer and explanation
-            """
-
-            # Query OpenAI model
-            response = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "user", "content": prompt},
-                ],
-            )
-
-            feedback = response.choices[0].message.content
-
-            return f"The action is: {action} - the result is: {feedback}"
-        except Exception as e:
-            last_action_error = f"{type(e).__name__}: {str(e)}"
-            logger.error(f"Action execution failed: {last_action_error}")
-            return f"{action} - Task failed with action error: {last_action_error}"
-
-    except Exception as e:
-        error_msg = f"{type(e).__name__}: {str(e)}"
-        logger.error(f"Task failed: {error_msg}")
-        return f"Task failed: {error_msg}"
+# def select_dropdown_options(goal):
+#     try:
+#         # Setup
+#         context = get_context()
+#         page = get_page()
+#         action_set = HighLevelActionSet(
+#             subsets=['coord', 'bid'],
+#             strict=False,
+#             multiaction=True,
+#             demo_mode="default"
+#         )
+#
+#         # Extract page information
+#         _pre_extract(page)
+#         dom = extract_dom_snapshot(page)
+#         axtree = extract_merged_axtree(page)
+#         focused_element_bid = extract_focused_element_bid(page)
+#         extra_properties = extract_dom_extra_properties(dom)
+#         _post_extract(page)
+#
+#         # Import necessary utilities
+#         from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
+#
+#         # Flatten DOM and accessibility tree
+#         dom_txt = flatten_dom_to_str(dom)
+#         axtree_txt = flatten_axtree_to_str(axtree)
+#
+#         # Prepare messages for AI model
+#         system_msg = f"""
+#         # Instructions
+#         Review the current state of the page and all other information to find the best
+#         possible next action to accomplish your goal. Your answer will be interpreted
+#         and executed by a program, make sure to follow the formatting instructions.
+#
+#         Provide ONLY ONE action. Do not suggest multiple actions or a sequence of actions.
+#         # Goal:
+#         {goal}"""
+#
+#         prompt = f"""
+#         # Current Accessibility Tree:
+#         {axtree_txt}
+#
+#         # Action Space
+#         {action_set.describe(with_long_description=False, with_examples=True)}
+#
+#         Here is an example with chain of thought of a valid action when clicking on a button:
+#         "
+#         In order to accomplish my goal I need to click on the button with bid 12
+#         ```click("12")```
+#         "
+#         """
+#
+#         # Query OpenAI model
+#         response = openai_client.chat.completions.create(
+#             model="gpt-4o-mini",
+#             messages=[
+#                 {"role": "system", "content": system_msg},
+#                 {"role": "user", "content": prompt},
+#             ],
+#         )
+#
+#         action = response.choices[0].message.content
+#
+#         # Execute the action
+#         try:
+#             code = action_set.to_python_code(action)
+#
+#             logger.info("Executing action script")
+#             execute_python_code(
+#                 code,
+#                 page,
+#                 context,
+#                 send_message_to_user=None,
+#                 report_infeasible_instructions=None,
+#             )
+#             page = get_page()
+#             _pre_extract(page)
+#             dom = extract_dom_snapshot(page)
+#             axtree = extract_merged_axtree(page)
+#             axtree_txt = flatten_axtree_to_str(axtree)
+#             focused_element_bid = extract_focused_element_bid(page)
+#             extra_properties = extract_dom_extra_properties(dom)
+#             _post_extract(page)
+#             prompt = f"""
+#             After we take action {action},
+#             # Accessibility Tree is updated as:
+#             {axtree_txt}
+#
+#             # the original goal:
+#             {goal}
+#
+#             Is the goal finished now? provide answer and explanation
+#             """
+#
+#             # Query OpenAI model
+#             response = openai_client.chat.completions.create(
+#                 model="gpt-4o-mini",
+#                 messages=[
+#                     {"role": "user", "content": prompt},
+#                 ],
+#             )
+#
+#             feedback = response.choices[0].message.content
+#
+#             return f"The action is: {action} - the result is: {feedback}"
+#         except Exception as e:
+#             last_action_error = f"{type(e).__name__}: {str(e)}"
+#             logger.error(f"Action execution failed: {last_action_error}")
+#             return f"{action} - Task failed with action error: {last_action_error}"
+#
+#     except Exception as e:
+#         error_msg = f"{type(e).__name__}: {str(e)}"
+#         logger.error(f"Task failed: {error_msg}")
+#         return f"Task failed: {error_msg}"
 
 def upload_file(goal):
     response = take_action(goal, ["file"])
@@ -424,25 +466,25 @@ tools = [
             }
         }
     },
-    {
-        "type": "function",
-        "function": {
-            "name": "scan_page_extract_information",
-            "description": "scan the content of the web page to extract information",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "instruction": {
-                        "type": "string",
-                        "description": "describe what to extract",
-                    }
-                },
-                "required": [
-                    "instruction"
-                ]
-            },
-        }
-    },
+    # {
+    #     "type": "function",
+    #     "function": {
+    #         "name": "scan_page_extract_information",
+    #         "description": "scan the content of the web page to extract information",
+    #         "parameters": {
+    #             "type": "object",
+    #             "properties": {
+    #                 "instruction": {
+    #                     "type": "string",
+    #                     "description": "describe what to extract",
+    #                 }
+    #             },
+    #             "required": [
+    #                 "instruction"
+    #             ]
+    #         },
+    #     }
+    # },
     {
         "type": "function",
         "function": {
@@ -469,7 +511,7 @@ available_tools = {
     "navigation": navigation,
     "upload_file": upload_file,
     "scan_page_extract_information": scan_page_extract_information,
-    "select_dropdown_options": select_dropdown_options,
+    # "select_dropdown_options": select_dropdown_options,
 }
 
 def use_web_agent(description, model_name="gpt-4o-mini"):
