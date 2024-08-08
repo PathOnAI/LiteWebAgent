@@ -15,7 +15,8 @@ _ = load_dotenv()
 async def run_agent():
     # default_task="search on airbnb, destination SF, check in 8/15, check out 8/20",
     #                         default_website="https://www.airbnb.com/",
-    agent = SeeActAgent(model="gpt-4o", grounding_strategy="text_choice")
+    # , grounding_strategy="text_choice"
+    agent = SeeActAgent(model="gpt-4o")
     await agent.start()
     while not agent.complete_flag:
         prediction_dict = await agent.predict()
