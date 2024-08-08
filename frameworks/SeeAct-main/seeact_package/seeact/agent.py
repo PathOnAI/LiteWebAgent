@@ -586,6 +586,7 @@ ELEMENT: The uppercase letter of your choice.''',
             self.logger.info(line)
 
         pred_element_label, pred_action, pred_value = postprocess_action_lmm(output)
+        # import pdb; pdb.set_trace()
 
         if len(pred_element_label) in [1, 2]:
             element_id = get_index_from_option_name(pred_element_label)
@@ -596,6 +597,7 @@ ELEMENT: The uppercase letter of your choice.''',
         else:
             pred_element = None
         # Log the prediction result
+        # import pdb; pdb.set_trace()
         self.logger.debug(f"Retrieved Answer")
         self.logger.debug(f"Predicted Element: {pred_element}")
         self.logger.debug(f"Action: {pred_action}")
