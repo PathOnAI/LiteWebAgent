@@ -267,7 +267,7 @@ class OpenAIEngine(Engine):
             temperature=temperature if temperature else self.temperature,
             **kwargs,
         )
-        # import pdb; pdb.set_trace()
+        import pdb; pdb.set_trace()
         return [choice["message"]["content"] for choice in response.choices][0]
 
 
