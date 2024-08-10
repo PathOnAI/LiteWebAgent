@@ -28,40 +28,42 @@ def driver_main(q):
     q.put((runtime, output))
 
 def main():
-    # goal = "enter the 'San Francisco' as destination"
-    # playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
-    # take_action(goal)
-    #
-    # ## agent take action
-    # tasks = [
-    #     "(1) enter the 'San Francisco' as destination,",
-    #     "(2) select check in, ",
-    #     "(3) select August 18th as check in date, ",
-    #     "(4) select August 20th as check out date, ",
-    #     "(5) click search button"]
-    # for description in tasks:
-    #     response = use_browsergym_agent(description)
-    #     print(response)
-    # from playwright_manager import PlaywrightManager
+    # litewebagent/playground/workflow_generation
+    import json
+
+    # Load the workflows from the JSON file
+    with open('litewebagent/playground/workflow_generation/workflows.json', 'r', encoding='utf-8') as json_file:
+        workflows = json.load(json_file)
+
+    # Access the 2nd workflow (index 1, since lists are 0-indexed)
+    workflow = workflows[5]
+
+    # Print the 2nd workflow
+    print("Workflow:")
+    print(f"Title: {workflow['title']}")
+    print("Steps:")
+    tasks = []
+    for i, step in enumerate(workflow['steps'], 1):
+        print(f"  {i}. {step}")
+        tasks.append(step)
+    print(tasks)
     browser = get_browser()
-    # browser = await p.firefox.launch(headless=False)
     context = get_context()
-    # context = get_context()
     page = playwright_manager.get_page()
     playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
 
     page.goto("https://www.clickup.com")
     # page.wait_for_timeout(5000)  # Wait for 5 seconds after navigation
 
-    tasks = [
-        "Click on Dashboards"]
+    # tasks = [
+    #     "Click on Dashboards"]
 
-    combined_tasks = "\n".join(tasks)
+    # combined_tasks = "\n".join(tasks)
     for description in tasks:
         print(description)
         response = use_web_agent(description)
         print(response)
-    # return response
+
 
 if __name__ == "__main__":
     main()
