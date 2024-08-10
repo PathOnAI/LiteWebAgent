@@ -1,7 +1,0 @@
-playwright
-undetected-playwright
-openai
-watchdog
-python-dotenv
-beautifulsoup4
-lxml
