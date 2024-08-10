@@ -23,11 +23,10 @@ _ = load_dotenv()
 
 
 openai_client = OpenAI()
+import argparse
 from litewebagent.action.highlevel import HighLevelActionSet
 from litewebagent.playwright_manager import PlaywrightManager
 from litewebagent.playwright_manager import get_browser, get_context, get_page, playwright_manager
-from litewebagent.utils import *
-from litewebagent.osagent import write_to_file
 from litewebagent.action.base import execute_python_code
 
 from playwright.sync_api import sync_playwright
@@ -36,7 +35,8 @@ import time
 import inspect
 from bs4 import BeautifulSoup
 import logging
-from litewebagent.utils import *
+from litewebagent.agents.DemoAgent import DemoAgent
+from litewebagent.agents.HighLevelPlanningAgent import HighLevelPlanningAgent
 
 logging.basicConfig(
     level=logging.INFO,
@@ -383,7 +383,7 @@ available_tools = {
     # "select_dropdown_options": select_dropdown_options,
 }
 
-def use_web_agent(description, model_name="gpt-4o-mini"):
+def use_web_agent(description, model_name="gpt-4o-mini", agent_type="DemoAgent"):
     messages = [
         {
             "role": "system",
@@ -407,13 +407,25 @@ def use_web_agent(description, model_name="gpt-4o-mini"):
     ]
     # messages = [Message(role="system",
     #                     content="You are a smart web search agent to perform search and click task, upload files for customers")]
-    send_prompt(model_name, messages, description, tools, available_tools)
-    print(messages)
-    return messages[-1]["content"]
+    # send_prompt(model_name, messages, description, tools, available_tools)
+    if agent_type == "DemoAgent":
+        agent = DemoAgent(model_name=model_name, tools=tools, available_tools=available_tools)
+    elif agent_type == "HighLevelPlanningAgent":
+        agent = HighLevelPlanningAgent(model_name=model_name, tools=tools, available_tools=available_tools)
+    else:
+        error_message = f"Unsupported agent type: {agent_type}. Please use 'DemoAgent' or 'HighLevelPlanningAgent'."
+        logger.error(error_message)
+        return {"error": error_message}
+
+    # print(messages)
+    # return messages[-1]["content"]
+    response = agent.send_prompt(messages, description)
+    return response
 
 
 
-def main():
+
+def main(args):
     browser = get_browser()
     context = get_context()
     page = get_page()
@@ -427,11 +439,18 @@ def main():
     tasks = [
         "(1) enter the 'San Francisco' as destination,"]
 
-    combined_tasks = "\n".join(tasks)
     for description in tasks:
-        response = use_web_agent(description)
-        print(response)
+        use_web_agent(description, model_name=args.model, agent_type=args.agent_type)
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Run web automation tasks with different agent types.")
+    parser.add_argument('--agent_type', type=str, default="DemoAgent",
+                        choices=["DemoAgent", "HighLevelPlanningAgent"],
+                        help="Type of agent to use (default: DemoAgent)")
+    parser.add_argument('--model', type=str, default="gpt-4o-mini",
+                        help="Model to use for the agent (default: gpt-4o-mini)")
+    parser.add_argument('--workflow_index', type=int, default=5,
+                        help="Index of the workflow to use from the JSON file (default: 5)")
+    args = parser.parse_args()
+    main(args)
