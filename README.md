@@ -4,6 +4,14 @@ repo owners: Danni (Danqing) Zhang (danqing.zhang.personal@gmail.com), and Balaj
 <a href='https://discord.gg/gqap9bzk'><img src='https://img.shields.io/badge/Community-Discord-8A2BE2'></a>
 
 
+## 2. Development mode
+```bash
+python -m litewebagent.clickup_test --agent_type HighLevelPlanningAgent
+python -m litewebagent.webagent
+python -m litewebagent.webagent --agent_type HighLevelPlanningAgent
+```
+
+
 ## ✈️ 1. Getting Started with litewebagent
 
 ### (1) Installation
@@ -34,8 +42,6 @@ python -m litewebagent.clickup_test
 python -m litewebagent.frontend_test
 python -m litewebagent.webagent
 ```
-
-
 
 
 ### (3) Enable webarena environment
