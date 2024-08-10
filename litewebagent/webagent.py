@@ -208,7 +208,7 @@ def take_action(goal, agent_type):
         Here is an example with chain of thought of a valid action when clicking on a button:
         "
         In order to accomplish my goal I need to click on the button with bid 12
-        ```click("12")```
+        ```click('12')```
         "
 
         Please analyze the screenshot and the Accessibility Tree to determine the next appropriate action. Refer to visual elements from the screenshot if relevant to your decision.
