@@ -58,11 +58,10 @@ def main():
     # tasks = [
     #     "Click on Dashboards"]
 
-    # combined_tasks = "\n".join(tasks)
-    for description in tasks:
-        print(description)
-        response = use_web_agent(description)
-        print(response)
+    combined_tasks = "\n".join(tasks)
+    print(combined_tasks)
+    response = use_web_agent(combined_tasks)
+    print(response)
 
 
 if __name__ == "__main__":

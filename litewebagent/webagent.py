@@ -176,7 +176,6 @@ def take_action(goal, agent_type):
         dom_txt = flatten_dom_to_str(dom)
         axtree_txt = flatten_axtree_to_str(axtree)
         interactive_elements = extract_interactive_elements(page)
-        # print(interactive_elements)
         highlight_elements(page, interactive_elements)
         screenshot_path_pre = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_pre.png')
         page.screenshot(path=screenshot_path_pre)
@@ -430,10 +429,9 @@ def main():
 
     combined_tasks = "\n".join(tasks)
     for description in tasks:
-        print(description)
         response = use_web_agent(description)
         print(response)
-        return response
+
 
 if __name__ == "__main__":
     main()
