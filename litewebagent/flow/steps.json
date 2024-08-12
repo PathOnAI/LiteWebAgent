@@ -1,0 +1,2 @@
+{"text": "", "type": "input", "tag": "input", "id": "bigsearch-query-location-input", "href": null, "title": null, "action": "In order to enter \"San Francisco\" as the destination, I need to fill the search box with bid '284'.\n\n```fill('284', 'San Francisco')```"}
+{"text": "Search", "type": "button", "tag": "button", "id": null, "href": null, "title": null, "action": "In order to accomplish my goal I need to click on the button with bid `348`.\n\n```click('348')```"}

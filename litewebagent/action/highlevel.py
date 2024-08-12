@@ -483,4 +483,4 @@ def execute_action(action: str):
                 function_name + "(" + ", ".join([repr(arg) for arg in function_args]) + ")\n"
             )
         # return the constructed python code
-        return python_code
+        return python_code, function_calls

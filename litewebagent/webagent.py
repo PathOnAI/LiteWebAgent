@@ -12,13 +12,15 @@ from litewebagent.observation.observation import (
     extract_focused_element_bid,
     MarkingError,
 )
-from litewebagent.observation.extract_elements import extract_interactive_elements, highlight_elements
+from litewebagent.observation.extract_elements import (extract_interactive_elements, highlight_elements)
+#, extract_interactive_elements_more_info
 from playwright.sync_api import sync_playwright
 from openai import OpenAI
 from dotenv import load_dotenv
 from openai import OpenAI
 # from litellm import completion
 import os
+import json
 _ = load_dotenv()
 
 
@@ -52,6 +54,32 @@ logger = logging.getLogger(__name__)
 # "extract all product names of the website screenshot"
 
 import base64
+
+
+def parse_function_args(function_args):
+    if not function_args or not isinstance(function_args, list):
+        return None
+
+    first_arg = function_args[0]
+
+    # Check if the first argument is a string that represents a number
+    if isinstance(first_arg, str) and first_arg.replace('.', '', 1).isdigit():
+        return first_arg
+
+    return None
+
+
+def append_to_steps_json(result, file_path):
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    # Convert the result to a JSON string
+    json_line = json.dumps(result)
+
+    # Append the JSON string as a new line in the file
+    with open(file_path, 'a') as file:
+        file.write(json_line + '\n')
+
+    print(f"Appended result to {file_path}")
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
@@ -176,11 +204,12 @@ def take_action(goal, agent_type):
         dom_txt = flatten_dom_to_str(dom)
         axtree_txt = flatten_axtree_to_str(axtree)
         interactive_elements = extract_interactive_elements(page)
+        #interactive_elements = extract_interactive_elements_more_info(page)
         highlight_elements(page, interactive_elements)
+        #extract_interactive_elements_more_info(page)
         screenshot_path_pre = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_pre.png')
         page.screenshot(path=screenshot_path_pre)
         _post_extract(page)
-
 
 
         # Prepare messages for AI model
@@ -237,7 +266,30 @@ def take_action(goal, agent_type):
 
         # Execute the action
         try:
-            code = action_set.to_python_code(action)
+            code, function_calls = action_set.to_python_code(action)
+            for function_name, function_args in function_calls:
+                print(function_name, function_args)
+                extracted_number = parse_function_args(function_args)
+
+            def search_interactive_elements(interactive_elements, extracted_number):
+                for element in interactive_elements:
+                    if element.get('bid') == extracted_number:
+                        return {
+                            'text': element.get('text'),
+                            'type': element.get('type'),
+                            'tag': element.get('tag'),
+                            'id': element.get('id'),
+                            'href': element.get('href'),
+                            'title': element.get('title')
+                        }
+                return None  # Return None if no matching element is found
+
+            result = search_interactive_elements(interactive_elements, extracted_number)
+            print(result)
+            result['action'] = action
+            file_path = os.path.join('litewebagent', 'flow', 'steps.json')
+            append_to_steps_json(result, file_path)
+
 
 
             logger.info("Executing action script")
@@ -408,6 +460,11 @@ def use_web_agent(description, model_name="gpt-4o-mini", agent_type="DemoAgent")
     # messages = [Message(role="system",
     #                     content="You are a smart web search agent to perform search and click task, upload files for customers")]
     # send_prompt(model_name, messages, description, tools, available_tools)
+    file_path = os.path.join('litewebagent', 'flow', 'steps.json')
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    # Create an empty file
+    open(file_path, 'w').close()
     if agent_type == "DemoAgent":
         agent = DemoAgent(model_name=model_name, tools=tools, available_tools=available_tools)
     elif agent_type == "HighLevelPlanningAgent":
@@ -437,7 +494,7 @@ def main(args):
     # print(response)
     page.goto("https://www.airbnb.com")
     tasks = [
-        "(1) enter the 'San Francisco' as destination,"]
+        "(1) enter the 'San Francisco' as destination, (2) and click search"]
 
     for description in tasks:
         use_web_agent(description, model_name=args.model, agent_type=args.agent_type)
