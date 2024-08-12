@@ -19,7 +19,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 from litewebagent.webagent import use_web_agent
-from litewebagent.osagent import use_os_agent
 
 def driver_main(q):
     start = time.time()
