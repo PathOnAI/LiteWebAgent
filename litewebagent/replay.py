@@ -55,6 +55,6 @@ logger = logging.getLogger(__name__)
 
 import base64
 
-# set url
+# starting url
 # set workflow
 # for each step, find element, and show action around the bounding box

@@ -208,6 +208,7 @@ def take_action(goal, agent_type):
         screenshot_path_pre = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_pre.png')
         page.screenshot(path=screenshot_path_pre)
         _post_extract(page)
+        url = page.url
 
 
         # Prepare messages for AI model
@@ -285,6 +286,8 @@ def take_action(goal, agent_type):
             result = search_interactive_elements(interactive_elements, extracted_number)
             print(result)
             result['action'] = action
+            result["url"] = url
+            result['goal'] = goal
             file_path = os.path.join('litewebagent', 'flow', 'steps.json')
             append_to_steps_json(result, file_path)
 
