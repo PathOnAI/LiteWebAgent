@@ -3,12 +3,7 @@ import logging
 import os
 import time
 import json
-# from observation import _pre_extract
 
-# Constants
-# BID_ATTR = "data-bid"
-# VIS_ATTR = "data-vis"
-# SOM_ATTR = "data-som"
 from .constants import BROWSERGYM_ID_ATTRIBUTE as BID_ATTR
 
 logger = logging.getLogger(__name__)
@@ -16,39 +11,8 @@ logger = logging.getLogger(__name__)
 class MarkingError(Exception):
     pass
 
-# def read_js_file(filepath):
-#     with open(filepath, 'r', encoding='utf-8') as file:
-#         return file.read()
-#
-# def mark_frames_recursive(frame, frame_bid: str, js_code: str):
-#     assert frame_bid == "" or (frame_bid.islower() and frame_bid.isalpha())
-#
-#     warning_msgs = frame.evaluate(js_code, [frame_bid, BID_ATTR])
-#     for msg in warning_msgs:
-#         logger.warning(msg)
-#
-#     for child_frame in frame.child_frames:
-#         if child_frame.is_detached():
-#             continue
-#         child_frame_elem = child_frame.frame_element()
-#         if not child_frame_elem.content_frame() == child_frame:
-#             logger.warning(f"Skipping frame '{child_frame.name}' for marking, seems problematic.")
-#             continue
-#         sandbox_attr = child_frame_elem.get_attribute("sandbox")
-#         if sandbox_attr is not None and "allow-scripts" not in sandbox_attr.split():
-#             continue
-#         child_frame_bid = child_frame_elem.get_attribute(BID_ATTR)
-#         if child_frame_bid is None:
-#             raise MarkingError("Cannot mark a child frame without a bid.")
-#         mark_frames_recursive(child_frame, frame_bid=child_frame_bid, js_code=js_code)
-#
-# def _pre_extract(page):
-#     js_frame_mark_elements = read_js_file(
-#         os.path.join(os.path.dirname(__file__), 'javascript', 'frame_mark_elements.js'))
-#     mark_frames_recursive(page.main_frame, frame_bid="", js_code=js_frame_mark_elements)
 
 def extract_interactive_elements(page):
-    # _pre_extract(page)
 
     js_code = """
     (browsergymIdAttribute) => {
@@ -72,16 +36,26 @@ def extract_interactive_elements(page):
         styleTag.textContent = customCSS;
         document.head.append(styleTag);
 
-        function getRandomColor() {
-            var letters = "0123456789ABCDEF";
-            var color = "#";
-            for (var i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
+        function generateSelector(element) {
+            let selector = element.tagName.toLowerCase();
+            if (element.id) {
+                selector += `#${element.id}`;
+            } else {
+                if (typeof element.className === 'string' && element.className.trim()) {
+                    selector += `.${element.className.trim().split(/\\s+/).join('.')}`;
+                }
+                let sibling = element;
+                let nth = 1;
+                while (sibling = sibling && sibling.previousElementSibling) {
+                    if (sibling.tagName.toLowerCase() === selector.split('.')[0]) nth++;
+                }
+                if (nth > 1) {
+                    selector += `:nth-of-type(${nth})`;
+                }
             }
-            return color;
+            return selector;
         }
 
-        var bodyRect = document.body.getBoundingClientRect();
         var vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
         var vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
 
@@ -91,7 +65,7 @@ def extract_interactive_elements(page):
                 var textualContent = element.textContent.trim().replace(/\\s{2,}/g, " ");
                 var elementType = element.tagName.toLowerCase();
                 var ariaLabel = element.getAttribute("aria-label") || "";
-                var bid = element.getAttribute(browsergymIdAttribute) || "";
+                var bid = element.getAttribute(browsergymIdAttribute) || generateSelector(element);
 
                 var rects = [...element.getClientRects()]
                     .filter((bb) => {
@@ -127,19 +101,24 @@ def extract_interactive_elements(page):
                         window.getComputedStyle(element).cursor == "pointer" ||
                         element.tagName === "IFRAME" ||
                         element.tagName === "VIDEO",
-                    area,
-                    rects,
+                    area: area,
+                    rects: rects,
                     text: textualContent,
                     type: elementType,
                     ariaLabel: ariaLabel,
-                    bid: bid
+                    bid: bid,
+                    tag: elementType,
+                    id: element.id || null,
+                    class: typeof element.className === 'string' ? element.className : null,
+                    href: element.getAttribute("href") || null,
+                    title: element.getAttribute("title") || null
                 };
             })
             .filter((item) => item.include && item.area >= 20);
 
         // Only keep inner clickable items
         items = items.filter(
-            (x) => !items.some((y) => x.element !== y.element && x.element.contains(y.element))
+            (x) => !items.some((y) => x !== y && document.querySelector(`[id="${y.bid}"]`) && document.querySelector(`[id="${y.bid}"]`).contains(document.querySelector(`[id="${x.bid}"]`)))
         );
 
         return items;
@@ -147,6 +126,8 @@ def extract_interactive_elements(page):
     """
 
     return page.evaluate(js_code, BID_ATTR)
+
+
 
 def highlight_elements(page, elements):
     js_code = """
@@ -194,24 +175,5 @@ def highlight_elements(page, elements):
     }
     """
     page.evaluate(js_code, elements)
-
-# def main():
-#     with sync_playwright() as p:
-#         browser = p.chromium.launch(headless=False)
-#         page = browser.new_page()
-#         page.goto('https://www.airbnb.com')
-#         _pre_extract(page)
-#
-#         interactive_elements = extract_interactive_elements(page)
-#         highlight_elements(page, interactive_elements)
-#
-#         # print(json.dumps(interactive_elements, indent=2))
-#
-#         time.sleep(30)  # Wait for 30 seconds
-#
-#         browser.close()
-#
-# if __name__ == "__main__":
-#     main()
 
 
