@@ -13,7 +13,6 @@ class MarkingError(Exception):
 
 
 def extract_interactive_elements(page):
-
     js_code = """
     (browsergymIdAttribute) => {
         const customCSS = `
@@ -62,10 +61,16 @@ def extract_interactive_elements(page):
         var items = Array.prototype.slice
             .call(document.querySelectorAll("*"))
             .map(function (element) {
+                var bid = element.getAttribute(browsergymIdAttribute) || "";
+
+                // Only process elements with a non-empty browsergymIdAttribute
+                if (bid === "") {
+                    return null;
+                }
+
                 var textualContent = element.textContent.trim().replace(/\\s{2,}/g, " ");
                 var elementType = element.tagName.toLowerCase();
                 var ariaLabel = element.getAttribute("aria-label") || "";
-                var bid = element.getAttribute(browsergymIdAttribute) || generateSelector(element);
 
                 var rects = [...element.getClientRects()]
                     .filter((bb) => {
@@ -91,16 +96,7 @@ def extract_interactive_elements(page):
                 var area = rects.reduce((acc, rect) => acc + rect.width * rect.height, 0);
 
                 return {
-                    include:
-                        element.tagName === "INPUT" ||
-                        element.tagName === "TEXTAREA" ||
-                        element.tagName === "SELECT" ||
-                        element.tagName === "BUTTON" ||
-                        element.tagName === "A" ||
-                        element.onclick != null ||
-                        window.getComputedStyle(element).cursor == "pointer" ||
-                        element.tagName === "IFRAME" ||
-                        element.tagName === "VIDEO",
+                    include: true, // All elements with non-empty bid are now considered interactive
                     area: area,
                     rects: rects,
                     text: textualContent,
@@ -114,7 +110,7 @@ def extract_interactive_elements(page):
                     title: element.getAttribute("title") || null
                 };
             })
-            .filter((item) => item.include && item.area >= 20);
+            .filter((item) => item !== null && item.area >= 20);
 
         // Only keep inner clickable items
         items = items.filter(
