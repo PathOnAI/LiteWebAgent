@@ -5,12 +5,31 @@ repo owners: Danni (Danqing) Zhang (danqing.zhang.personal@gmail.com), and Balaj
 
 
 ## 2. Development mode
+### (1) Installation
+First set up virtual environment
+```bash
+$ python3 -m venv venv
+$ . venv/bin/activate
+$ pip install -r requirements.txt
+```
+
+Then please create a .env file, and update your API keys:
+
+```bash
+cp .env.example .env
+```
+
+### (2) QuickStart
+* use web agent to finish some task and save the workflow
 ```bash
 python -m litewebagent.clickup_test --agent_type HighLevelPlanningAgent
 python -m litewebagent.webagent
 python -m litewebagent.webagent --agent_type HighLevelPlanningAgent
 ```
-
+* replay the workflow verified by the web agent
+```
+python -m litewebagent.replay
+```
 
 ## ✈️ 1. Getting Started with litewebagent
 
@@ -39,7 +58,6 @@ python persist_state.py
 Then run tests, or run the webagent file
 ```
 python -m litewebagent.clickup_test
-python -m litewebagent.frontend_test
 python -m litewebagent.webagent
 ```
 
