@@ -209,8 +209,6 @@ def take_action(goal, agent_type):
         page.screenshot(path=screenshot_path_pre)
         _post_extract(page)
         url = page.url
-        import pdb; pdb.set_trace()
-
 
         # Prepare messages for AI model
         system_msg = f"""
@@ -305,13 +303,13 @@ def take_action(goal, agent_type):
             page = get_page()
             screenshot_path_post = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_post.png')
             page.screenshot(path=screenshot_path_post)
-            _pre_extract(page)
-            dom = extract_dom_snapshot(page)
-            axtree = extract_merged_axtree(page)
-            axtree_txt = flatten_axtree_to_str(axtree)
-            focused_element_bid = extract_focused_element_bid(page)
-            extra_properties = extract_dom_extra_properties(dom)
-            _post_extract(page)
+            # _pre_extract(page)
+            # dom = extract_dom_snapshot(page)
+            # axtree = extract_merged_axtree(page)
+            # axtree_txt = flatten_axtree_to_str(axtree)
+            # focused_element_bid = extract_focused_element_bid(page)
+            # extra_properties = extract_dom_extra_properties(dom)
+            # _post_extract(page)
             base64_image = encode_image(screenshot_path_post)
             prompt = f"""
             After we take action {action}, a screenshot was captured.
@@ -319,8 +317,6 @@ def take_action(goal, agent_type):
             # Screenshot description:
             The image provided is a screenshot of the application state after the action was performed.
 
-            # Accessibility Tree is updated as:
-            {axtree_txt}
 
             # The original goal:
             {goal}
