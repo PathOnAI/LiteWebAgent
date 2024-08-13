@@ -23,8 +23,11 @@ import os
 import re
 import json
 _ = load_dotenv()
+from elevenlabs.client import ElevenLabs
+from elevenlabs import play
 
-
+# Initialize the Eleven Labs client
+elevenlabs_client = ElevenLabs(api_key=os.getenv("ELEVEN_API_KEY"))
 openai_client = OpenAI()
 import argparse
 from litewebagent.action.highlevel import HighLevelActionSet
@@ -159,34 +162,72 @@ def take_action(step):
     goal = step["goal"]
     action = replace_number(step["action"], element['bid'])
     print(action)
+    audio = elevenlabs_client.generate(
+        text=action,
+        voice="Rachel",
+        model="eleven_multilingual_v2"
+    )
+    # play(audio)
     code, function_calls = action_set.to_python_code(action)
     logger.info("Executing action script")
-    execute_python_code(
-        code,
-        page,
-        context,
-        send_message_to_user=None,
-        report_infeasible_instructions=None,
-    )
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    from threading import Event
+
+
+    audio_finished = Event()
+
+    def play_audio():
+        play(audio)
+        audio_finished.set()
+
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        audio_future = executor.submit(play_audio)
+
+        # Execute code in the main thread
+        execute_python_code(
+            code,
+            page,
+            context,
+            send_message_to_user=None,
+            report_infeasible_instructions=None,
+        )
+
+        # Wait for audio to finish if it hasn't already
+        audio_finished.wait()
+
+    # Check for any exceptions in the audio thread
+    try:
+        audio_future.result()
+    except Exception as e:
+        logger.error(f"An error occurred during audio playback: {str(e)}")
+
+
+    # execute_python_code(
+    #     code,
+    #     page,
+    #     context,
+    #     send_message_to_user=None,
+    #     report_infeasible_instructions=None,
+    # )
     page = get_page()
+    print(page.url)
     screenshot_path_post = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_post.png')
+    # time.sleep(3)
     page.screenshot(path=screenshot_path_post)
-    _pre_extract(page)
-    dom = extract_dom_snapshot(page)
-    axtree = extract_merged_axtree(page)
-    axtree_txt = flatten_axtree_to_str(axtree)
-    focused_element_bid = extract_focused_element_bid(page)
-    extra_properties = extract_dom_extra_properties(dom)
-    _post_extract(page)
+    # _pre_extract(page)
+    # dom = extract_dom_snapshot(page)
+    # axtree = extract_merged_axtree(page)
+    # axtree_txt = flatten_axtree_to_str(axtree)
+    # focused_element_bid = extract_focused_element_bid(page)
+    # extra_properties = extract_dom_extra_properties(dom)
+    # _post_extract(page)
     base64_image = encode_image(screenshot_path_post)
+    # import pdb; pdb.set_trace()
     prompt = f"""
                 After we take action {action}, a screenshot was captured.
 
                 # Screenshot description:
                 The image provided is a screenshot of the application state after the action was performed.
-
-                # Accessibility Tree is updated as:
-                {axtree_txt}
 
                 # The original goal:
                 {goal}
@@ -228,8 +269,11 @@ for i, step in enumerate(steps, 1):
 # page.video.stop()
 messages.append({"role": "user", "content": "summarize the status of the task"})
 response = openai_client.chat.completions.create(model="gpt-4o", messages=messages)
-print(response.choices[0].message.content)
+summary = response.choices[0].message.content
 close_playwright()
-
-
-
+audio = elevenlabs_client.generate(
+    text=summary,
+    voice="Rachel",
+    model="eleven_multilingual_v2"
+)
+play(audio)
