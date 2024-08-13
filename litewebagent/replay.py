@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 # from litellm import completion
 import os
+import re
 import json
 _ = load_dotenv()
 
@@ -28,7 +29,7 @@ openai_client = OpenAI()
 import argparse
 from litewebagent.action.highlevel import HighLevelActionSet
 from litewebagent.playwright_manager import PlaywrightManager
-from litewebagent.playwright_manager import get_browser, get_context, get_page, playwright_manager
+from litewebagent.playwright_manager import get_browser, get_context, get_page, playwright_manager, close_playwright
 from litewebagent.action.base import execute_python_code
 
 from playwright.sync_api import sync_playwright
@@ -57,4 +58,178 @@ import base64
 
 # starting url
 # set workflow
-# for each step, find element, and show action around the bounding box
+# for each step, find element bid, change action, replace bid with the new bid, and show action around the bounding box
+
+browser = get_browser()
+context = get_context()
+page = get_page()
+playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
+
+# page.goto("https://www.amazon.com/s?k=dining+table&crid=1FQ2714L2KJLK&sprefix=dining+tabl%2Caps%2C235&ref=nb_sb_noss_2")
+# description = "Scan the whole page to extract product names"
+# response = use_web_agent(description, "gpt-4o-mini")
+# print(response)
+page.goto("https://www.airbnb.com")
+file_path = os.path.join('litewebagent', 'flow', 'steps.json')
+
+
+def read_steps_json(file_path):
+    steps = []
+
+    # Ensure the file exists
+    if not os.path.exists(file_path):
+        print(f"File not found: {file_path}")
+        return steps
+
+    with open(file_path, 'r') as file:
+        for line in file:
+            try:
+                # Parse each line as a JSON object
+                step = json.loads(line.strip())
+                steps.append(step)
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON on line: {line}")
+                print(f"Error message: {str(e)}")
+
+    return steps
+
+
+# Example usage
+steps = read_steps_json(file_path)
+
+
+
+# take_action(step)
+# https://developer.mozilla.org/en-US/docs/Glossary/Accessibility_tree
+
+def find_matching_element(interactive_elements, target):
+    for element in interactive_elements:
+        if (element.get('text', '').lower() == target.get('text', '').lower() and
+            element.get('tag') == target.get('tag') and
+            target.get('id') == element.get('id')):
+            return element
+    return None
+
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+def find_match(interactive_elements, key, value):
+    for element in interactive_elements:
+        if element.get(key, '') == value:
+            return element
+    return None
+
+def replace_number(text, new_number):
+    # Find the first number in the string and replace it
+    return re.sub(r'\d+', str(new_number), text)
+def take_action(step):
+    # Setup
+    time.sleep(5)
+    context = get_context()
+    page = get_page()
+    action_set = HighLevelActionSet(
+        subsets=["bid", "nav"],
+        strict=False,
+        multiaction=True,
+        demo_mode="default"
+    )
+
+    # Extract page information
+    # screenshot = extract_screenshot(page)
+    _pre_extract(page)
+    dom = extract_dom_snapshot(page)
+    axtree = extract_merged_axtree(page)
+    focused_element_bid = extract_focused_element_bid(page)
+    extra_properties = extract_dom_extra_properties(dom)
+    # Flatten DOM and accessibility tree
+    # Import necessary utilities
+    from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
+    dom_txt = flatten_dom_to_str(dom)
+    axtree_txt = flatten_axtree_to_str(axtree)
+    interactive_elements = extract_interactive_elements(page)
+    # highlight_elements(page, interactive_elements)
+    screenshot_path_pre = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_pre.png')
+    page.screenshot(path=screenshot_path_pre)
+    _post_extract(page)
+    url = page.url
+    element = find_matching_element(interactive_elements, step)
+    print(element)
+    print(step["action"])
+    print(element['bid'])
+    goal = step["goal"]
+    action = replace_number(step["action"], element['bid'])
+    print(action)
+    code, function_calls = action_set.to_python_code(action)
+    logger.info("Executing action script")
+    execute_python_code(
+        code,
+        page,
+        context,
+        send_message_to_user=None,
+        report_infeasible_instructions=None,
+    )
+    page = get_page()
+    screenshot_path_post = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_post.png')
+    page.screenshot(path=screenshot_path_post)
+    _pre_extract(page)
+    dom = extract_dom_snapshot(page)
+    axtree = extract_merged_axtree(page)
+    axtree_txt = flatten_axtree_to_str(axtree)
+    focused_element_bid = extract_focused_element_bid(page)
+    extra_properties = extract_dom_extra_properties(dom)
+    _post_extract(page)
+    base64_image = encode_image(screenshot_path_post)
+    prompt = f"""
+                After we take action {action}, a screenshot was captured.
+
+                # Screenshot description:
+                The image provided is a screenshot of the application state after the action was performed.
+
+                # Accessibility Tree is updated as:
+                {axtree_txt}
+
+                # The original goal:
+                {goal}
+
+                Based on the screenshot and the updated Accessibility Tree, is the goal finished now? Provide an answer and explanation, referring to visual elements from the screenshot if relevant.
+                """
+
+    # Query OpenAI model
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "user",
+             "content": [
+                 {"type": "text", "text": prompt},
+                 {"type": "image_url",
+                  "image_url": {
+                      "url": f"data:image/jpeg;base64,{base64_image}",
+                      "detail": "high"
+                  }
+                  }
+             ]
+             },
+        ],
+    )
+
+    feedback = response.choices[0].message.content
+    return action, feedback
+
+
+
+messages = [{"role":"system", "content":"You are a smart web search agent to perform search and click task, upload files for customers"}]
+for i, step in enumerate(steps, 1):
+    print(f"Step {i}:")
+    print(json.dumps(step))
+    goal = step["goal"]
+    action, feedback = take_action(step)
+    content = "The goal is: {}, the action is: {} and the feedback is: {}".format(goal, action, feedback)
+    messages.append({"role": "assistant", "content": content})
+# page.video.stop()
+messages.append({"role": "user", "content": "summarize the status of the task"})
+response = openai_client.chat.completions.create(model="gpt-4o", messages=messages)
+print(response.choices[0].message.content)
+close_playwright()
+
+
+
