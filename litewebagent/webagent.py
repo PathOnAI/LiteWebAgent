@@ -209,6 +209,7 @@ def take_action(goal, agent_type):
         page.screenshot(path=screenshot_path_pre)
         _post_extract(page)
         url = page.url
+        import pdb; pdb.set_trace()
 
 
         # Prepare messages for AI model

@@ -1,25 +1,36 @@
 from playwright.sync_api import sync_playwright
+import os
+import time
 
 
 class PlaywrightManager:
-    def __init__(self, storage_state=None):
+    def __init__(self, storage_state=None, video_dir='./videos'):
         self.playwright = None
         self.browser = None
         self.context = None
         self.page = None
         self.storage_state = storage_state
+        self.video_dir = video_dir
+
+        # Ensure the video directory exists
+        os.makedirs(self.video_dir, exist_ok=True)
 
     def initialize(self):
         if self.playwright is None:
             self.playwright = sync_playwright().start()
             self.browser = self.playwright.chromium.launch(headless=False)
 
+            # Configure context options with video recording
+            context_options = {
+                "record_video_dir": self.video_dir,
+                "record_video_size": {"width": 1280, "height": 720}
+            }
+
             # Use the storage_state if provided
             if self.storage_state:
-                self.context = self.browser.new_context(storage_state=self.storage_state)
-            else:
-                self.context = self.browser.new_context()
+                context_options["storage_state"] = self.storage_state
 
+            self.context = self.browser.new_context(**context_options)
             self.page = self.context.new_page()
 
     def get_browser(self):
@@ -52,8 +63,8 @@ class PlaywrightManager:
         self.playwright = None
 
 
-# Initialize the PlaywrightManager with the storage state
-playwright_manager = PlaywrightManager(storage_state='litewebagent/playground/state.json')
+# Initialize the PlaywrightManager with the storage state and video directory
+playwright_manager = PlaywrightManager(storage_state='litewebagent/playground/state.json', video_dir='./videos')
 
 
 def get_browser():
