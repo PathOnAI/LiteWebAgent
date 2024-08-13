@@ -13,3 +13,4 @@ groq
 flask
 flask-cors
 pytablewriter
+elevenlabs==1.6.1
