@@ -70,8 +70,6 @@ def parse_function_args(function_args):
 
 
 def append_to_steps_json(result, file_path):
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-
     # Convert the result to a JSON string
     json_line = json.dumps(result)
 
@@ -217,6 +215,7 @@ def take_action(goal, agent_type):
         possible next action to accomplish your goal. Your answer will be interpreted
         and executed by a program, make sure to follow the formatting instructions.
 
+        Provide ONLY ONE action. Do not suggest multiple actions or a sequence of actions.
         # Goal:
         {goal}"""
 
@@ -237,6 +236,7 @@ def take_action(goal, agent_type):
         "
 
         Please analyze the screenshot and the Accessibility Tree to determine the next appropriate action. Refer to visual elements from the screenshot if relevant to your decision.
+        Provide ONLY ONE action. Do not suggest multiple actions or a sequence of actions.
         """
 
         # Query OpenAI model
@@ -413,7 +413,7 @@ available_tools = {
     "scan_page_extract_information": scan_page_extract_information,
 }
 
-def use_web_agent(goal, plan, model_name="gpt-4o-mini", agent_type="DemoAgent"):
+def use_web_agent(starting_url, goal, plan, model_name="gpt-4o-mini", agent_type="DemoAgent"):
     messages = [
         {
             "role": "system",
@@ -437,9 +437,15 @@ def use_web_agent(goal, plan, model_name="gpt-4o-mini", agent_type="DemoAgent"):
     ]
     file_path = os.path.join('litewebagent', 'flow', 'steps.json')
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    page = get_page()
+    page.goto(starting_url)
 
-    # Create an empty file
-    open(file_path, 'w').close()
+    # Save starting_url as the first line in the file
+    with open(file_path, 'w') as file:
+        file.write(starting_url + '\n')
+
+    # # Create an empty file
+    # open(file_path, 'w').close()
     if agent_type == "DemoAgent":
         agent = DemoAgent(model_name=model_name, tools=tools, available_tools=available_tools, messages=messages, goal = goal)
     elif agent_type == "HighLevelPlanningAgent":
@@ -467,10 +473,11 @@ def main(args):
     # description = "Scan the whole page to extract product names"
     # response = use_web_agent(description, "gpt-4o-mini")
     # print(response)
-    page.goto("https://www.airbnb.com")
+    #page.goto("https://www.airbnb.com")
+    starting_url = "https://www.airbnb.com"
     plan = "(1) enter the 'San Francisco' as destination, (2) and click search"
     goal = "set destination as San Francisco, then search the results"
-    response = use_web_agent(goal, plan, model_name=args.model, agent_type=args.agent_type)
+    response = use_web_agent(starting_url, goal, plan, model_name=args.model, agent_type=args.agent_type)
     print(response)
 
 

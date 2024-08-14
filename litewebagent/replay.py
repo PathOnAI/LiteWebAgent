@@ -72,33 +72,39 @@ playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-
 # description = "Scan the whole page to extract product names"
 # response = use_web_agent(description, "gpt-4o-mini")
 # print(response)
-page.goto("https://www.airbnb.com")
+# page.goto("https://www.airbnb.com")
 file_path = os.path.join('litewebagent', 'flow', 'steps.json')
 
 
 def read_steps_json(file_path):
+    starting_url = None
     steps = []
 
     # Ensure the file exists
     if not os.path.exists(file_path):
         print(f"File not found: {file_path}")
-        return steps
+        return starting_url, steps
 
     with open(file_path, 'r') as file:
-        for line in file:
-            try:
-                # Parse each line as a JSON object
-                step = json.loads(line.strip())
-                steps.append(step)
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON on line: {line}")
-                print(f"Error message: {str(e)}")
+        for i, line in enumerate(file):
+            if i == 0:
+                # First line is the starting_url (plain string)
+                starting_url = line.strip()
+            else:
+                try:
+                    # Subsequent lines are JSON objects
+                    step = json.loads(line.strip())
+                    steps.append(step)
+                except json.JSONDecodeError as e:
+                    print(f"Error decoding JSON on line {i+1}: {line}")
+                    print(f"Error message: {str(e)}")
 
-    return steps
+    return starting_url, steps
 
 
 # Example usage
-steps = read_steps_json(file_path)
+starting_url, steps = read_steps_json(file_path)
+page.goto(starting_url)
 
 
 

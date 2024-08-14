@@ -36,11 +36,11 @@ def main(args):
     page = playwright_manager.get_page()
     playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
 
-    page.goto("https://www.google.com")
+    starting_url = "https://www.google.com"
 
     plan = "search dining table"
     goal = "search dining table"
-    response = use_web_agent(goal, plan, agent_type=args.agent_type)
+    response = use_web_agent(starting_url, goal, plan, agent_type=args.agent_type)
     print(response)
 
 
