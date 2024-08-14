@@ -217,7 +217,6 @@ def take_action(goal, agent_type):
         possible next action to accomplish your goal. Your answer will be interpreted
         and executed by a program, make sure to follow the formatting instructions.
 
-        Provide ONLY ONE action. Do not suggest multiple actions or a sequence of actions.
         # Goal:
         {goal}"""
 
@@ -302,6 +301,7 @@ def take_action(goal, agent_type):
             )
             page = get_page()
             screenshot_path_post = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_post.png')
+            time.sleep(3)
             page.screenshot(path=screenshot_path_post)
             # _pre_extract(page)
             # dom = extract_dom_snapshot(page)

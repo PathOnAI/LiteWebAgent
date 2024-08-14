@@ -7,6 +7,8 @@ import logging
 logger = logging.getLogger(__name__)
 class DemoAgent(BaseAgent):
     def send_completion_request(self, plan: str, depth: int = 0) -> Dict:
+        if plan is None and depth == 0:
+            plan = self.make_plan()
         if depth >= 8:
             return None
 

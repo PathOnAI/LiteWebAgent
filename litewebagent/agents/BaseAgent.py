@@ -3,7 +3,12 @@ import logging
 from typing import List, Dict, Any
 
 logger = logging.getLogger(__name__)
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
+_ = load_dotenv()
 
+client = OpenAI()
 class BaseAgent:
     def __init__(self, model_name, tools, available_tools, messages, goal):
         self.model_name = model_name
@@ -13,6 +18,15 @@ class BaseAgent:
         self.goal = goal
         self.messages.append({"role": "user", "content": "The goal is:{}".format(self.goal)})
 
+    def make_plan(self):
+        messages = [{"role": "system",
+                     "content": "You are are helpful assistant to make a plan for a task or user request. Please provide a plan in the next few sentences."}]
+        messages.append({"role": "assistant", "content": "The goal is{}".format(self.goal)})
+        chat_completion = client.chat.completions.create(
+            model=self.model_name, messages=messages,
+        )
+        plan = chat_completion.choices[0].message.content
+        return plan
     def process_tool_calls(self, tool_calls: List[Dict]) -> List[Dict]:
         tool_call_responses = []
         logger.info("Number of function calls: %i", len(tool_calls))
@@ -47,6 +61,6 @@ class BaseAgent:
         raise NotImplementedError("This method should be implemented by subclasses")
 
     def send_prompt(self, plan: str) -> Dict:
-        self.messages.append({"role": "user", "content": "The plan is: {}".format(plan)})
-        plan = plan
+        if plan is not None:
+            self.messages.append({"role": "user", "content": "The plan is: {}".format(plan)})
         return self.send_completion_request(plan, 0)
