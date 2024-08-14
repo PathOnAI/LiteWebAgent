@@ -29,6 +29,7 @@ python -m litewebagent.google_test
 ```
 * replay the workflow verified by the web agent
 ```
+cp litewebagent/flow/example.json litewebagent/flow/steps.json 
 python -m litewebagent.replay
 ```
 
