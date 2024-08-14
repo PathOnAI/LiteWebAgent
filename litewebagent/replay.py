@@ -273,14 +273,15 @@ for i, step in enumerate(steps, 1):
     content = "The goal is: {}, the action is: {} and the feedback is: {}".format(goal, action, feedback)
     messages.append({"role": "assistant", "content": content})
 # page.video.stop()
-messages.append({"role": "user", "content": "summarize the status of the task"})
+messages.append({"role": "user", "content": "summarize the status of the task, be concise"})
 response = openai_client.chat.completions.create(model="gpt-4o", messages=messages)
 summary = response.choices[0].message.content
 close_playwright()
-# audio = elevenlabs_client.generate(
-#     text=summary,
-#     voice="Rachel",
-#     model="eleven_multilingual_v2"
-# )
-# play(audio)
 print(summary)
+audio = elevenlabs_client.generate(
+    text=summary,
+    voice="Rachel",
+    model="eleven_multilingual_v2"
+)
+play(audio)
+
