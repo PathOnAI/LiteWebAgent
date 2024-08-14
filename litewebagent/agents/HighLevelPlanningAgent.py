@@ -3,6 +3,12 @@ from .BaseAgent import BaseAgent
 from typing import List, Dict, Any
 import json
 import logging
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
+_ = load_dotenv()
+
+client = OpenAI()
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +29,12 @@ class HighLevelPlanningAgent(BaseAgent):
         logger.info("last message: %s", json.dumps(messages[-1]))
         logger.info('current plan: %s', plan)
 
+        from pydantic import BaseModel
+        class Plan(BaseModel):
+            task_finished: bool
+            updated_plan: str
+            completed_tasks: str
+
         if depth > 0:
             prompt = """
             Current plan: {}
@@ -31,8 +43,7 @@ class HighLevelPlanningAgent(BaseAgent):
 
             1. An updated complete plan
             2. A list of tasks that have already been completed
-            3. The next task to be tackled
-            4. An explanation of changes and their rationale
+            3. An explanation of changes and their rationale
 
             Format your response as follows:
 
@@ -45,15 +56,18 @@ class HighLevelPlanningAgent(BaseAgent):
             - [Task 1]
             - [Task 2]
             - ...
-
-            Next Task:
-            [Specify the next task to be done]
             """.format(plan)
             messages.append({"role": "user", "content": prompt})
-            response = completion(model=self.model_name, messages=messages, tools=self.tools, tool_choice="auto")
-            message = response.choices[0].message.model_dump()
-            plan = message['content']
-            messages.append(message)
+            response = client.beta.chat.completions.parse(model=self.model_name, messages=messages, response_format=Plan)
+            message = response.choices[0].message.parsed
+            updated_plan = message.updated_plan
+            completed_tasks = message.completed_tasks
+            logger.info('Replan: %s', message)
+            if message.task_finished:
+                return response
+            else:
+                combined_str = "updated plan is: {}, completed tasks are: {}".format(updated_plan, completed_tasks)
+                messages.append({"role": "assistant", "content": combined_str})
 
 
         logger.info('updated plan: %s', plan)
@@ -68,6 +82,8 @@ class HighLevelPlanningAgent(BaseAgent):
             message = response.choices[0].message.model_dump()
             messages.append(message)
             return response
+        # limit one function calling at a time
+        tool_calls = [tool_calls[0]]
 
         tool_call_message = {"content": response.choices[0].message.content,
                              "role": response.choices[0].message.role,
