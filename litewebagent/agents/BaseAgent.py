@@ -5,10 +5,13 @@ from typing import List, Dict, Any
 logger = logging.getLogger(__name__)
 
 class BaseAgent:
-    def __init__(self, model_name: str, tools: List[Dict], available_tools: Dict[str, Any]):
+    def __init__(self, model_name, tools, available_tools, messages, goal):
         self.model_name = model_name
         self.tools = tools
         self.available_tools = available_tools
+        self.messages = messages
+        self.goal = goal
+        self.messages.append({"role": "user", "content": "The goal is:{}".format(self.goal)})
 
     def process_tool_calls(self, tool_calls: List[Dict]) -> List[Dict]:
         tool_call_responses = []
@@ -40,10 +43,10 @@ class BaseAgent:
 
         return tool_call_responses
 
-    def send_completion_request(self, messages: List[Dict], plan: str, depth: int = 0) -> Dict:
+    def send_completion_request(self, plan: str, depth: int = 0) -> Dict:
         raise NotImplementedError("This method should be implemented by subclasses")
 
-    def send_prompt(self, messages: List[Dict], content: str) -> Dict:
-        messages.append({"role": "user", "content": content})
-        plan = content
-        return self.send_completion_request(messages, plan, 0)
+    def send_prompt(self, plan: str) -> Dict:
+        self.messages.append({"role": "user", "content": "The plan is: {}".format(plan)})
+        plan = plan
+        return self.send_completion_request(plan, 0)

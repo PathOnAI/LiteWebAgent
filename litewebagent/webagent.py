@@ -404,25 +404,6 @@ tools = [
             }
         }
     },
-    {
-        "type": "function",
-        "function": {
-            "name": "select_dropdown_options",
-            "description": "select dropdown option",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "instruction": {
-                        "type": "string",
-                        "description": "The description of how to select dropdown",
-                    }
-                },
-                "required": [
-                    "instruction"
-                ]
-            },
-        }
-    }
 ]
 
 client = OpenAI()
@@ -430,10 +411,9 @@ available_tools = {
     "navigation": navigation,
     "upload_file": upload_file,
     "scan_page_extract_information": scan_page_extract_information,
-    # "select_dropdown_options": select_dropdown_options,
 }
 
-def use_web_agent(description, model_name="gpt-4o-mini", agent_type="DemoAgent"):
+def use_web_agent(goal, plan, model_name="gpt-4o-mini", agent_type="DemoAgent"):
     messages = [
         {
             "role": "system",
@@ -455,26 +435,23 @@ def use_web_agent(description, model_name="gpt-4o-mini", agent_type="DemoAgent")
     Remember: Your role is to execute the given task precisely as instructed, using only the provided functions and within the confines of the current web page. Do not exceed these boundaries under any circumstances."""
         }
     ]
-    # messages = [Message(role="system",
-    #                     content="You are a smart web search agent to perform search and click task, upload files for customers")]
-    # send_prompt(model_name, messages, description, tools, available_tools)
     file_path = os.path.join('litewebagent', 'flow', 'steps.json')
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
     # Create an empty file
     open(file_path, 'w').close()
     if agent_type == "DemoAgent":
-        agent = DemoAgent(model_name=model_name, tools=tools, available_tools=available_tools)
+        agent = DemoAgent(model_name=model_name, tools=tools, available_tools=available_tools, messages=messages, goal = goal)
     elif agent_type == "HighLevelPlanningAgent":
-        agent = HighLevelPlanningAgent(model_name=model_name, tools=tools, available_tools=available_tools)
+        agent = HighLevelPlanningAgent(model_name=model_name, tools=tools, available_tools=available_tools, messages=messages, goal=goal)
     else:
         error_message = f"Unsupported agent type: {agent_type}. Please use 'DemoAgent' or 'HighLevelPlanningAgent'."
         logger.error(error_message)
         return {"error": error_message}
 
-    # print(messages)
-    # return messages[-1]["content"]
-    response = agent.send_prompt(messages, description)
+    response = agent.send_prompt(plan)
+    print("agent message list:\n")
+    print(agent.messages)
     return response
 
 
@@ -491,12 +468,10 @@ def main(args):
     # response = use_web_agent(description, "gpt-4o-mini")
     # print(response)
     page.goto("https://www.airbnb.com")
-    tasks = [
-        "(1) enter the 'San Francisco' as destination, (2) and click search"]
-
-    for description in tasks:
-        response = use_web_agent(description, model_name=args.model, agent_type=args.agent_type)
-        print(response)
+    plan = "(1) enter the 'San Francisco' as destination, (2) and click search"
+    goal = "set destination as San Francisco, then search the results"
+    response = use_web_agent(goal, plan, model_name=args.model, agent_type=args.agent_type)
+    print(response)
 
 
 if __name__ == "__main__":

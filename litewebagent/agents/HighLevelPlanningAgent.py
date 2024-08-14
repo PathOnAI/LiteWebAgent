@@ -13,30 +13,31 @@ client = OpenAI()
 logger = logging.getLogger(__name__)
 
 class HighLevelPlanningAgent(BaseAgent):
-    def send_completion_request(self, messages: List[Dict], plan: str, depth: int = 0) -> Dict:
+    def send_completion_request(self, plan: str, depth: int = 0) -> Dict:
         if depth >= 8:
             return None
 
         if not self.tools:
-            response = completion(model=self.model_name, messages=messages)
+            response = completion(model=self.model_name, messages=self.messages)
             logger.info('agent: %s, prompt tokens: %s, completion tokens: %s', self.model_name,
                         str(response.usage.prompt_tokens), str(response.usage.completion_tokens))
             logger.info('agent: %s, depth: %s, response: %s', self.model_name, depth, response)
             message = response.choices[0].message.model_dump()
-            messages.append(message)
+            self.messages.append(message)
             return response
 
-        logger.info("last message: %s", json.dumps(messages[-1]))
+        logger.info("last message: %s", json.dumps(self.messages[-1]))
         logger.info('current plan: %s', plan)
 
         from pydantic import BaseModel
         class Plan(BaseModel):
-            task_finished: bool
+            goal_finished: bool
             updated_plan: str
             completed_tasks: str
 
         if depth > 0:
             prompt = """
+            Goal: {}
             Current plan: {}
 
             Based on the progress made so far, please provide:
@@ -56,22 +57,24 @@ class HighLevelPlanningAgent(BaseAgent):
             - [Task 1]
             - [Task 2]
             - ...
-            """.format(plan)
-            messages.append({"role": "user", "content": prompt})
-            response = client.beta.chat.completions.parse(model=self.model_name, messages=messages, response_format=Plan)
+            """.format(self.goal, plan)
+            self.messages.append({"role": "user", "content": prompt})
+            response = client.beta.chat.completions.parse(model=self.model_name, messages=self.messages, response_format=Plan)
             message = response.choices[0].message.parsed
             updated_plan = message.updated_plan
             completed_tasks = message.completed_tasks
             logger.info('Replan: %s', message)
-            if message.task_finished:
+            if message.goal_finished:
                 return response
             else:
                 combined_str = "updated plan is: {}, completed tasks are: {}".format(updated_plan, completed_tasks)
-                messages.append({"role": "assistant", "content": combined_str})
+                self.messages.append({"role": "assistant", "content": combined_str})
+                plan = updated_plan
+
 
 
         logger.info('updated plan: %s', plan)
-        response = completion(model=self.model_name, messages=messages, tools=self.tools, tool_choice="auto")
+        response = completion(model=self.model_name, messages=self.messages, tools=self.tools, tool_choice="auto")
 
         logger.info('agent: %s, prompt tokens: %s, completion tokens: %s', self.model_name,
                     str(response.usage.prompt_tokens), str(response.usage.completion_tokens))
@@ -80,7 +83,7 @@ class HighLevelPlanningAgent(BaseAgent):
 
         if tool_calls is None or len(tool_calls) == 0:
             message = response.choices[0].message.model_dump()
-            messages.append(message)
+            self.messages.append(message)
             return response
         # limit one function calling at a time
         tool_calls = [tool_calls[0]]
@@ -89,8 +92,8 @@ class HighLevelPlanningAgent(BaseAgent):
                              "role": response.choices[0].message.role,
                              "tool_calls": tool_calls}
 
-        messages.append(tool_call_message)
+        self.messages.append(tool_call_message)
         tool_responses = self.process_tool_calls(tool_calls)
-        messages.extend(tool_responses)
+        self.messages.extend(tool_responses)
 
-        return self.send_completion_request(messages, plan, depth + 1)
+        return self.send_completion_request(plan, depth + 1)

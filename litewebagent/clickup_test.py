@@ -55,9 +55,9 @@ def main(args):
 
     page.goto("https://www.clickup.com")
 
-    combined_tasks = "\n".join(tasks)
-    print(combined_tasks)
-    response = use_web_agent(combined_tasks, agent_type=args.agent_type)
+    plan = "\n".join(tasks)
+    goal = "create a doc in clickup"
+    response = use_web_agent(goal, plan, agent_type=args.agent_type)
     print(response)
 
 
