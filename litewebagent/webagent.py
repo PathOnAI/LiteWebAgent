@@ -495,7 +495,8 @@ def main(args):
         "(1) enter the 'San Francisco' as destination, (2) and click search"]
 
     for description in tasks:
-        use_web_agent(description, model_name=args.model, agent_type=args.agent_type)
+        response = use_web_agent(description, model_name=args.model, agent_type=args.agent_type)
+        print(response)
 
 
 if __name__ == "__main__":
