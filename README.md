@@ -25,6 +25,7 @@ cp .env.example .env
 python -m litewebagent.clickup_test --agent_type HighLevelPlanningAgent
 python -m litewebagent.webagent
 python -m litewebagent.webagent --agent_type HighLevelPlanningAgent
+python -m litewebagent.google_test
 ```
 * replay the workflow verified by the web agent
 ```
