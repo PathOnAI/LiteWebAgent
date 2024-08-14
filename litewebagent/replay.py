@@ -218,7 +218,7 @@ def take_action(step):
     page = get_page()
     print(page.url)
     screenshot_path_post = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_post.png')
-    # time.sleep(3)
+    time.sleep(3)
     page.screenshot(path=screenshot_path_post)
     # _pre_extract(page)
     # dom = extract_dom_snapshot(page)
@@ -277,9 +277,10 @@ messages.append({"role": "user", "content": "summarize the status of the task"})
 response = openai_client.chat.completions.create(model="gpt-4o", messages=messages)
 summary = response.choices[0].message.content
 close_playwright()
-audio = elevenlabs_client.generate(
-    text=summary,
-    voice="Rachel",
-    model="eleven_multilingual_v2"
-)
-play(audio)
+# audio = elevenlabs_client.generate(
+#     text=summary,
+#     voice="Rachel",
+#     model="eleven_multilingual_v2"
+# )
+# play(audio)
+print(summary)
