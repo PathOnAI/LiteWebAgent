@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError
 import os
 _ = load_dotenv()
 
-client = OpenAI()
+openai_client = OpenAI()
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +68,7 @@ class HighLevelPlanningAgent(BaseAgent):
             self.messages.append({"role": "user", "content": prompt})
 
             def execute_replan():
-                return client.beta.chat.completions.parse(
+                return openai_client.beta.chat.completions.parse(
                     model=self.model_name,
                     messages=self.messages,
                     response_format=Plan
@@ -101,7 +101,13 @@ class HighLevelPlanningAgent(BaseAgent):
         logger.info('agent: %s, prompt tokens: %s, completion tokens: %s', self.model_name,
                     str(response.usage.prompt_tokens), str(response.usage.completion_tokens))
         logger.info('agent: %s, depth: %s, response: %s', self.model_name, depth, response)
-        tool_calls = response.choices[0].message.tool_calls
+
+        if hasattr(response.choices[0].message, 'tool_calls'):
+            tool_calls = response.choices[0].message.tool_calls
+        else:
+            message = response.choices[0].message.model_dump()
+            self.messages.append(message)
+            return response
 
         if tool_calls is None or len(tool_calls) == 0:
             message = response.choices[0].message.model_dump()
