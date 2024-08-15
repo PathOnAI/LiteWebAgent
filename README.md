@@ -22,18 +22,16 @@ cp .env.example .env
 ### (2) QuickStart
 * use web agent to finish some task and save the workflow
 ```bash
-python -m litewebagent.clickup_test --agent_type HighLevelPlanningAgent
-python -m litewebagent.webagent
-python -m litewebagent.webagent --agent_type HighLevelPlanningAgent
-python -m litewebagent.google_test
+python -m litewebagent.main --agent_type HighLevelPlanningAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table'
+python -m litewebagent.main --agent_type HighLevelPlanningAgent --starting_url https://www.airbnb.com --goal "set destination as San Francisco, then search the results" --plan "(1) enter the 'San Francisco' as destination, (2) and click search"
 ```
 * replay the workflow verified by the web agent
-```
+```bash
 cp litewebagent/flow/example.json litewebagent/flow/steps.json 
 python -m litewebagent.replay
 ```
 * enable user agent interaction
-```
+```bash
 python -m litewebagent.cli_main --agent_type HighLevelPlanningAgent 
 ```
 
