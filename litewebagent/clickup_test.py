@@ -18,7 +18,7 @@ logging.basicConfig(
 # Create a logger
 logger = logging.getLogger(__name__)
 
-from litewebagent.webagent import use_web_agent
+from litewebagent.webagent import setup_web_agent
 
 def driver_main(q):
     start = time.time()
@@ -57,8 +57,11 @@ def main(args):
 
     plan = "\n".join(tasks)
     goal = "create a doc in clickup"
-    response = use_web_agent(starting_url, goal, plan, agent_type=args.agent_type)
+    agent = setup_web_agent(starting_url, goal, model_name=args.model, agent_type=args.agent_type)
+    response = agent.send_prompt(plan)
     print(response)
+    # response = use_web_agent(starting_url, goal, plan, agent_type=args.agent_type)
+    # print(response)
 
 
 if __name__ == "__main__":

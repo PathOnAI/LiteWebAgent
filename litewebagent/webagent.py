@@ -191,6 +191,7 @@ def take_action(goal, agent_type):
 
         # Extract page information
         # screenshot = extract_screenshot(page)
+        time.sleep(3)
         _pre_extract(page)
         dom = extract_dom_snapshot(page)
         axtree = extract_merged_axtree(page)
@@ -413,7 +414,10 @@ available_tools = {
     "scan_page_extract_information": scan_page_extract_information,
 }
 
-def use_web_agent(starting_url, goal, plan, model_name="gpt-4o-mini", agent_type="DemoAgent"):
+# set up web agent
+# use web agent
+
+def setup_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="DemoAgent"):
     messages = [
         {
             "role": "system",
@@ -454,14 +458,15 @@ def use_web_agent(starting_url, goal, plan, model_name="gpt-4o-mini", agent_type
         error_message = f"Unsupported agent type: {agent_type}. Please use 'DemoAgent' or 'HighLevelPlanningAgent'."
         logger.error(error_message)
         return {"error": error_message}
+    return agent
 
-    response = agent.send_prompt(plan)
-    print("agent message list:\n")
-    print(agent.messages)
-    return response
+    # response = agent.send_prompt(plan)
+    # print("agent message list:\n")
+    # print(agent.messages)
+    # return response
 
 
-
+# def use_web_agent(agent, plan):
 
 def main(args):
     browser = get_browser()
@@ -477,7 +482,8 @@ def main(args):
     starting_url = "https://www.airbnb.com"
     plan = "(1) enter the 'San Francisco' as destination, (2) and click search"
     goal = "set destination as San Francisco, then search the results"
-    response = use_web_agent(starting_url, goal, plan, model_name=args.model, agent_type=args.agent_type)
+    agent = setup_web_agent(starting_url, goal, model_name=args.model, agent_type=args.agent_type)
+    response = agent.send_prompt(plan)
     print(response)
 
 
