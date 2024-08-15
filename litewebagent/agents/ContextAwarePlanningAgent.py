@@ -54,6 +54,8 @@ class ContextAwarePlanningAgent(BaseAgent):
 
 
         if depth > 0:
+            # TODO: adapt prompt
+            # Reference: https://github.com/OSU-NLP-Group/SeeAct/blob/main/seeact_package/seeact/agent.py#L163
             context = get_context()
             page = get_page()
             # Extract page information
