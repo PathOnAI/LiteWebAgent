@@ -54,6 +54,10 @@ class ContextAwarePlanningAgent(BaseAgent):
 
 
         if depth > 0:
+            from pydantic import BaseModel
+            class Plan(BaseModel):
+                goal_finished: bool
+
             # TODO: adapt prompt
             # Reference: https://github.com/OSU-NLP-Group/SeeAct/blob/main/seeact_package/seeact/agent.py#L163
             context = get_context()
@@ -176,7 +180,18 @@ class ContextAwarePlanningAgent(BaseAgent):
             )
 
             plan = response.choices[0].message.content
-            self.messages.append({"role": "user", "content": plan})
+            new_response = openai_client.beta.chat.completions.parse(
+                model=self.model_name,
+                messages=[{"role": "system", "content": "Is the overall goal finished?"}, {"role": "user", "content": plan}],
+                response_format=Plan
+            )
+            message = new_response.choices[0].message.parsed
+            goal_finished = message.goal_finished
+            if goal_finished:
+                logger.info("goal finished")
+                return response
+            else:
+                self.messages.append({"role": "user", "content": plan})
 
 
         logger.info('updated plan: %s', plan)

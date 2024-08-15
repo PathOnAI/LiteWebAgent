@@ -40,8 +40,6 @@ class HighLevelPlanningAgent(BaseAgent):
             from pydantic import BaseModel
             class Plan(BaseModel):
                 goal_finished: bool
-                updated_plan: str
-                completed_tasks: str
 
             prompt = """
             Goal: {}
@@ -66,33 +64,24 @@ class HighLevelPlanningAgent(BaseAgent):
             - ...
             """.format(self.goal, plan)
             self.messages.append({"role": "user", "content": prompt})
-
-            def execute_replan():
-                return openai_client.beta.chat.completions.parse(
-                    model=self.model_name,
-                    messages=self.messages,
-                    response_format=Plan
-                )
-
-            with ThreadPoolExecutor(max_workers=1) as executor:
-                future = executor.submit(execute_replan)
-                try:
-                    response = future.result(timeout=20)  # 20-second timeout
-                except TimeoutError:
-                    logger.warning('Replan operation timed out after 20 seconds. Continuing with current plan.')
-                    return plan  # Return the current plan if timeout occurs
-
-            message = response.choices[0].message.parsed
-            updated_plan = message.updated_plan
-            completed_tasks = message.completed_tasks
-            logger.info('Replan: %s', message)
-
-            if message.goal_finished:
+            response = openai_client.chat.completions.create(
+                model="gpt-4o",
+                messages=self.messages
+            )
+            plan = response.choices[0].message.content
+            new_response = openai_client.beta.chat.completions.parse(
+                model=self.model_name,
+                messages=[{"role": "system", "content": "Is the overall goal finished?"}, {"role": "user", "content": plan}],
+                response_format=Plan
+            )
+            message = new_response.choices[0].message.parsed
+            goal_finished = message.goal_finished
+            if goal_finished:
+                logger.info("goal finished")
                 return response
             else:
-                combined_str = f"updated plan is: {updated_plan}, completed tasks are: {completed_tasks}"
-                self.messages.append({"role": "assistant", "content": combined_str})
-                plan = updated_plan
+                self.messages.append({"role": "user", "content": plan})
+
 
 
         logger.info('updated plan: %s', plan)
