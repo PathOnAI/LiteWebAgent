@@ -27,8 +27,7 @@ _ = load_dotenv()
 openai_client = OpenAI()
 import argparse
 from litewebagent.action.highlevel import HighLevelActionSet
-from litewebagent.playwright_manager import PlaywrightManager
-from litewebagent.playwright_manager import get_browser, get_context, get_page, playwright_manager
+from litewebagent.playwright_manager import PlaywrightManager, get_browser, get_context, get_page, playwright_manager
 from litewebagent.action.base import execute_python_code
 
 from playwright.sync_api import sync_playwright
@@ -39,6 +38,7 @@ from bs4 import BeautifulSoup
 import logging
 from litewebagent.agents.DemoAgent import DemoAgent
 from litewebagent.agents.HighLevelPlanningAgent import HighLevelPlanningAgent
+from litewebagent.agents.ContextAwarePlanningAgent import ContextAwarePlanningAgent
 
 logging.basicConfig(
     level=logging.INFO,
@@ -454,6 +454,9 @@ def setup_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="De
         agent = DemoAgent(model_name=model_name, tools=tools, available_tools=available_tools, messages=messages, goal = goal)
     elif agent_type == "HighLevelPlanningAgent":
         agent = HighLevelPlanningAgent(model_name=model_name, tools=tools, available_tools=available_tools, messages=messages, goal=goal)
+    elif agent_type == "ContextAwarePlanningAgent":
+        agent = ContextAwarePlanningAgent(model_name=model_name, tools=tools, available_tools=available_tools,
+                                       messages=messages, goal=goal)
     else:
         error_message = f"Unsupported agent type: {agent_type}. Please use 'DemoAgent' or 'HighLevelPlanningAgent'."
         logger.error(error_message)
@@ -490,7 +493,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run web automation tasks with different agent types.")
     parser.add_argument('--agent_type', type=str, default="DemoAgent",
-                        choices=["DemoAgent", "HighLevelPlanningAgent"],
+                        choices=["DemoAgent", "HighLevelPlanningAgent", "ContextAwarePlanningAgent"],
                         help="Type of agent to use (default: DemoAgent)")
     parser.add_argument('--model', type=str, default="gpt-4o-mini",
                         help="Model to use for the agent (default: gpt-4o-mini)")

@@ -30,10 +30,11 @@ class BaseAgent:
     def process_tool_calls(self, tool_calls: List[Dict]) -> List[Dict]:
         tool_call_responses = []
         logger.info("Number of function calls: %i", len(tool_calls))
+
         for tool_call in tool_calls:
-            tool_call_id = tool_call["id"]
-            function_name = tool_call["function"]["name"]
-            function_args = json.loads(tool_call["function"]["arguments"])
+            tool_call_id = tool_call.id
+            function_name = tool_call.function.name
+            function_args = json.loads(tool_call.function.arguments)
 
             function_to_call = self.available_tools.get(function_name)
 

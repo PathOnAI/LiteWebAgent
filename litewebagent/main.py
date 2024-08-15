@@ -36,7 +36,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run web automation tasks with different agent types.")
     parser.add_argument('--agent_type', type=str, default="DemoAgent",
-                        choices=["DemoAgent", "HighLevelPlanningAgent"],
+                        choices=["DemoAgent", "HighLevelPlanningAgent", "ContextAwarePlanningAgent"],
                         help="Type of agent to use (default: DemoAgent)")
     parser.add_argument('--model', type=str, default="gpt-4o-mini",
                         help="Model to use for the agent (default: gpt-4o-mini)")
