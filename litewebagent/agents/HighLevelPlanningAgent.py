@@ -15,62 +15,7 @@ client = OpenAI()
 logger = logging.getLogger(__name__)
 
 class HighLevelPlanningAgent(BaseAgent):
-    def replan(self, plan):
-        from pydantic import BaseModel
-        class Plan(BaseModel):
-            goal_finished: bool
-            updated_plan: str
-            completed_tasks: str
-        prompt = """
-        Goal: {}
-        Current plan: {}
 
-        Based on the progress made so far, please provide:
-
-        1. An updated complete plan
-        2. A list of tasks that have already been completed
-        3. An explanation of changes and their rationale
-
-        Format your response as follows:
-
-        Updated Plan:
-        - [Step 1]
-        - [Step 2]
-        - ...
-
-        Completed Tasks:
-        - [Task 1]
-        - [Task 2]
-        - ...
-        """.format(self.goal, plan)
-        self.messages.append({"role": "user", "content": prompt})
-
-        def execute_replan():
-            return client.beta.chat.completions.parse(
-                model=self.model_name,
-                messages=self.messages,
-                response_format=Plan
-            )
-
-        with ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(execute_replan)
-            try:
-                response = future.result(timeout=20)  # 20-second timeout
-            except TimeoutError:
-                logger.warning('Replan operation timed out after 10 seconds. Continuing with current plan.')
-                return plan  # Return the current plan if timeout occurs
-
-        message = response.choices[0].message.parsed
-        updated_plan = message.updated_plan
-        completed_tasks = message.completed_tasks
-        logger.info('Replan: %s', message)
-
-        if message.goal_finished:
-            return response
-        else:
-            combined_str = f"updated plan is: {updated_plan}, completed tasks are: {completed_tasks}"
-            self.messages.append({"role": "assistant", "content": combined_str})
-            return updated_plan
     def send_completion_request(self, plan: str, depth: int = 0) -> Dict:
         if plan is None and depth == 0:
             plan = self.make_plan()
@@ -92,20 +37,62 @@ class HighLevelPlanningAgent(BaseAgent):
 
 
         if depth > 0:
-            plan = self.replan(plan)
+            from pydantic import BaseModel
+            class Plan(BaseModel):
+                goal_finished: bool
+                updated_plan: str
+                completed_tasks: str
 
-            # response = client.beta.chat.completions.parse(model=self.model_name, messages=self.messages, response_format=Plan)
-            # message = response.choices[0].message.parsed
-            # updated_plan = message.updated_plan
-            # completed_tasks = message.completed_tasks
-            # logger.info('Replan: %s', message)
-            # if message.goal_finished:
-            #     return response
-            # else:
-            #     combined_str = "updated plan is: {}, completed tasks are: {}".format(updated_plan, completed_tasks)
-            #     self.messages.append({"role": "assistant", "content": combined_str})
-            #     plan = updated_plan
+            prompt = """
+            Goal: {}
+            Current plan: {}
 
+            Based on the progress made so far, please provide:
+
+            1. An updated complete plan
+            2. A list of tasks that have already been completed
+            3. An explanation of changes and their rationale
+
+            Format your response as follows:
+
+            Updated Plan:
+            - [Step 1]
+            - [Step 2]
+            - ...
+
+            Completed Tasks:
+            - [Task 1]
+            - [Task 2]
+            - ...
+            """.format(self.goal, plan)
+            self.messages.append({"role": "user", "content": prompt})
+
+            def execute_replan():
+                return client.beta.chat.completions.parse(
+                    model=self.model_name,
+                    messages=self.messages,
+                    response_format=Plan
+                )
+
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(execute_replan)
+                try:
+                    response = future.result(timeout=20)  # 20-second timeout
+                except TimeoutError:
+                    logger.warning('Replan operation timed out after 20 seconds. Continuing with current plan.')
+                    return plan  # Return the current plan if timeout occurs
+
+            message = response.choices[0].message.parsed
+            updated_plan = message.updated_plan
+            completed_tasks = message.completed_tasks
+            logger.info('Replan: %s', message)
+
+            if message.goal_finished:
+                return response
+            else:
+                combined_str = f"updated plan is: {updated_plan}, completed tasks are: {completed_tasks}"
+                self.messages.append({"role": "assistant", "content": combined_str})
+                plan = updated_plan
 
 
         logger.info('updated plan: %s', plan)
