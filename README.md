@@ -32,6 +32,10 @@ python -m litewebagent.google_test
 cp litewebagent/flow/example.json litewebagent/flow/steps.json 
 python -m litewebagent.replay
 ```
+* enable user agent interaction
+```
+python -m litewebagent.cli_main --agent_type HighLevelPlanningAgent 
+```
 
 ## ✈️ 1. Getting Started with litewebagent
 

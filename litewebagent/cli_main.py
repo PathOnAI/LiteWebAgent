@@ -55,12 +55,9 @@ def main(args):
             response = agent.send_prompt(plan)
             sys.stdout.write('\r')  # Clear the spinner
             sys.stdout.flush()
-            if isinstance(response, ErrorResponse):
-                print(f"[Agent]: There is an error. Error: {response.model_dump_json()}")
-            else:
-                print("[Agent]: The response is as follows: ")
-                output = {"type": "console", "content": response.content}
-                display_output_cli(output)
+            print("[Agent]: The response is as follows: ")
+            output = {"type": "console", "content": response}
+            display_output_cli(output)
         except Exception as e:
             print(f"[Agent]: An error occurred: {str(e)}")
         finally:
@@ -85,12 +82,9 @@ def main(args):
                         break
                 sys.stdout.write('\r')  # Clear the spinner
                 sys.stdout.flush()
-                if isinstance(response, ErrorResponse):
-                    print(f"[Agent]: There is an error. Error: {response.model_dump_json()}")
-                else:
-                    print("[Agent]: The response is as follows: ")
-                    output = {"type": "console", "content": response.content}
-                    display_output_cli(output)
+                print("[Agent]: The response is as follows: ")
+                output = {"type": "console", "content": response}
+                display_output_cli(output)
             except Exception as e:
                 print(f"[Agent]: An error occurred: {str(e)}")
             finally:
