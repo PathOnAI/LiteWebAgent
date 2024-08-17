@@ -40,6 +40,7 @@ def main(args):
         context = get_context()
         page = playwright_manager.get_page()
         playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
+        features = args.features.split(',') if args.features else None
 
         # Get initial setup from user
         starting_url = input("Enter the starting URL: ")
@@ -47,7 +48,7 @@ def main(args):
         plan = input("Enter the initial plan: ")
 
         # Setup the web agent
-        agent = setup_web_agent(starting_url, goal, model_name=args.model, agent_type=args.agent_type)
+        agent = setup_web_agent(starting_url, goal, model_name=args.model, agent_type=args.agent_type, features=features)
         # Initial agent response
         print("\n[Agent]: Initializing with the provided plan...")
         spinner = progress_indicator()
@@ -102,6 +103,8 @@ if __name__ == "__main__":
                         help="Type of agent to use (default: DemoAgent)")
     parser.add_argument('--model', type=str, default="gpt-4o-mini",
                         help="Model to use for the agent (default: gpt-4o-mini)")
+    parser.add_argument('--features', type=str, default="axtree",
+                        help="Comma-separated list of features to use (default: None, which uses all features)")
     args = parser.parse_args()
 
     main(args)

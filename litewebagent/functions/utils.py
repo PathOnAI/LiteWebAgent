@@ -19,7 +19,44 @@ logger = logging.getLogger(__name__)
 openai_client = OpenAI()
 
 
+def flatten_interactive_elements_to_str(
+    interactive_elements,
+    indent_char="\t"
+):
+    """
+    Formats a list of interactive elements into a string, including only text, type, and bid.
+    Skips elements where the type is 'html'.
+
+    :param interactive_elements: List of dictionaries containing interactive element data
+    :param indent_char: Character used for indentation (default: tab)
+    :return: Formatted string representation of interactive elements
+    """
+
+    def format_element(element):
+        # Skip if element type is 'html'
+        if element.get('type', '').lower() == 'html' or element.get('type', '').lower() == 'body':
+            return None
+
+        # Add bid if present
+        bid = f"[{element['bid']}] " if 'bid' in element else ""
+
+        # Basic element info
+        element_type = element.get('type', 'Unknown')
+        text = element.get('text', '').replace('\n', ' ')
+
+        return f"{bid}{element_type} {repr(text)}"
+
+    formatted_elements = [
+        formatted_elem for elem in interactive_elements
+        if elem.get('include', True)
+        for formatted_elem in [format_element(elem)]
+        if formatted_elem is not None
+    ]
+    return "\n".join(formatted_elements)
+
+
 def prepare_prompt(page_info, action_set, features):
+    logger.info("features used: {}".format(features))
     prompt = f"""
     """
     if "axtree" in features:
@@ -32,7 +69,7 @@ def prepare_prompt(page_info, action_set, features):
     if "interactive_elements" in features:
         prompt += f"""
         # Interactive elements:
-        {page_info.get('interactive_elements', '')}
+        {flatten_interactive_elements_to_str(page_info.get('interactive_elements', ''))}
         """
 
     # TODO: clean dom elements
