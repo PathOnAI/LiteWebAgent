@@ -1,3 +1,4 @@
+# Reference: https://github.com/OSU-NLP-Group/SeeAct/blob/main/seeact_package/seeact/agent.py#L163
 from litellm import completion
 from .BaseAgent import BaseAgent
 from typing import List, Dict, Any
@@ -59,7 +60,6 @@ class ContextAwarePlanningAgent(BaseAgent):
                 goal_finished: bool
 
             # TODO: adapt prompt
-            # Reference: https://github.com/OSU-NLP-Group/SeeAct/blob/main/seeact_package/seeact/agent.py#L163
             context = get_context()
             page = get_page()
             time.sleep(3)
