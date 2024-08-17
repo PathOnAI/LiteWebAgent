@@ -62,8 +62,6 @@ class ContextAwarePlanningAgent(BaseAgent):
             # Reference: https://github.com/OSU-NLP-Group/SeeAct/blob/main/seeact_package/seeact/agent.py#L163
             context = get_context()
             page = get_page()
-            # Extract page information
-            # screenshot = extract_screenshot(page)
             time.sleep(3)
             _pre_extract(page)
             dom = extract_dom_snapshot(page)
@@ -72,13 +70,6 @@ class ContextAwarePlanningAgent(BaseAgent):
             screenshot_path_post = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_next.png')
             time.sleep(3)
             page.screenshot(path=screenshot_path_post)
-            # _pre_extract(page)
-            # dom = extract_dom_snapshot(page)
-            # axtree = extract_merged_axtree(page)
-            # axtree_txt = flatten_axtree_to_str(axtree)
-            # focused_element_bid = extract_focused_element_bid(page)
-            # extra_properties = extract_dom_extra_properties(dom)
-            # _post_extract(page)
             base64_image = encode_image(screenshot_path_post)
             prompt = f"""
             After we take action, a screenshot was captured.
