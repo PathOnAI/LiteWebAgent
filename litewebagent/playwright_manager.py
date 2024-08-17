@@ -4,7 +4,7 @@ import time
 
 
 class PlaywrightManager:
-    def __init__(self, storage_state=None, video_dir='./videos'):
+    def __init__(self, storage_state=None, video_dir='./litewebagent/videos'):
         self.playwright = None
         self.browser = None
         self.context = None
@@ -64,7 +64,7 @@ class PlaywrightManager:
 
 
 # Initialize the PlaywrightManager with the storage state and video directory
-playwright_manager = PlaywrightManager(storage_state='litewebagent/playground/state.json', video_dir='./videos')
+playwright_manager = PlaywrightManager(storage_state='litewebagent/playground/state.json', video_dir='./litewebagent/videos')
 
 
 def get_browser():
