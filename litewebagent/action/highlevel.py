@@ -7,7 +7,7 @@ from typing import Literal, Optional
 
 from . import utils
 from .base import AbstractActionSet
-from .functions import (
+from .playwright_functions import (
     noop,
     send_msg_to_user,
     report_infeasible,
