@@ -1,5 +1,6 @@
 import sys
 import os
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from litewebagent.observation.constants import TEXT_MAX_LENGTH, BROWSERGYM_ID_ATTRIBUTE, EXTRACT_OBS_MAX_TRIES
 from litewebagent.observation.observation import (
@@ -13,7 +14,7 @@ from litewebagent.observation.observation import (
     MarkingError,
 )
 from litewebagent.observation.extract_elements import (extract_interactive_elements, highlight_elements)
-#, extract_interactive_elements_more_info
+# , extract_interactive_elements_more_info
 from playwright.sync_api import sync_playwright
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -22,6 +23,7 @@ from openai import OpenAI
 import os
 import re
 import json
+
 _ = load_dotenv()
 from elevenlabs.client import ElevenLabs
 from elevenlabs import play
@@ -59,20 +61,11 @@ logger = logging.getLogger(__name__)
 
 import base64
 
-# starting url
-# set workflow
-# for each step, find element bid, change action, replace bid with the new bid, and show action around the bounding box
-
 browser = get_browser()
 context = get_context()
 page = get_page()
 playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
 
-# page.goto("https://www.amazon.com/s?k=dining+table&crid=1FQ2714L2KJLK&sprefix=dining+tabl%2Caps%2C235&ref=nb_sb_noss_2")
-# description = "Scan the whole page to extract product names"
-# response = use_web_agent(description, "gpt-4o-mini")
-# print(response)
-# page.goto("https://www.airbnb.com")
 file_path = os.path.join('litewebagent', 'flow', 'steps.json')
 
 
@@ -96,7 +89,7 @@ def read_steps_json(file_path):
                     step = json.loads(line.strip())
                     steps.append(step)
                 except json.JSONDecodeError as e:
-                    print(f"Error decoding JSON on line {i+1}: {line}")
+                    print(f"Error decoding JSON on line {i + 1}: {line}")
                     print(f"Error message: {str(e)}")
 
     return starting_url, steps
@@ -107,30 +100,32 @@ starting_url, steps = read_steps_json(file_path)
 page.goto(starting_url)
 
 
-
-# take_action(step)
-# https://developer.mozilla.org/en-US/docs/Glossary/Accessibility_tree
-
 def find_matching_element(interactive_elements, target):
     for element in interactive_elements:
         if (element.get('text', '').lower() == target.get('text', '').lower() and
-            element.get('tag') == target.get('tag') and
-            target.get('id') == element.get('id')):
+                element.get('tag') == target.get('tag') and
+                target.get('id') == element.get('id')):
             return element
     return None
+
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
+
+
 def find_match(interactive_elements, key, value):
     for element in interactive_elements:
         if element.get(key, '') == value:
             return element
     return None
 
+
 def replace_number(text, new_number):
     # Find the first number in the string and replace it
     return re.sub(r'\d+', str(new_number), text)
+
+
 def take_action(step):
     # Setup
     time.sleep(5)
@@ -150,7 +145,6 @@ def take_action(step):
     axtree = extract_merged_axtree(page)
     focused_element_bid = extract_focused_element_bid(page)
     extra_properties = extract_dom_extra_properties(dom)
-    # Flatten DOM and accessibility tree
     # Import necessary utilities
     from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
     dom_txt = flatten_dom_to_str(dom)
@@ -179,7 +173,6 @@ def take_action(step):
     from concurrent.futures import ThreadPoolExecutor, as_completed
     from threading import Event
 
-
     audio_finished = Event()
 
     def play_audio():
@@ -207,26 +200,11 @@ def take_action(step):
     except Exception as e:
         logger.error(f"An error occurred during audio playback: {str(e)}")
 
-
-    # execute_python_code(
-    #     code,
-    #     page,
-    #     context,
-    #     send_message_to_user=None,
-    #     report_infeasible_instructions=None,
-    # )
     page = get_page()
     print(page.url)
     screenshot_path_post = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_post.png')
     time.sleep(3)
     page.screenshot(path=screenshot_path_post)
-    # _pre_extract(page)
-    # dom = extract_dom_snapshot(page)
-    # axtree = extract_merged_axtree(page)
-    # axtree_txt = flatten_axtree_to_str(axtree)
-    # focused_element_bid = extract_focused_element_bid(page)
-    # extra_properties = extract_dom_extra_properties(dom)
-    # _post_extract(page)
     base64_image = encode_image(screenshot_path_post)
     # import pdb; pdb.set_trace()
     prompt = f"""
@@ -263,8 +241,8 @@ def take_action(step):
     return action, feedback
 
 
-
-messages = [{"role":"system", "content":"You are a smart web search agent to perform search and click task, upload files for customers"}]
+messages = [{"role": "system",
+             "content": "You are a smart web search agent to perform search and click task, upload files for customers"}]
 for i, step in enumerate(steps, 1):
     print(f"Step {i}:")
     print(json.dumps(step))
@@ -272,7 +250,6 @@ for i, step in enumerate(steps, 1):
     action, feedback = take_action(step)
     content = "The goal is: {}, the action is: {} and the feedback is: {}".format(goal, action, feedback)
     messages.append({"role": "assistant", "content": content})
-# page.video.stop()
 messages.append({"role": "user", "content": "summarize the status of the task, be concise"})
 response = openai_client.chat.completions.create(model="gpt-4o", messages=messages)
 summary = response.choices[0].message.content
@@ -284,4 +261,3 @@ audio = elevenlabs_client.generate(
     model="eleven_multilingual_v2"
 )
 play(audio)
-
