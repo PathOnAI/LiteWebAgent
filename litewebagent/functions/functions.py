@@ -31,7 +31,7 @@ def take_action(goal, agent_type, features=None):
         )
 
         # Extract page information
-        page_info = extract_page_info(page, features)
+        page_info = extract_page_info(page)
 
         # Prepare messages for AI model
         system_msg, prompt = prepare_messages(goal, page_info, action_set, features)
@@ -40,7 +40,12 @@ def take_action(goal, agent_type, features=None):
         action = query_openai_model(system_msg, prompt, page_info['screenshot'])
 
         # Execute the action
-        result = execute_action(action, action_set, page, context, goal, page_info['interactive_elements'])
+        try:
+            execute_action(action, action_set, page, context, goal, page_info['interactive_elements'])
+        except Exception as e:
+            last_action_error = f"{type(e).__name__}: {str(e)}"
+            logger.error(f"Action execution failed: {last_action_error}")
+            return f"Task failed with action error: {last_action_error}"
 
         # Capture post-action feedback
         feedback = capture_post_action_feedback(page, action, goal)
@@ -53,7 +58,7 @@ def take_action(goal, agent_type, features=None):
         return f"Task failed: {error_msg}"
 
 
-def extract_page_info(page, features):
+def extract_page_info(page):
     page_info = {}
     _pre_extract(page)
     screenshot_path = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_pre.png')
@@ -144,33 +149,28 @@ def query_openai_model(system_msg, prompt, screenshot_path):
 
 
 def execute_action(action, action_set, page, context, goal, interactive_elements):
-    try:
-        code, function_calls = action_set.to_python_code(action)
-        for function_name, function_args in function_calls:
-            print(function_name, function_args)
-            extracted_number = parse_function_args(function_args)
+    code, function_calls = action_set.to_python_code(action)
+    for function_name, function_args in function_calls:
+        print(function_name, function_args)
+        extracted_number = parse_function_args(function_args)
 
-        result = search_interactive_elements(interactive_elements, extracted_number)
-        print(result)
-        result['action'] = action
-        result["url"] = page.url
-        result['goal'] = goal
-        file_path = os.path.join('litewebagent', 'flow', 'steps.json')
-        append_to_steps_json(result, file_path)
+    result = search_interactive_elements(interactive_elements, extracted_number)
+    print(result)
+    result['action'] = action
+    result["url"] = page.url
+    result['goal'] = goal
+    file_path = os.path.join('litewebagent', 'flow', 'steps.json')
+    append_to_steps_json(result, file_path)
 
-        logger.info("Executing action script")
-        execute_python_code(
-            code,
-            page,
-            context,
-            send_message_to_user=None,
-            report_infeasible_instructions=None,
-        )
-        return result
-    except Exception as e:
-        last_action_error = f"{type(e).__name__}: {str(e)}"
-        logger.error(f"Action execution failed: {last_action_error}")
-        return f"Task failed with action error: {last_action_error}"
+    logger.info("Executing action script")
+    execute_python_code(
+        code,
+        page,
+        context,
+        send_message_to_user=None,
+        report_infeasible_instructions=None,
+    )
+    return result
 
 
 def capture_post_action_feedback(page, action, goal):
