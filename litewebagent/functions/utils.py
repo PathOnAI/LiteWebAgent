@@ -141,14 +141,13 @@ def execute_action(action, action_set, page, context, goal, interactive_elements
     for function_name, function_args in function_calls:
         print(function_name, function_args)
         extracted_number = parse_function_args(function_args)
-
-    result = search_interactive_elements(interactive_elements, extracted_number)
-    print(result)
-    result['action'] = action
-    result["url"] = page.url
-    result['goal'] = goal
-    file_path = os.path.join('litewebagent', 'flow', 'steps.json')
-    append_to_steps_json(result, file_path)
+        result = search_interactive_elements(interactive_elements, extracted_number)
+        print(result)
+        result['action'] = action
+        result["url"] = page.url
+        result['goal'] = goal
+        file_path = os.path.join('litewebagent', 'flow', 'steps.json')
+        append_to_steps_json(result, file_path)
 
     logger.info("Executing action script")
     execute_python_code(
