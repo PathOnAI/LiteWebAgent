@@ -48,3 +48,8 @@ python -m litewebagent.main --agent_type DemoAgent --starting_url https://www.ai
 python -m litewebagent.main --agent_type DemoAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features interactive_elements
 python -m litewebagent.main --agent_type DemoAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features axtree,interactive_elements
 ```
+
+### (4) Demos
+* https://www.loom.com/share/1018bcc4e21c4a7eb517b60c2931ee3c
+* https://www.loom.com/share/aa48256478714d098faac740239c9013
+* https://www.loom.com/share/89f5fa69b8cb49c8b6a60368ddcba103
