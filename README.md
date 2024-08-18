@@ -28,8 +28,12 @@ python -m litewebagent.main --agent_type ContextAwarePlanningAgent --starting_ur
 python -m litewebagent.main --agent_type DemoAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
 ```
 * replay the workflow verified by the web agent
+If you haven't used the web agent to try any tests yet, first copy our example.json file.
 ```bash
 cp litewebagent/flow/example.json litewebagent/flow/steps.json 
+```
+Now that we have the steps.json file, which contains the workflow of a specific task, we can replay.
+```bash
 python -m litewebagent.replay
 ```
 * enable user agent interaction

@@ -34,6 +34,7 @@ def main(args):
     agent = setup_web_agent(args.starting_url, args.goal, model_name=args.model, agent_type=args.agent_type, features=features)
     response = agent.send_prompt(args.plan)
     print(response)
+    print(agent.messages)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run web automation tasks with different agent types.")
