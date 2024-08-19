@@ -72,9 +72,9 @@ FILE_ACTIONS = [
     upload_file,
 ]
 
-# SELECT_OPTION_ACTIONS = [
-#     select_option,
-# ]
+SELECT_OPTION_ACTIONS = [
+    select_option,
+]
 
 COORD_ACTIONS = [
     scroll,
@@ -148,8 +148,8 @@ class HighLevelActionSet(AbstractActionSet):
                         allowed_actions.extend(CHAT_ACTIONS)
                     case "infeas":
                         allowed_actions.extend(INFEAS_ACTIONS)
-                    # case "select_option":
-                    #     allowed_actions.extend(SELECT_OPTION_ACTIONS)
+                    case "select_option":
+                        allowed_actions.extend(SELECT_OPTION_ACTIONS)
                     case "file":
                         allowed_actions.extend(FILE_ACTIONS)
                     case "bid":

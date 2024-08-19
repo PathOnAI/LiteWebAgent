@@ -75,6 +75,10 @@ def upload_file(goal, features=None):
     response = take_action(goal, ["file"], features)
     return response
 
+def select_option(goal, features=None):
+    response = take_action(goal, ["select_option"], features)
+    return response
+
 
 def scan_page_extract_information(instruction):
     page = get_page()

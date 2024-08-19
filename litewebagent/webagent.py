@@ -8,7 +8,7 @@ from litewebagent.playwright_manager import get_browser, get_context, get_page, 
 from litewebagent.agents.DemoAgent import DemoAgent
 from litewebagent.agents.HighLevelPlanningAgent import HighLevelPlanningAgent
 from litewebagent.agents.ContextAwarePlanningAgent import ContextAwarePlanningAgent
-from litewebagent.functions.functions import navigation, upload_file, scan_page_extract_information, take_action
+from litewebagent.functions.functions import navigation, upload_file, scan_page_extract_information, take_action, select_option
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -76,6 +76,25 @@ tools = [
             }
         }
     },
+    {
+            "type": "function",
+            "function": {
+                "name": "select_option",
+                "description": "Select an option from a dropdown or list.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "goal": {
+                            "type": "string",
+                            "description": "The description of the option selection task"
+                        }
+                    },
+                    "required": [
+                        "goal"
+                    ]
+                }
+            }
+        }
 ]
 
 
@@ -86,7 +105,8 @@ def setup_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="De
     available_tools = {
         "navigation": create_function_wrapper(navigation, features),
         "upload_file": create_function_wrapper(upload_file, features),
-        "scan_page_extract_information": scan_page_extract_information,
+        "select_option": create_function_wrapper(select_option, features),
+        # "scan_page_extract_information": scan_page_extract_information,
     }
 
     messages = [
