@@ -5,9 +5,10 @@ Please note that the LiteWebAgent repository is in development mode. We have ope
 ### (1) Installation
 First set up virtual environment
 ```bash
-$ python3 -m venv venv
-$ . venv/bin/activate
-$ pip install -r requirements.txt
+cd litewebagent
+python3 -m venv venv
+. venv/bin/activate
+pip install -r requirements.txt
 ```
 
 Then please create a .env file, and update your API keys:
