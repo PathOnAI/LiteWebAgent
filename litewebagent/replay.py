@@ -98,6 +98,7 @@ def read_steps_json(file_path):
 # Example usage
 starting_url, steps = read_steps_json(file_path)
 page.goto(starting_url)
+page.set_viewport_size({"width": 1440, "height": 900})
 
 
 def find_matching_element(interactive_elements, target):
