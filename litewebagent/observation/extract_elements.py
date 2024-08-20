@@ -128,12 +128,17 @@ def extract_interactive_elements(page):
 def highlight_elements(page, elements):
     js_code = """
     (elements) => {
-        const labels = [];
+        if (!window.litewebagentLabels) {
+            window.litewebagentLabels = [];
+        }
+
         function unmarkPage() {
-            for (const label of labels) {
-                document.body.removeChild(label);
+            for (const label of window.litewebagentLabels) {
+                if (label && label.parentNode) {
+                    label.parentNode.removeChild(label);
+                }
             }
-            labels.length = 0;
+            window.litewebagentLabels.length = 0;
         }
 
         unmarkPage();
@@ -165,11 +170,26 @@ def highlight_elements(page, elements):
                 newElement.appendChild(label);
 
                 document.body.appendChild(newElement);
-                labels.push(newElement);
+                window.litewebagentLabels.push(newElement);
             });
         });
     }
     """
     page.evaluate(js_code, elements)
+
+def remove_highlights(page):
+    js_code = """
+    () => {
+        if (window.litewebagentLabels) {
+            for (const label of window.litewebagentLabels) {
+                if (label && label.parentNode) {
+                    label.parentNode.removeChild(label);
+                }
+            }
+            window.litewebagentLabels.length = 0;
+        }
+    }
+    """
+    page.evaluate(js_code)
 
 

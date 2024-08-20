@@ -9,7 +9,7 @@ from litewebagent.observation.observation import (
     _pre_extract, _post_extract, extract_screenshot, extract_dom_snapshot,
     extract_dom_extra_properties, extract_merged_axtree, extract_focused_element_bid
 )
-from litewebagent.observation.extract_elements import extract_interactive_elements, highlight_elements
+from litewebagent.observation.extract_elements import extract_interactive_elements, highlight_elements, remove_highlights
 from litewebagent.action.highlevel import HighLevelActionSet
 from litewebagent.playwright_manager import get_context, get_page
 from litewebagent.action.base import execute_python_code
@@ -150,6 +150,7 @@ def execute_action(action, action_set, page, context, goal, interactive_elements
         append_to_steps_json(result, file_path)
 
     logger.info("Executing action script")
+    remove_highlights(page)
     execute_python_code(
         code,
         page,

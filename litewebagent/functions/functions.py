@@ -30,6 +30,7 @@ def take_action(goal, agent_type, features=None):
         )
 
         # Extract page information
+        time.sleep(5)
         page_info = extract_page_info(page)
 
         # Prepare messages for AI model
