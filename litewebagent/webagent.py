@@ -135,7 +135,7 @@ def setup_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="De
     page = get_page()
     page.goto(starting_url)
     # Maximize the window on macOS
-    page.set_viewport_size({"width": 1920, "height": 1080})  # Adjust as needed
+    page.set_viewport_size({"width": 1440, "height": 900})
 
     with open(file_path, 'w') as file:
         file.write(starting_url + '\n')
