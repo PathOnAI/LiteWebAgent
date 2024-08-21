@@ -10,7 +10,11 @@ python3 -m venv venv
 . venv/bin/activate
 pip install -r requirements.txt
 ```
-
+then allow your code to be able to see 'litewebagent'
+```
+cd ..
+pip install -e .
+```
 Then please create a .env file, and update your API keys:
 
 ```bash
