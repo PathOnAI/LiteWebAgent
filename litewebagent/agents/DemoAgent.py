@@ -5,6 +5,8 @@ import json
 import logging
 
 logger = logging.getLogger(__name__)
+
+# very basic chain of thought by providing the message list to OpenAI API
 class DemoAgent(BaseAgent):
     def send_completion_request(self, plan: str, depth: int = 0) -> Dict:
         if plan is None and depth == 0:
