@@ -3,9 +3,14 @@ Please note that the LiteWebAgent repository is in development mode. We have ope
 
 ## 2. Development mode
 ### (1) Installation
+From PyPI: https://pypi.org/project/litewebagent/
+```
+pip install litewebagent 
+```
+
+Set up locally
 First set up virtual environment
 ```bash
-cd litewebagent
 python3 -m venv venv
 . venv/bin/activate
 pip install -r requirements.txt

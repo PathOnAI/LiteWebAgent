@@ -1,0 +1,16 @@
+undetected-playwright==0.3.0
+openai==1.42.0
+watchdog==4.0.2
+python-dotenv==1.0.1
+selenium==4.22.0
+webdriver-manager==4.0.1
+gymnasium==0.29.1
+browsergym==0.4.0
+pyparsing==3.1.2
+browsergym-workarena==0.3.1
+litellm==1.42.1
+groq==0.9.0
+flask==3.0.3
+flask-cors==4.0.1
+pytablewriter==1.2.0
+elevenlabs==1.6.1
