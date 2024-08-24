@@ -30,9 +30,9 @@ openai_client = OpenAI()
 DEFAULT_FEATURES = ['screenshot', 'dom', 'axtree', 'focused_element', 'extra_properties', 'interactive_elements']
 
 
-def create_function_wrapper(func, features):
+def create_function_wrapper(func, features, branching_factor):
     def wrapper(task_description):
-        return func(task_description, features)
+        return func(task_description, features, branching_factor)
 
     return wrapper
 
@@ -98,14 +98,15 @@ tools = [
 ]
 
 
-def setup_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="DemoAgent", features=['axtree']):
+def setup_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="DemoAgent", features=['axtree'], branching_factor = None):
     if features is None:
         features = DEFAULT_FEATURES
 
+
     available_tools = {
-        "navigation": create_function_wrapper(navigation, features),
-        "upload_file": create_function_wrapper(upload_file, features),
-        "select_option": create_function_wrapper(select_option, features),
+        "navigation": create_function_wrapper(navigation, features, branching_factor),
+        "upload_file": create_function_wrapper(upload_file, features, branching_factor),
+        "select_option": create_function_wrapper(select_option, features, branching_factor),
         # "scan_page_extract_information": scan_page_extract_information,
     }
 
@@ -168,8 +169,9 @@ def main(args):
 
     # Use the features from command-line arguments
     features = args.features.split(',') if args.features else None
+    branching_factor = args.branching_factor if args.branching_factor else None
 
-    agent = setup_web_agent(starting_url, goal, model_name=args.model, agent_type=args.agent_type, features=features)
+    agent = setup_web_agent(starting_url, goal, model_name=args.model, agent_type=args.agent_type, features=features, branching_factor = branching_factor)
     response = agent.send_prompt(plan)
     print(response)
 
@@ -185,5 +187,6 @@ if __name__ == "__main__":
                         help="Index of the workflow to use from the JSON file (default: 5)")
     parser.add_argument('--features', type=str, default="axtree",
                         help="Comma-separated list of features to use (default: None, which uses all features)")
+    parser.add_argument('--branching_factor', type=int, default=None)
     args = parser.parse_args()
     main(args)

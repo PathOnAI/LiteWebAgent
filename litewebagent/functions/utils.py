@@ -114,7 +114,7 @@ def extract_page_info(page):
     return page_info
 
 
-def query_openai_model(system_msg, prompt, screenshot_path):
+def query_openai_model(system_msg, prompt, screenshot_path, num_outputs):
     base64_image = encode_image(screenshot_path)
     response = openai_client.chat.completions.create(
         model="gpt-4o",
@@ -132,8 +132,13 @@ def query_openai_model(system_msg, prompt, screenshot_path):
              ]
              },
         ],
+        n=num_outputs
     )
-    return response.choices[0].message.content
+    if num_outputs > 1:
+        answer: list[str] = [x.message.content for x in response.choices]
+    else:
+        answer: list[str] = [response.choices[0].message.content]
+    return answer
 
 
 def execute_action(action, action_set, page, context, task_description, interactive_elements):
