@@ -11,7 +11,6 @@ from litewebagent.observation.observation import (
 )
 from litewebagent.observation.extract_elements import extract_interactive_elements, highlight_elements, remove_highlights
 from litewebagent.action.highlevel import HighLevelActionSet
-from litewebagent.playwright_manager import get_context, get_page
 from litewebagent.action.base import execute_python_code
 from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str
 

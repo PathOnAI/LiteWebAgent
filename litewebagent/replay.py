@@ -34,7 +34,7 @@ openai_client = OpenAI()
 import argparse
 from litewebagent.action.highlevel import HighLevelActionSet
 from litewebagent.playwright_manager import PlaywrightManager
-from litewebagent.playwright_manager import get_browser, get_context, get_page, playwright_manager, close_playwright
+#from litewebagent.playwright_manager import get_browser, get_context, get_page, playwright_manager, close_playwright
 from litewebagent.action.base import execute_python_code
 
 from playwright.sync_api import sync_playwright
@@ -43,8 +43,8 @@ import time
 import inspect
 from bs4 import BeautifulSoup
 import logging
-from litewebagent.agents.DemoAgent import DemoAgent
-from litewebagent.agents.HighLevelPlanningAgent import HighLevelPlanningAgent
+# from litewebagent.agents.DemoAgent import DemoAgent
+# from litewebagent.agents.HighLevelPlanningAgent import HighLevelPlanningAgent
 
 logging.basicConfig(
     level=logging.INFO,
@@ -61,12 +61,7 @@ logger = logging.getLogger(__name__)
 
 import base64
 
-browser = get_browser()
-context = get_context()
-page = get_page()
-playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
 
-file_path = os.path.join('litewebagent', 'flow', 'steps.json')
 
 
 def read_steps_json(file_path):
@@ -99,10 +94,7 @@ def read_steps_json(file_path):
     return goal, starting_url, steps
 
 
-# Example usage
-goal, starting_url, steps = read_steps_json(file_path)
-page.goto(starting_url)
-page.set_viewport_size({"width": 1440, "height": 900})
+
 
 
 def find_matching_element(interactive_elements, target):
@@ -131,11 +123,11 @@ def replace_number(text, new_number):
     return re.sub(r'\d+', str(new_number), text)
 
 
-def take_action(step):
+def take_action(step, playwright_manager, is_replay=True):
     # Setup
     time.sleep(5)
-    context = get_context()
-    page = get_page()
+    context = playwright_manager.get_context()
+    page = playwright_manager.get_page()
     action_set = HighLevelActionSet(
         subsets=["bid", "nav"],
         strict=False,
@@ -164,29 +156,49 @@ def take_action(step):
     print(element)
     print(step["action"])
     print(element['bid'])
-    task_description = step["task_description"]
     action = replace_number(step["action"], element['bid'])
     print(action)
-    audio = elevenlabs_client.generate(
-        text=action,
-        voice="Rachel",
-        model="eleven_multilingual_v2"
-    )
-    # play(audio)
+    # import pdb; pdb.set_trace()
     code, function_calls = action_set.to_python_code(action)
     logger.info("Executing action script")
-    from concurrent.futures import ThreadPoolExecutor, as_completed
-    from threading import Event
+    if is_replay:
+        audio = elevenlabs_client.generate(
+            text=action,
+            voice="Rachel",
+            model="eleven_multilingual_v2"
+        )
+        # play(audio)
 
-    audio_finished = Event()
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        from threading import Event
 
-    def play_audio():
-        play(audio)
-        audio_finished.set()
+        audio_finished = Event()
 
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        audio_future = executor.submit(play_audio)
+        def play_audio():
+            play(audio)
+            audio_finished.set()
 
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            audio_future = executor.submit(play_audio)
+
+            # Execute code in the main thread
+            execute_python_code(
+                code,
+                page,
+                context,
+                send_message_to_user=None,
+                report_infeasible_instructions=None,
+            )
+
+            # Wait for audio to finish if it hasn't already
+            audio_finished.wait()
+
+        # Check for any exceptions in the audio thread
+        try:
+            audio_future.result()
+        except Exception as e:
+            logger.error(f"An error occurred during audio playback: {str(e)}")
+    else:
         # Execute code in the main thread
         execute_python_code(
             code,
@@ -196,73 +208,79 @@ def take_action(step):
             report_infeasible_instructions=None,
         )
 
-        # Wait for audio to finish if it hasn't already
-        audio_finished.wait()
+    if is_replay:
+        task_description = step["task_description"]
+        page = playwright_manager.get_page()
+        print(page.url)
+        screenshot_path_post = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_post.png')
+        time.sleep(3)
+        page.screenshot(path=screenshot_path_post)
+        base64_image = encode_image(screenshot_path_post)
+        # import pdb; pdb.set_trace()
+        prompt = f"""
+                    After we take action {action}, a screenshot was captured.
+    
+                    # Screenshot description:
+                    The image provided is a screenshot of the application state after the action was performed.
+    
+                    # The original goal:
+                    {task_description}
+    
+                    Based on the screenshot and the updated Accessibility Tree, is the goal finished now? Provide an answer and explanation, referring to visual elements from the screenshot if relevant.
+                    """
 
-    # Check for any exceptions in the audio thread
-    try:
-        audio_future.result()
-    except Exception as e:
-        logger.error(f"An error occurred during audio playback: {str(e)}")
+        # Query OpenAI model
+        response = openai_client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "user",
+                 "content": [
+                     {"type": "text", "text": prompt},
+                     {"type": "image_url",
+                      "image_url": {
+                          "url": f"data:image/jpeg;base64,{base64_image}",
+                          "detail": "high"
+                      }
+                      }
+                 ]
+                 },
+            ],
+        )
 
-    page = get_page()
-    print(page.url)
-    screenshot_path_post = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_post.png')
-    time.sleep(3)
-    page.screenshot(path=screenshot_path_post)
-    base64_image = encode_image(screenshot_path_post)
-    # import pdb; pdb.set_trace()
-    prompt = f"""
-                After we take action {action}, a screenshot was captured.
+        feedback = response.choices[0].message.content
+        return action, feedback
+    else:
+        return action, None
 
-                # Screenshot description:
-                The image provided is a screenshot of the application state after the action was performed.
+if __name__ == "__main__":
+    # Example usage
+    playwright_manager = PlaywrightManager(storage_state=None)
+    browser = playwright_manager.get_browser()
+    context = playwright_manager.get_context()
+    page = playwright_manager.get_page()
+    playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
 
-                # The original goal:
-                {task_description}
-
-                Based on the screenshot and the updated Accessibility Tree, is the goal finished now? Provide an answer and explanation, referring to visual elements from the screenshot if relevant.
-                """
-
-    # Query OpenAI model
-    response = openai_client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "user",
-             "content": [
-                 {"type": "text", "text": prompt},
-                 {"type": "image_url",
-                  "image_url": {
-                      "url": f"data:image/jpeg;base64,{base64_image}",
-                      "detail": "high"
-                  }
-                  }
-             ]
-             },
-        ],
+    file_path = os.path.join('litewebagent', 'flow', 'steps.json')
+    goal, starting_url, steps = read_steps_json(file_path)
+    page.goto(starting_url)
+    page.set_viewport_size({"width": 1440, "height": 900})
+    messages = [{"role": "system",
+                 "content": "You are a smart web search agent to perform search and click task, upload files for customers"}]
+    for i, step in enumerate(steps, 1):
+        print(f"Step {i}:")
+        print(json.dumps(step))
+        task_description = step["task_description"]
+        action, feedback = take_action(step, playwright_manager)
+        content = "The task_description is: {}, the action is: {} and the feedback is: {}".format(task_description, action, feedback)
+        messages.append({"role": "assistant", "content": content})
+    messages.append({"role": "user", "content": "summarize the status of the task, be concise"})
+    response = openai_client.chat.completions.create(model="gpt-4o", messages=messages)
+    summary = response.choices[0].message.content
+    playwright_manager.close()
+    print(summary)
+    audio = elevenlabs_client.generate(
+        text=summary,
+        voice="Rachel",
+        model="eleven_multilingual_v2"
     )
-
-    feedback = response.choices[0].message.content
-    return action, feedback
-
-
-messages = [{"role": "system",
-             "content": "You are a smart web search agent to perform search and click task, upload files for customers"}]
-for i, step in enumerate(steps, 1):
-    print(f"Step {i}:")
-    print(json.dumps(step))
-    task_description = step["task_description"]
-    action, feedback = take_action(step)
-    content = "The task_description is: {}, the action is: {} and the feedback is: {}".format(task_description, action, feedback)
-    messages.append({"role": "assistant", "content": content})
-messages.append({"role": "user", "content": "summarize the status of the task, be concise"})
-response = openai_client.chat.completions.create(model="gpt-4o", messages=messages)
-summary = response.choices[0].message.content
-close_playwright()
-print(summary)
-audio = elevenlabs_client.generate(
-    text=summary,
-    voice="Rachel",
-    model="eleven_multilingual_v2"
-)
-play(audio)
+    play(audio)
