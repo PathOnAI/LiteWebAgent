@@ -134,10 +134,8 @@ def query_openai_model(system_msg, prompt, screenshot_path, num_outputs):
         ],
         n=num_outputs
     )
-    if num_outputs > 1:
-        answer: list[str] = [x.message.content for x in response.choices]
-    else:
-        answer: list[str] = [response.choices[0].message.content]
+
+    answer: list[str] = [x.message.content for x in response.choices]
     return answer
 
 
