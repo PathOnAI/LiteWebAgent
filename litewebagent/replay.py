@@ -70,17 +70,21 @@ file_path = os.path.join('litewebagent', 'flow', 'steps.json')
 
 
 def read_steps_json(file_path):
+    goal = None
     starting_url = None
     steps = []
 
     # Ensure the file exists
     if not os.path.exists(file_path):
         print(f"File not found: {file_path}")
-        return starting_url, steps
+        return goal, starting_url, steps
 
     with open(file_path, 'r') as file:
         for i, line in enumerate(file):
             if i == 0:
+                # First line is the starting_url (plain string)
+                goal = line.strip()
+            if i == 1:
                 # First line is the starting_url (plain string)
                 starting_url = line.strip()
             else:
@@ -92,11 +96,11 @@ def read_steps_json(file_path):
                     print(f"Error decoding JSON on line {i + 1}: {line}")
                     print(f"Error message: {str(e)}")
 
-    return starting_url, steps
+    return goal, starting_url, steps
 
 
 # Example usage
-starting_url, steps = read_steps_json(file_path)
+goal, starting_url, steps = read_steps_json(file_path)
 page.goto(starting_url)
 page.set_viewport_size({"width": 1440, "height": 900})
 
@@ -160,7 +164,7 @@ def take_action(step):
     print(element)
     print(step["action"])
     print(element['bid'])
-    goal = step["goal"]
+    task_description = step["task_description"]
     action = replace_number(step["action"], element['bid'])
     print(action)
     audio = elevenlabs_client.generate(
@@ -215,7 +219,7 @@ def take_action(step):
                 The image provided is a screenshot of the application state after the action was performed.
 
                 # The original goal:
-                {goal}
+                {task_description}
 
                 Based on the screenshot and the updated Accessibility Tree, is the goal finished now? Provide an answer and explanation, referring to visual elements from the screenshot if relevant.
                 """
@@ -247,9 +251,9 @@ messages = [{"role": "system",
 for i, step in enumerate(steps, 1):
     print(f"Step {i}:")
     print(json.dumps(step))
-    goal = step["goal"]
+    task_description = step["task_description"]
     action, feedback = take_action(step)
-    content = "The goal is: {}, the action is: {} and the feedback is: {}".format(goal, action, feedback)
+    content = "The task_description is: {}, the action is: {} and the feedback is: {}".format(task_description, action, feedback)
     messages.append({"role": "assistant", "content": content})
 messages.append({"role": "user", "content": "summarize the status of the task, be concise"})
 response = openai_client.chat.completions.create(model="gpt-4o", messages=messages)

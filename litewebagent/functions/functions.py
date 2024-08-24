@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 openai_client = OpenAI()
 
 
-def take_action(goal, agent_type, features=None):
+def take_action(task_description, agent_type, features=None):
     try:
         context = get_context()
         page = get_page()
@@ -42,7 +42,7 @@ def take_action(goal, agent_type, features=None):
 
         Provide ONLY ONE action. Do not suggest multiple actions or a sequence of actions.
         # Goal:
-        {goal}"""
+        {task_description}"""
         prompt = prepare_prompt(page_info, action_set, features)
 
         # Query OpenAI model
@@ -50,14 +50,14 @@ def take_action(goal, agent_type, features=None):
 
         # Execute the action
         try:
-            execute_action(action, action_set, page, context, goal, page_info['interactive_elements'])
+            execute_action(action, action_set, page, context, task_description, page_info['interactive_elements'])
         except Exception as e:
             last_action_error = f"{type(e).__name__}: {str(e)}"
             logger.error(f"Action execution failed: {last_action_error}")
             return f"Task failed with action error: {last_action_error}"
 
         # Capture post-action feedback
-        feedback = capture_post_action_feedback(page, action, goal)
+        feedback = capture_post_action_feedback(page, action, task_description)
 
         return f"The action is: {action} - the result is: {feedback}"
 
@@ -67,17 +67,17 @@ def take_action(goal, agent_type, features=None):
         return f"Task failed: {error_msg}"
 
 
-def navigation(goal, features=None):
-    response = take_action(goal, ["bid", "nav"], features)
+def navigation(task_description, features=None):
+    response = take_action(task_description, ["bid", "nav"], features)
     return response
 
 
-def upload_file(goal, features=None):
-    response = take_action(goal, ["file"], features)
+def upload_file(task_description, features=None):
+    response = take_action(task_description, ["file"], features)
     return response
 
-def select_option(goal, features=None):
-    response = take_action(goal, ["select_option"], features)
+def select_option(task_description, features=None):
+    response = take_action(task_description, ["select_option"], features)
     return response
 
 
