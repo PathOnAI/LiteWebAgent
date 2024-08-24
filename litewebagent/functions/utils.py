@@ -136,7 +136,7 @@ def query_openai_model(system_msg, prompt, screenshot_path):
     return response.choices[0].message.content
 
 
-def execute_action(action, action_set, page, context, goal, interactive_elements):
+def execute_action(action, action_set, page, context, task_description, interactive_elements):
     code, function_calls = action_set.to_python_code(action)
     for function_name, function_args in function_calls:
         print(function_name, function_args)
@@ -145,7 +145,7 @@ def execute_action(action, action_set, page, context, goal, interactive_elements
         print(result)
         result['action'] = action
         result["url"] = page.url
-        result['goal'] = goal
+        result['task_description'] = task_description
         file_path = os.path.join('litewebagent', 'flow', 'steps.json')
         append_to_steps_json(result, file_path)
 

@@ -31,8 +31,8 @@ DEFAULT_FEATURES = ['screenshot', 'dom', 'axtree', 'focused_element', 'extra_pro
 
 
 def create_function_wrapper(func, features):
-    def wrapper(goal):
-        return func(goal, features)
+    def wrapper(task_description):
+        return func(task_description, features)
 
     return wrapper
 
@@ -46,13 +46,13 @@ tools = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "goal": {
+                    "task_description": {
                         "type": "string",
                         "description": "The description of the web navigation task"
                     },
                 },
                 "required": [
-                    "goal",
+                    "task_description",
                 ]
             }
         }
@@ -65,13 +65,13 @@ tools = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "goal": {
+                    "task_description": {
                         "type": "string",
                         "description": "The description of the web navigation task"
                     },
                 },
                 "required": [
-                    "goal",
+                    "task_description",
                 ]
             }
         }
@@ -84,13 +84,13 @@ tools = [
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "goal": {
+                        "task_description": {
                             "type": "string",
                             "description": "The description of the option selection task"
                         }
                     },
                     "required": [
-                        "goal"
+                        "task_description"
                     ]
                 }
             }
@@ -138,6 +138,7 @@ def setup_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="De
     page.set_viewport_size({"width": 1440, "height": 900})
 
     with open(file_path, 'w') as file:
+        file.write(goal + '\n')
         file.write(starting_url + '\n')
 
     if agent_type == "DemoAgent":
