@@ -30,8 +30,9 @@ def main(args):
     playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
     # Use the features from command-line arguments
     features = args.features.split(',') if args.features else None
+    branching_factor = args.branching_factor if args.branching_factor else None
 
-    agent = setup_web_agent(args.starting_url, args.goal, model_name=args.model, agent_type=args.agent_type, features=features)
+    agent = setup_web_agent(args.starting_url, args.goal, model_name=args.model, agent_type=args.agent_type, features=features, branching_factor=branching_factor)
     response = agent.send_prompt(args.plan)
     print(response)
     print(agent.messages)
@@ -51,5 +52,6 @@ if __name__ == "__main__":
                         help="Goal for the web automation task")
     parser.add_argument('--features', type=str, default="axtree",
                         help="Comma-separated list of features to use (default: None, which uses all features)")
+    parser.add_argument('--branching_factor', type=int, default=None)
     args = parser.parse_args()
     main(args)
