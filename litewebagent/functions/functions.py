@@ -9,10 +9,9 @@ from litewebagent.observation.observation import (
 )
 from litewebagent.observation.extract_elements import extract_interactive_elements, highlight_elements
 from litewebagent.action.highlevel import HighLevelActionSet
-from litewebagent.playwright_manager import get_context, get_page
 from litewebagent.action.base import execute_python_code
 from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str
-from .utils import *
+from litewebagent.functions.utils import *
 
 logger = logging.getLogger(__name__)
 openai_client = OpenAI()
@@ -109,10 +108,10 @@ def get_action_probability(responses, branching_factor):
     print(updated_actions)
     return updated_actions
 
-def take_action(task_description, agent_type, features=None, branching_factor=None):
+def take_action(task_description, agent_type, features=None, branching_factor=None, playwright_manager=None):
     try:
-        context = get_context()
-        page = get_page()
+        context = playwright_manager.get_context()
+        page = playwright_manager.get_page()
         action_set = HighLevelActionSet(
             subsets=agent_type,
             strict=False,
@@ -163,52 +162,16 @@ def take_action(task_description, agent_type, features=None, branching_factor=No
         return f"Task failed: {error_msg}"
 
 
-def navigation(task_description, features=None, branching_factor=None):
-    response = take_action(task_description, ["bid", "nav"], features, branching_factor)
+def navigation(task_description, features=None, branching_factor=None, playwright_manager= None):
+    response = take_action(task_description, ["bid", "nav"], features, branching_factor, playwright_manager)
     return response
 
 
-def upload_file(task_description, features=None, branching_factor=None):
-    response = take_action(task_description, ["file"], features, branching_factor)
+def upload_file(task_description, features=None, branching_factor=None, playwright_manager=None):
+    response = take_action(task_description, ["file"], features, branching_factor, playwright_manager)
     return response
 
 
-def select_option(task_description, features=None, branching_factor=None):
-    response = take_action(task_description, ["select_option"], features, branching_factor)
+def select_option(task_description, features=None, branching_factor=None, playwright_manager=None):
+    response = take_action(task_description, ["select_option"], features, branching_factor, playwright_manager)
     return response
-
-
-def scan_page_extract_information(instruction):
-    page = get_page()
-    time.sleep(2)
-    page.screenshot(path='./playground/gpt4v/screenshot.png', full_page=True)
-    html_content = page.content()
-    main_content = page.evaluate('''() => {
-        // ... (keep the existing JavaScript code for extracting main content)
-    }''')
-    with open('./playground/gpt4v/main_content.html', 'w') as f:
-        f.write(main_content)
-
-    image_path = './playground/gpt4v/screenshot.png'
-    image_data_url = local_image_to_data_url(image_path)
-
-    response = openai_client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": instruction},
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": image_data_url
-                        }
-                    },
-                ]
-            }
-        ]
-    )
-
-    content = response.choices[0].message.content
-    return f"Scanned the page content according to your instruction {instruction}. Here's the answer:\n\n{content}"
