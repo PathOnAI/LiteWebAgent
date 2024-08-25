@@ -19,7 +19,7 @@ class PlaywrightManager:
         with self.lock:
             if self.playwright is None:
                 self.playwright = sync_playwright().start()
-                self.browser = self.playwright.chromium.launch(headless=False)
+                self.browser = self.playwright.chromium.launch(executable_path=r'C:\Users\aksha\AppData\Local\ms-playwright\chromium-1076\chrome-win\chrome.exe',headless=False)
 
                 context_options = {
                     "record_video_dir": self.video_dir,
