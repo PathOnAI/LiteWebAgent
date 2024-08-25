@@ -2,6 +2,7 @@ from litewebagent.playwright_manager import PlaywrightManager
 from litewebagent.playwright_manager import get_browser, get_context, get_page, playwright_manager
 from dotenv import load_dotenv
 import argparse
+import json
 import playwright
 _ = load_dotenv()
 import time
@@ -21,9 +22,6 @@ logger = logging.getLogger(__name__)
 from litewebagent.webagent import setup_web_agent
 
 def main(args):
-    # litewebagent/playground/workflow_generation
-    import json
-
     browser = get_browser()
     context = get_context()
     page = playwright_manager.get_page()

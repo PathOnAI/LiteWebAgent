@@ -10,7 +10,10 @@ From PyPI: https://pypi.org/project/litewebagent/
 ```
 pip install litewebagent 
 ```
-
+Then, a required step is to setup playwright by running
+```
+playwright install chromium
+```
 Set up locally
 First set up virtual environment, and allow your code to be able to see 'litewebagent'
 ```bash

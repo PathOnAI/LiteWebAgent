@@ -64,7 +64,7 @@ class PlaywrightManager:
 
 
 # Initialize the PlaywrightManager with the storage state and video directory
-playwright_manager = PlaywrightManager(storage_state='litewebagent/playground/state.json', video_dir='./litewebagent/videos')
+playwright_manager = PlaywrightManager(storage_state=None, video_dir='./litewebagent/videos')
 
 
 def get_browser():
