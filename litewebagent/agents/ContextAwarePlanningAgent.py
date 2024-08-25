@@ -8,7 +8,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import threading
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
-from ..playwright_manager import PlaywrightManager, get_browser, get_context, get_page, playwright_manager
+from ..playwright_manager import PlaywrightManager
 import os
 import time
 from litewebagent.observation.observation import (
@@ -60,8 +60,8 @@ class ContextAwarePlanningAgent(BaseAgent):
                 goal_finished: bool
 
             # TODO: adapt prompt
-            context = get_context()
-            page = get_page()
+            context = self.playwright_manager.get_context()
+            page = self.playwright_manager.get_page()
             time.sleep(3)
             _pre_extract(page)
             dom = extract_dom_snapshot(page)
