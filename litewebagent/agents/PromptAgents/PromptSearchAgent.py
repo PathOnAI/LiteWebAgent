@@ -69,7 +69,7 @@ class PromptSearchAgent:
 
         page = self.playwright_manager.get_page()
         self.playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
-        starting_url = "https://www.google.com"
+        starting_url = "https://www.airbnb.com"
         page.goto(starting_url)
 
         try:
@@ -82,6 +82,7 @@ class PromptSearchAgent:
 
 
         time.sleep(3)
+        page = self.playwright_manager.get_page()
         page_info = extract_page_info(page)
         base64_image = encode_image(page_info['screenshot'])
         branching_factor = 2
@@ -108,9 +109,13 @@ class PromptSearchAgent:
         while queue:
             trajectory, depth = queue.popleft()  # Dequeue the first element
             goal_finished, next_actions = self.get_next_actions(trajectory)
-            if depth < 3:
-                self.trajectories.append({'goal_finished': goal_finished, 'trajectory': trajectory})
-                if not goal_finished:
+            logger.info('INX')
+            logger.info(trajectory)
+            logger.info(goal_finished)
+            logger.info(next_actions)
+            self.trajectories.append({'goal_finished': goal_finished, 'trajectory': trajectory})
+            if depth < 4:
+                if not goal_finished and next_actions is not None:
                     for action in next_actions:
                         print(action)
                         # Enqueue the new trajectory and increase the depth by 1
