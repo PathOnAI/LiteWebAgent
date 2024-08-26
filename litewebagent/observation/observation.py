@@ -34,6 +34,8 @@ def _pre_extract(page: playwright.sync_api.Page):
     # (can't access the content of an iframe from a another one)
     # In web development, a frame refers to a separate browsing context within a web page. Frames can be created using elements like <iframe> or <frame> (though <frame> is deprecated in HTML5). They allow a page to embed other HTML documents within itself.
     def mark_frames_recursive(frame, frame_bid: str):
+        logger.info(f"Frame data: {frame}")
+        logger.info(f"Child frame data: {frame.child_frames}")
         assert frame_bid == "" or (frame_bid.islower() and frame_bid.isalpha())
 
         # mark all DOM elements in the frame (it will use the parent frame element's bid as a prefix)
