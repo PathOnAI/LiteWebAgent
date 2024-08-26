@@ -1,4 +1,28 @@
 # TODO
+* TODO
+  * add debugger in the highlighted elements function
+  * add debugger in the axtree function
+  * add debugger in the take action function
+* findings
+  * first time couldn't load child frames
+  * second time, couldn't show highlighted elements or just show highlighted elements on the modal
+    * and is able to click on got it button
+  * when the modal is closed, and we want to click on the 2nd element, the highlighted elements show up
+    * but the number might not be correct?? since web agent cannot click on the element
+```
+[{'action': "In order to accomplish my goal, I need to click on the second search result.\n\n```click('5240')```", 'prob': 1.0}]
+click ['5240']
+
+["To achieve the goal of clicking on the 2nd result in the list of search results, the appropriate action is to click on the link with bid '5235' for the second hotel listing.\n\n```click('5235')```", "In order to accomplish my goal, I need to click on the second search result with bid 5235.\n\n```click('5235')```", "In order to accomplish my goal, I need to click on the second result in the list of search results by verifying its accessibility. \n\n```click('5107')```", "In order to accomplish my goal, I will click on the link with bid `5235` which is the 2nd result in the list of search results.\n\n```click('5235')```", "In order to accomplish my goal, I need to click on the 2nd search result's link with bid 5235.\n\n```click('5235')```", "To accomplish the goal, the next action should be to click on the second search result link.\n\n```click('5235')```", "```click('5235')```", "To accomplish my goal, I need to click on the link corresponding to the second result in the search results list in the accessibility tree.\n\n```click('5235')```", "In order to accomplish my goal, I need to click on the second search result in the list. The second result corresponds to the element with bid 5235.\n\n```click('5235')```", "In order to accomplish my goal, I need to click on the link with bid 5235.\n\n```click('5235')```", "In order to accomplish my goal, I need to click on the second search result.\n\n```click('5235')```", "```click('5235')```", "To accomplish the goal of clicking on the second result in the list of search results, I need to interact with the link having bid `5235`.\n\n```click('5235')```", "```click('5235')```", "In order to accomplish my goal I need to click on the second result in the list of search results:\n```click('5235')```", "In order to accomplish the goal of clicking on the second result in the list of search results, I will click on the link with bid 5235.\n\n```click('5235')```", "To click on the second result in the list of search results, the button with bid `5235` should be clicked:\n\n```click('5235')```", "To click on the second result in the list of search results, the corresponding bid to be clicked is `5235`.\n\n```click('5235')```", "```click('5235')```", "```click('5235')```"]
+defaultdict(<class 'int'>, {"click('5235')": 19, "click('5107')": 1})
+[{'action': "To achieve the goal of clicking on the 2nd result in the list of search results, the appropriate action is to click on the link with bid '5235' for the second hotel listing.\n\n```click('5235')```", 'prob': 0.95}, {'action': "In order to accomplish my goal, I need to click on the second result in the list of search results by verifying its accessibility. \n\n```click('5107')```", 'prob': 0.05}]
+click ['5235']
+None
+2024-08-26 14:22:21,605 - litewebagent.utils.fc_functions - ERROR - Action execution failed: TypeError: 'NoneType' object does not support item assignment
+```
+
+
+
 ```
 python -m litewebagent.main --agent_type ContextAwarePlanningAgent --starting_url https://www.airbnb.com --goal "fill San Francisco as destination in the search bar, then search the results" --plan "(1) fill the 'San Francisco' as destination in the search bar, (2) and click search"
 
