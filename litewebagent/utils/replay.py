@@ -33,7 +33,7 @@ elevenlabs_client = ElevenLabs(api_key=os.getenv("ELEVEN_API_KEY"))
 openai_client = OpenAI()
 import argparse
 from litewebagent.action.highlevel import HighLevelActionSet
-from litewebagent.playwright_manager import PlaywrightManager
+from litewebagent.utils.playwright_manager import PlaywrightManager
 #from litewebagent.playwright_manager import get_browser, get_context, get_page, playwright_manager, close_playwright
 from litewebagent.action.base import execute_python_code
 
