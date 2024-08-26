@@ -84,6 +84,7 @@ class PromptSearchAgent:
         time.sleep(3)
         page = self.playwright_manager.get_page()
         page_info = extract_page_info(page)
+        # TODO: if child_frame_bid not None: fix python code, airbnb modal page
         base64_image = encode_image(page_info['screenshot'])
         branching_factor = 2
 
@@ -114,7 +115,7 @@ class PromptSearchAgent:
             logger.info(goal_finished)
             logger.info(next_actions)
             self.trajectories.append({'goal_finished': goal_finished, 'trajectory': trajectory})
-            if depth < 4:
+            if depth < 1:
                 if not goal_finished and next_actions is not None:
                     for action in next_actions:
                         print(action)
