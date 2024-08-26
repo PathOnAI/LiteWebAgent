@@ -44,11 +44,6 @@ If you haven't used the web agent to try any tests yet, first copy our example.j
 ```bash
 cp litewebagent/flow/example.json litewebagent/flow/steps.json 
 ```
-Now that we have the steps.json file, which contains the workflow of a specific task, we can replay.
-```bash
-python -m litewebagent.replay
-```
-
 * enable user agent interaction
 
 ```bash
