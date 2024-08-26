@@ -1,5 +1,5 @@
 from litellm import completion
-from .BaseAgent import BaseAgent
+from litewebagent.agents.FunctionCallingAgents.BaseAgent import BaseAgent
 from typing import List, Dict, Any
 import json
 import logging
@@ -16,8 +16,8 @@ from litewebagent.observation.extract_elements import extract_interactive_elemen
 from litewebagent.action.highlevel import HighLevelActionSet
 from litewebagent.action.base import execute_python_code
 from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str
-from litewebagent.functions.functions import build_highlevel_action_parser
-from litewebagent.functions.utils import *
+from litewebagent.utils.functions import build_highlevel_action_parser
+from litewebagent.utils.utils import *
 import ast
 import pyparsing as pp
 from typing import Any
