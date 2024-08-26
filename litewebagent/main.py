@@ -1,4 +1,4 @@
-from litewebagent.playwright_manager import PlaywrightManager
+from litewebagent.utils.playwright_manager import PlaywrightManager
 from dotenv import load_dotenv
 import argparse
 import json
@@ -18,7 +18,7 @@ logging.basicConfig(
 # Create a logger
 logger = logging.getLogger(__name__)
 
-from litewebagent.webagent import setup_web_agent
+from litewebagent.agents.webagent import setup_web_agent
 
 def main(args):
     playwright_manager = PlaywrightManager(storage_state=None, video_dir='./litewebagent/videos')
