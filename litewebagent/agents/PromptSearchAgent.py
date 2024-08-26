@@ -194,5 +194,33 @@ class PromptSearchAgent:
                                 print(f"An error occurred: {e}")  # Provide more detailed error information
 
 
-    def dfs(self, plan):
-        pass
+    def dfs(self, trajectory=[], depth=0):
+        goal_finished, next_actions = self.get_next_actions(trajectory)
+        
+        if depth < 3:
+            self.trajectories.append({'goal_finished': goal_finished, 'trajectory': trajectory})
+            
+            if not goal_finished:
+                for action in next_actions:
+                    page = self.playwright_manager.get_page()
+                    page_info = extract_page_info(page)
+                    code, function_calls = self.action_set.to_python_code(action['action'])
+                    steps = []
+                    
+                    if len(function_calls) == 1:
+                        try:
+                            for function_name, function_args in function_calls:
+                                print(function_name, function_args)
+                                extracted_number = parse_function_args(function_args)
+                                result = search_interactive_elements(page_info["interactive_elements"], extracted_number)
+                                print(result)
+                                result['action'] = action['action']
+                                result["url"] = page.url
+                                steps.append(result)
+                            action['steps'] = steps
+                            
+                            # Recursion
+                            self.dfs(trajectory + [action], depth + 1)
+                            
+                        except Exception as e:
+                            print(f"An error occurred: {e}")  
