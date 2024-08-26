@@ -1,8 +1,7 @@
 import sys
 import json
 import time
-from litewebagent.playwright_manager import PlaywrightManager
-#, get_browser, get_context, get_page, close_playwright, playwright_manager)
+from litewebagent.utils.playwright_manager import PlaywrightManager
 from dotenv import load_dotenv
 import argparse
 _ = load_dotenv()
@@ -19,7 +18,7 @@ logging.basicConfig(
 # Create a logger
 logger = logging.getLogger(__name__)
 
-from litewebagent.webagent import setup_web_agent
+from litewebagent.agents.webagent import setup_web_agent
 
 def progress_indicator():
     chars = '|/-\\'

@@ -1,6 +1,6 @@
 # Reference: https://github.com/OSU-NLP-Group/SeeAct/blob/main/seeact_package/seeact/agent.py#L163
 from litellm import completion
-from .BaseAgent import BaseAgent
+from litewebagent.agents.FunctionCallingAgents.BaseAgent import BaseAgent
 from typing import List, Dict, Any
 import json
 import logging
@@ -8,7 +8,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import threading
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
-from ..playwright_manager import PlaywrightManager
+from litewebagent.utils.playwright_manager import PlaywrightManager
 import os
 import time
 from litewebagent.observation.observation import (
