@@ -4,12 +4,12 @@ import argparse
 import logging
 from dotenv import load_dotenv
 from openai import OpenAI
-from litewebagent.agents.FunctionCallingAgent import FunctionCallingAgent
-from litewebagent.agents.HighLevelPlanningAgent import HighLevelPlanningAgent
-from litewebagent.agents.ContextAwarePlanningAgent import ContextAwarePlanningAgent
-from litewebagent.agents.PromptSearchAgent import PromptSearchAgent
-from litewebagent.agents.PromptAgent import PromptAgent
-from litewebagent.functions.functions import navigation, upload_file, take_action, select_option
+from litewebagent.agents.FunctionCallingAgents.FunctionCallingAgent import FunctionCallingAgent
+from litewebagent.agents.FunctionCallingAgents.HighLevelPlanningAgent import HighLevelPlanningAgent
+from litewebagent.agents.FunctionCallingAgents.ContextAwarePlanningAgent import ContextAwarePlanningAgent
+from litewebagent.agents.PromptAgents.PromptSearchAgent import PromptSearchAgent
+from litewebagent.agents.PromptAgents.PromptAgent import PromptAgent
+from litewebagent.utils.fc_functions import navigation, upload_file, take_action, select_option
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
