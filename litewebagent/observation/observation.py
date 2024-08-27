@@ -62,8 +62,11 @@ def _pre_extract(page: playwright.sync_api.Page):
                 continue
             child_frame_bid = child_frame_elem.get_attribute(BID_ATTR)
             if child_frame_bid is None:
-                raise MarkingError("Cannot mark a child frame without a bid.")
-            mark_frames_recursive(child_frame, frame_bid=child_frame_bid)
+                # raise MarkingError("Cannot mark a child frame without a bid.")
+                # here's a temp fix, TODO: https://github.com/PathOnAI/LiteWebAgent/issues/32
+                logger.info("Cannot mark a child frame without a bid.")
+            else:
+                mark_frames_recursive(child_frame, frame_bid=child_frame_bid)
 
     # mark all frames recursively
     mark_frames_recursive(page.main_frame, frame_bid="")
