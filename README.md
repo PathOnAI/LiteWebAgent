@@ -2,7 +2,7 @@
 Please note that the LiteWebAgent repository is in development mode. We have open-sourced the repository to foster collaboration between contributors.
 
 <a href='https://danqingz.github.io/blog/2024/08/22/LiteWebAgent.html'><img src='https://img.shields.io/badge/BLOG-181717?logo=github&logoColor=white'></a>
-
+<a href='https://litewebagent.readthedocs.io/en/latest/'><img src='https://img.shields.io/badge/Documentation-green'></a>
 
 ## 2. Development mode
 ### (1) Installation
