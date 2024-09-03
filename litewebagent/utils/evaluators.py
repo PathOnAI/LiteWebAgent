@@ -27,3 +27,24 @@ def goal_finished_evaluator(messages, openai_client):
 
     goal_finished = message.goal_finished
     return goal_finished, score
+
+
+def goal_finished_value_function
+
+def early_stop(
+    trajectory: Trajectory, action_set: dict, max_steps: int, score_thresholds: dict[str, int]
+) -> tuple[bool, str]:
+    """Check whether need to stop early"""
+
+    # reach the max step
+    num_steps = (len(trajectory) - 1) / 2
+    if num_steps >= max_steps:
+        return True, f"Reach max steps {max_steps}"
+
+    last_k_actions: list[Action]
+    action_seq: list[Action]
+
+    # Case: parsing failure for k times
+    
+    # Case: same action for k times
+    pass
