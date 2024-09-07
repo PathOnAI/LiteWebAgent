@@ -18,6 +18,7 @@ from litewebagent.action.base import execute_python_code
 from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str
 from litewebagent.utils.utils import build_highlevel_action_parser
 from litewebagent.utils.utils import *
+from litewebagent.utils.evaluators import *
 import ast
 import pyparsing as pp
 from typing import Any
@@ -56,7 +57,7 @@ class PromptSearchAgent:
         self.trajectories = []
 
 
-    def get_next_actions(self, trajectory):
+    def get_next_actions(self, trajectory, finished_score_threhold=0.9):
         print(trajectory)
         print("XXXXXXXXXXXXXXXXXX")
         self.playwright_manager.close()
@@ -92,9 +93,11 @@ class PromptSearchAgent:
             messages.append({"role": "user", "content": 'action is: {}'.format(action)})
 
 
-        goal_finished = is_goal_finished(messages, openai_client)
+        # goal_finished = is_goal_finished(messages, openai_client)
+        goal_finished, score = goal_finished_evaluator(messages, openai_client)
 
-        if goal_finished == False:
+        if goal_finished == False or score < finished_score_threhold:
+            print(f"goal score: {score}")
             updated_actions = extract_top_actions(trajectory, self.goal, page_info, self.action_set, openai_client, branching_factor)
             # Prepare messages for AI model
 
