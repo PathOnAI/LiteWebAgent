@@ -1,6 +1,9 @@
 from pydantic import BaseModel
 import math
 
+class Plan(BaseModel):
+    goal_finished: bool
+
 def parse_oai_logprob(response):
     response_logprob = 0
     try:
@@ -12,10 +15,6 @@ def parse_oai_logprob(response):
 
 
 def goal_finished_evaluator(messages, openai_client):    
-    class Plan(BaseModel):
-        goal_finished: bool
-
-
     new_response = openai_client.beta.chat.completions.parse(
         model='gpt-4o-mini',
         messages=messages,
@@ -29,10 +28,11 @@ def goal_finished_evaluator(messages, openai_client):
     return goal_finished, score
 
 
-def goal_finished_value_function
+# def goal_finished_value_function():
+    # pass
 
 def early_stop(
-    trajectory: Trajectory, action_set: dict, max_steps: int, score_thresholds: dict[str, int]
+    trajectory: list, action_set: dict, max_steps: int, score_thresholds: dict[str, int]
 ) -> tuple[bool, str]:
     """Check whether need to stop early"""
 
