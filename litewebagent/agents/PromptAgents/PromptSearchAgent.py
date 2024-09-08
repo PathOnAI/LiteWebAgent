@@ -33,7 +33,8 @@ openai_client = OpenAI()
 
 class PromptSearchAgent:
     def send_prompt(self, plan: str) -> Dict:
-        self.bfs()
+        # self.bfs()
+        self.dfs()
         # TODO: select best trajectory from all trajectories,
         # TODO: better early stopping
         # TODO: plan VS goal
