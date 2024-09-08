@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 import math
+import re
 
 class Plan(BaseModel):
     goal_finished: bool
@@ -13,6 +14,13 @@ def parse_oai_logprob(response):
     except Exception as e:
         print(f"An error occurred when checking oai logprob: {e}") 
 
+def extract_action(text):
+    match = re.search(r'```(.*?)```', text, re.DOTALL)    
+    if match:
+        extracted_text = match.group(1)
+        return extracted_text # Output: click('249')
+    else:
+        raise Exception("No exact action found.")
 
 def goal_finished_evaluator(messages, openai_client):    
     new_response = openai_client.beta.chat.completions.parse(
@@ -28,8 +36,8 @@ def goal_finished_evaluator(messages, openai_client):
     return goal_finished, score
 
 
-# def goal_finished_value_function():
-    # pass
+def goal_finished_value_function():
+    pass
 
 def early_stop(
     trajectory: list, action_set: dict, max_steps: int, score_thresholds: dict[str, int]
@@ -41,10 +49,13 @@ def early_stop(
     if num_steps >= max_steps:
         return True, f"Reach max steps {max_steps}"
 
-    last_k_actions: list[Action]
-    action_seq: list[Action]
+    last_k_actions = []
+    action_seq = []
 
-    # Case: parsing failure for k times
-    
     # Case: same action for k times
-    pass
+    k = thresholds["repeating_action"]
+    if len(trajectory) >= k:
+        last_k_actions = [extract_action(tra['action']) for tra in trajectory[-k:]]                 
+        last_action = last_k_actions[-1]
+        if (sum([action == last_action for action in last_k_actions]) > k): # not >=k as last_action in last_k_actions as well
+            return True, f"Same typing action for {k} times"
