@@ -58,7 +58,7 @@ class PromptSearchAgent:
 
 
     def get_next_actions(self, trajectory, finished_score_threhold=0.9):
-        print(trajectory)
+        print("trajectory: ", trajectory)
         print("XXXXXXXXXXXXXXXXXX")
         self.playwright_manager.close()
         self.playwright_manager = PlaywrightManager(storage_state=None)
@@ -96,8 +96,8 @@ class PromptSearchAgent:
         # goal_finished = is_goal_finished(messages, openai_client)
         goal_finished, score = goal_finished_evaluator(messages, openai_client)
 
-        if goal_finished == False or score < finished_score_threhold:
-            print(f"goal score: {score}")
+        if goal_finished == False or (goal_finished == True and score < finished_score_threhold):
+            print(f"goal_finished: {str(goal_finished)}, goal score: {score}")
             updated_actions = extract_top_actions(trajectory, self.goal, page_info, self.action_set, openai_client, branching_factor)
             # Prepare messages for AI model
 
@@ -111,7 +111,8 @@ class PromptSearchAgent:
         while queue:
             trajectory, depth = queue.popleft()  # Dequeue the first element
             goal_finished, next_actions = self.get_next_actions(trajectory)
-            if depth < 3:
+            print("XXXXX***** trajectories: ", self.trajectories)
+            if depth < 8:
                 self.trajectories.append({'goal_finished': goal_finished, 'trajectory': trajectory})
                 if not goal_finished:
                     for action in next_actions:
