@@ -58,8 +58,7 @@ class PromptSearchAgent:
         self.trajectories = []
 
 
-    def get_next_actions(self, trajectory, finished_score_threhold=0.9):
-        print("trajectory: ", trajectory)
+    def get_next_actions(self, trajectory, finished_score_threhold=0.9):        
         print("XXXXXXXXXXXXXXXXXX")
         self.playwright_manager.close()
         self.playwright_manager = PlaywrightManager(storage_state=None)
@@ -112,7 +111,6 @@ class PromptSearchAgent:
         while queue:
             trajectory, depth = queue.popleft()  # Dequeue the first element
             goal_finished, next_actions = self.get_next_actions(trajectory)
-            print("XXXXX***** trajectories: ", self.trajectories)
             if depth < 8:
                 self.trajectories.append({'goal_finished': goal_finished, 'trajectory': trajectory})
                 if not goal_finished:
@@ -146,7 +144,7 @@ class PromptSearchAgent:
 
     def dfs(self, trajectory=[], depth=0):
         goal_finished, next_actions = self.get_next_actions(trajectory)
-        
+        # print("XXXXX***** trajectories: ", self.trajectories)
         if depth < 3:
             self.trajectories.append({'goal_finished': goal_finished, 'trajectory': trajectory})
             
