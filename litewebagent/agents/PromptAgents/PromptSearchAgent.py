@@ -111,7 +111,7 @@ class PromptSearchAgent:
         while queue:
             trajectory, depth = queue.popleft()  # Dequeue the first element
             goal_finished, next_actions = self.get_next_actions(trajectory)
-            if depth < 8:
+            if depth < 3:
                 self.trajectories.append({'goal_finished': goal_finished, 'trajectory': trajectory})
                 if not goal_finished:
                     for action in next_actions:
