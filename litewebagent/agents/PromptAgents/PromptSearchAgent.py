@@ -18,6 +18,7 @@ from litewebagent.action.base import execute_python_code
 from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str
 from litewebagent.utils.utils import build_highlevel_action_parser
 from litewebagent.utils.utils import *
+from litewebagent.utils.evaluators import *
 import ast
 import pyparsing as pp
 from typing import Any
@@ -32,7 +33,8 @@ openai_client = OpenAI()
 
 class PromptSearchAgent:
     def send_prompt(self, plan: str) -> Dict:
-        self.bfs()
+        # self.bfs()
+        self.dfs()
         # TODO: select best trajectory from all trajectories,
         # TODO: better early stopping
         # TODO: plan VS goal
@@ -56,8 +58,7 @@ class PromptSearchAgent:
         self.trajectories = []
 
 
-    def get_next_actions(self, trajectory):
-        print(trajectory)
+    def get_next_actions(self, trajectory, finished_score_threhold=0.9):        
         print("XXXXXXXXXXXXXXXXXX")
         self.playwright_manager.close()
         self.playwright_manager = PlaywrightManager(storage_state=None)
@@ -92,9 +93,11 @@ class PromptSearchAgent:
             messages.append({"role": "user", "content": 'action is: {}'.format(action)})
 
 
-        goal_finished = is_goal_finished(messages, openai_client)
+        # goal_finished = is_goal_finished(messages, openai_client)
+        goal_finished, score = goal_finished_evaluator(messages, openai_client)
 
-        if goal_finished == False:
+        if goal_finished == False or (goal_finished == True and score < finished_score_threhold):
+            print(f"goal_finished: {str(goal_finished)}, goal score: {score}")
             updated_actions = extract_top_actions(trajectory, self.goal, page_info, self.action_set, openai_client, branching_factor)
             # Prepare messages for AI model
 
@@ -139,5 +142,33 @@ class PromptSearchAgent:
                                 print(f"An error occurred: {e}")  # Provide more detailed error information
 
 
-    def dfs(self, plan):
-        pass
+    def dfs(self, trajectory=[], depth=0):
+        goal_finished, next_actions = self.get_next_actions(trajectory)
+        # print("XXXXX***** trajectories: ", self.trajectories)
+        if depth < 3:
+            self.trajectories.append({'goal_finished': goal_finished, 'trajectory': trajectory})
+            
+            if not goal_finished:
+                for action in next_actions:
+                    page = self.playwright_manager.get_page()
+                    page_info = extract_page_info(page)
+                    code, function_calls = self.action_set.to_python_code(action['action'])
+                    steps = []
+                    
+                    if len(function_calls) == 1:
+                        try:
+                            for function_name, function_args in function_calls:
+                                print(function_name, function_args)
+                                extracted_number = parse_function_args(function_args)
+                                result = search_interactive_elements(page_info["interactive_elements"], extracted_number)
+                                print(result)
+                                result['action'] = action['action']
+                                result["url"] = page.url
+                                steps.append(result)
+                            action['steps'] = steps
+                            
+                            # Recursion
+                            self.dfs(trajectory + [action], depth + 1)
+                            
+                        except Exception as e:
+                            print(f"An error occurred: {e}")  
