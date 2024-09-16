@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 from litewebagent.agents.webagent import setup_web_agent
 
 def main(args):
-    playwright_manager = PlaywrightManager(storage_state=None, video_dir='./litewebagent/videos')
+    playwright_manager = PlaywrightManager(storage_state='state.json', video_dir='./litewebagent/videos')
     browser = playwright_manager.get_browser()
     context = playwright_manager.get_context()
     page = playwright_manager.get_page()
