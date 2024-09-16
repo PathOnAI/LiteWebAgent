@@ -65,7 +65,6 @@ class PromptSearchAgent:
         self.playwright_manager.initialize()
         browser = self.playwright_manager.get_browser()
         context = self.playwright_manager.get_context()
-        context = self.playwright_manager.get_context()
         page = self.playwright_manager.get_page()
 
         page = self.playwright_manager.get_page()
