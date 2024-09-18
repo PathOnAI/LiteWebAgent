@@ -281,7 +281,8 @@ def search_interactive_elements(interactive_elements, extracted_number):
                 'tag': element.get('tag'),
                 'id': element.get('id'),
                 'href': element.get('href'),
-                'title': element.get('title')
+                'title': element.get('title'),
+                'ariaLabel': element.get('ariaLabel')
             }
     return None  # Return None if no matching element is found
 
