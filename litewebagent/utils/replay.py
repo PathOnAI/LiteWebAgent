@@ -148,7 +148,7 @@ def take_action(step, playwright_manager, is_replay=True):
     axtree_txt = flatten_axtree_to_str(axtree)
     interactive_elements = extract_interactive_elements(page)
     # highlight_elements(page, interactive_elements)
-    screenshot_path_pre = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_pre.png')
+    screenshot_path_pre = os.path.join(os.getcwd(), 'log', 'screenshots', 'screenshot_pre.png')
     page.screenshot(path=screenshot_path_pre)
     _post_extract(page)
     url = page.url
@@ -212,7 +212,7 @@ def take_action(step, playwright_manager, is_replay=True):
         task_description = step["task_description"]
         page = playwright_manager.get_page()
         print(page.url)
-        screenshot_path_post = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_post.png')
+        screenshot_path_post = os.path.join(os.getcwd(), 'log', 'screenshots', 'screenshot_post.png')
         time.sleep(3)
         page.screenshot(path=screenshot_path_post)
         base64_image = encode_image(screenshot_path_post)
@@ -260,7 +260,7 @@ if __name__ == "__main__":
     page = playwright_manager.get_page()
     playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
 
-    file_path = os.path.join('litewebagent', 'flow', 'steps.json')
+    file_path = os.path.join('log', 'flow', 'steps.json')
     goal, starting_url, steps = read_steps_json(file_path)
     page.goto(starting_url)
     page.set_viewport_size({"width": 1440, "height": 900})

@@ -3,7 +3,7 @@ import os
 import threading
 
 class PlaywrightManager:
-    def __init__(self, storage_state=None, video_dir='./litewebagent/videos'):
+    def __init__(self, storage_state=None, video_dir='./log/videos'):
         self.playwright = None
         self.browser = None
         self.context = None
