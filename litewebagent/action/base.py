@@ -3,35 +3,6 @@ import playwright.sync_api
 from abc import ABC, abstractmethod
 
 
-class AbstractActionSet(ABC):
-    def __init__(self, strict: bool = False):
-        self.strict = strict
-
-    @abstractmethod
-    def describe(self, with_long_description: bool = True, with_examples: bool = True) -> str:
-        """
-        Returns a textual description of this action space.
-        """
-
-    @abstractmethod
-    def example_action(self, abstract: bool) -> str:
-        """
-        Returns an example action as a string.
-        """
-
-    @abstractmethod
-    def to_python_code(self, action) -> str:
-        """
-        Converts the given action to browsergym-compatible python code.
-
-        Args:
-            action: the action to convert.
-
-        Returns:
-            Executable python code that performs the action in a browsergym environment.
-        """
-
-
 def execute_python_code(
     code: str,
     page: playwright.sync_api.Page,
