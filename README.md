@@ -30,39 +30,41 @@ cp .env.example .env
 ### (2) QuickStart
 * use web agent to finish some task and save the workflow
 ```bash
-python -m litewebagent.main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table'
-python -m litewebagent.main --agent_type PromptAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' 
-python -m litewebagent.main --agent_type HighLevelPlanningAgent --starting_url https://www.airbnb.com --goal "set destination as San Francisco, then search the results" --plan "(1) enter the 'San Francisco' as destination, (2) and click search"
-python -m litewebagent.main --agent_type ContextAwarePlanningAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table'
-python -m litewebagent.main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
-python -m litewebagent.main --agent_type HighLevelPlanningAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
-python -m litewebagent.main --agent_type ContextAwarePlanningAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
-python -m litewebagent.main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
+python -m main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table'
+python -m main --agent_type PromptAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' 
+python -m main --agent_type HighLevelPlanningAgent --starting_url https://www.airbnb.com --goal "set destination as San Francisco, then search the results" --plan "(1) enter the 'San Francisco' as destination, (2) and click search"
+python -m main --agent_type ContextAwarePlanningAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table'
+python -m main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
+python -m main --agent_type HighLevelPlanningAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
+python -m main --agent_type ContextAwarePlanningAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
+python -m main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
 ```
 * replay the workflow verified by the web agent
 If you haven't used the web agent to try any tests yet, first copy our example.json file.
 ```bash
-cp litewebagent/flow/example.json litewebagent/flow/steps.json 
+cp log/flow/example.json log/flow/steps.json 
 ```
 * enable user agent interaction
 
 ```bash
-python -m litewebagent.cli_main --agent_type FunctionCallingAgent
-python -m litewebagent.cli_main --agent_type HighLevelPlanningAgent 
-python -m litewebagent.cli_main --agent_type PromptAgent
+python -m cli_main --agent_type FunctionCallingAgent
+python -m cli_main --agent_type HighLevelPlanningAgent 
+python -m cli_main --agent_type PromptAgent
 ```
+
+https://www.loom.com/share/93e3490a6d684cddb0fbefce4813902a
 
 ### (3) test different input features
 We use axtree by default. Alternatively, you can provide a comma-separated string listing the desired input feature types.
 ```bash
-python -m litewebagent.main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search'
-python -m litewebagent.main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features interactive_elements
-python -m litewebagent.main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features axtree,interactive_elements
+python -m main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search'
+python -m main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features interactive_elements
+python -m main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features axtree,interactive_elements
 ```
 
 ### (4) search_agent
 ```
-python -m litewebagent.main --agent_type PromptSearchAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table'
+python -m main --agent_type PromptSearchAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table'
 ```
 
 ### (5) Demos

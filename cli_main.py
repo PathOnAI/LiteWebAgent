@@ -35,7 +35,7 @@ def display_output_cli(output):
 
 def main(args):
     # Initialize PlaywrightManager (it's already a global instance in your setup)
-    playwright_manager = PlaywrightManager(storage_state=None, video_dir='./litewebagent/videos')
+    playwright_manager = PlaywrightManager(storage_state="state.json", video_dir='./log/videos')
     browser = playwright_manager.get_browser()
     context = playwright_manager.get_context()
     page = playwright_manager.get_page()
