@@ -1,4 +1,40 @@
 # copied and modified from https://github.com/ServiceNow/BrowserGym
+# these are placeholders
+# all these symbols will be available in browsergym actions
+import playwright.sync_api
+from typing import Literal
+
+from .utils import (
+    add_demo_mode_effects,
+    get_elem_by_bid,
+    highlight_by_box,
+    smooth_move_visual_cursor_to,
+)
+
+page: playwright.sync_api.Page = None
+send_message_to_user: callable = None
+report_infeasible_instructions: callable = None
+demo_mode: Literal["off", "default", "all_blue", "only_visible_elements"] = None
+
+"""IMPORTANT
+The following primitives are meant to be included in the browsergym action using
+inspect.getsource().
+"""
+
+def new_tab():
+    """
+    Open a new tab. It will become the active one.
+
+    Examples:
+        new_tab()
+    """
+    global page, context
+    # Create a new page in the existing context
+    page = context.new_page()
+    # trigger the callback that sets this page as active in browsergym
+    page.evaluate("() => document.documentElement.dispatchEvent(new Event('pageshow'))")
+    return page
+
 import inspect
 import random
 
@@ -6,8 +42,10 @@ from dataclasses import dataclass
 from typing import Literal, Optional
 
 from . import utils
-from .base import AbstractActionSet
-from .playwright_functions import (
+from browsergym.core.action.base import AbstractActionSet
+from browsergym.core.action.parsers import highlevel_action_parser, action_docstring_parser
+
+from browsergym.core.action.functions import (
     noop,
     send_msg_to_user,
     report_infeasible,
@@ -39,13 +77,10 @@ from .playwright_functions import (
     # keyboard_insert_text_then_enter,
     tab_close,
     tab_focus,
-    new_tab,
     go_back,
     go_forward,
     goto,
 )
-from .parsers import highlevel_action_parser, action_docstring_parser
-
 
 CHAT_ACTIONS = [send_msg_to_user]
 
