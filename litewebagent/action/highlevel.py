@@ -4,7 +4,8 @@
 import playwright.sync_api
 from typing import Literal
 
-from .utils import (
+from browsergym.core.action import utils
+from browsergym.core.action.utils import (
     add_demo_mode_effects,
     get_elem_by_bid,
     highlight_by_box,
@@ -41,7 +42,6 @@ import random
 from dataclasses import dataclass
 from typing import Literal, Optional
 
-from . import utils
 from browsergym.core.action.base import AbstractActionSet
 from browsergym.core.action.parsers import highlevel_action_parser, action_docstring_parser
 
