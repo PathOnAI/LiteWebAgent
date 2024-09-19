@@ -23,7 +23,7 @@ async def handle_login_state(action):
             nonlocal terminated
             state = await context.storage_state()
             print('Saving storage state', state)
-            with open('state.json', 'w') as f:
+            with open('litewebagent/state.json', 'w') as f:
                 json.dump(state, f, indent=4)
             await context.close()
             terminated = True
