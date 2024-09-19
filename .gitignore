@@ -1,4 +1,4 @@
-litewebagent/log/
+log/
 build
 dist
 litewebagent.egg-info
