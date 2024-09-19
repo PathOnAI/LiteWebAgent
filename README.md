@@ -6,7 +6,7 @@ Please note that the LiteWebAgent repository is in development mode. We have ope
 
 ## 2. Development mode
 ### (1) Installation
-From PyPI: https://pypi.org/project/litewebagent/
+* From PyPI: https://pypi.org/project/litewebagent/
 ```
 pip install litewebagent 
 ```
@@ -14,7 +14,8 @@ Then, a required step is to setup playwright by running
 ```
 playwright install chromium
 ```
-Set up locally
+* Set up locally
+
 First set up virtual environment, and allow your code to be able to see 'litewebagent'
 ```bash
 python3 -m venv venv
