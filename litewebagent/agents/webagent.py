@@ -132,7 +132,7 @@ def setup_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="De
     Remember: Your role is to execute the given task precisely as instructed, using only the provided functions and within the confines of the current web page. Do not exceed these boundaries under any circumstances."""
         }
     ]
-    file_path = os.path.join('litewebagent', 'flow', 'steps.json')
+    file_path = os.path.join('log', 'flow', 'steps.json')
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     page = playwright_manager.get_page()
     page.goto(starting_url)

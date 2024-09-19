@@ -167,7 +167,7 @@ def prepare_prompt(page_info, action_set, features):
 def extract_page_info(page):
     page_info = {}
     _pre_extract(page)
-    screenshot_path = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_pre.png')
+    screenshot_path = os.path.join(os.getcwd(), 'log', 'screenshots', 'screenshot_pre.png')
     page.screenshot(path=screenshot_path)
     page_info['screenshot'] = screenshot_path
     page_info['dom'] = extract_dom_snapshot(page)
@@ -215,7 +215,7 @@ def execute_action(action, action_set, page, context, task_description, interact
         result['action'] = action
         result["url"] = page.url
         result['task_description'] = task_description
-        file_path = os.path.join('litewebagent', 'flow', 'steps.json')
+        file_path = os.path.join('log', 'flow', 'steps.json')
         append_to_steps_json(result, file_path)
 
     logger.info("Executing action script")
@@ -236,7 +236,7 @@ def encode_image(image_path):
 
 
 def capture_post_action_feedback(page, action, goal):
-    screenshot_path_post = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_post.png')
+    screenshot_path_post = os.path.join(os.getcwd(), 'log', 'screenshots', 'screenshot_post.png')
     time.sleep(3)
     page.screenshot(path=screenshot_path_post)
     base64_image = encode_image(screenshot_path_post)

@@ -1,0 +1,4 @@
+search dining table
+https://www.google.com
+{"text": "", "type": "textarea", "tag": "textarea", "id": "APjFqb", "href": null, "title": "Search", "action": "In order to accomplish my goal, I need to fill the search box with the term \"dining table\".\n\n```fill('95', 'dining table')```", "url": "https://www.google.com/", "task_description": "search for dining table"}
+{"text": "", "type": "input", "tag": "input", "id": null, "href": null, "title": null, "action": "In order to perform the search for \"dining table,\" you need to click on the \"Google Search\" button with bid `231`.\n\n```click('231')```", "url": "https://www.google.com/", "task_description": "perform the search for dining table"}

@@ -67,7 +67,7 @@ class ContextAwarePlanningAgent(BaseAgent):
             dom = extract_dom_snapshot(page)
             axtree = extract_merged_axtree(page)
             # update plan, and next action generation
-            screenshot_path_post = os.path.join(os.getcwd(), 'litewebagent', 'screenshots', 'screenshot_next.png')
+            screenshot_path_post = os.path.join(os.getcwd(), 'log', 'screenshots', 'screenshot_next.png')
             time.sleep(3)
             page.screenshot(path=screenshot_path_post)
             base64_image = encode_image(screenshot_path_post)
