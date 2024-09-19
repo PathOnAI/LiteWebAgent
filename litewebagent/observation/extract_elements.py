@@ -55,6 +55,33 @@ def extract_interactive_elements(page):
             return selector;
         }
 
+        function isInteractive(element) {
+            const interactiveTags = [
+                'a', 'button', 'input', 'select', 'textarea', 'summary', 'video', 'audio',
+                'iframe', 'embed', 'object', 'menu', 'label', 'fieldset', 'datalist', 'output',
+                'details', 'dialog', 'option'
+            ];
+            const interactiveRoles = [
+                'button', 'link', 'checkbox', 'radio', 'menuitem', 'menuitemcheckbox', 'menuitemradio',
+                'option', 'listbox', 'textbox', 'combobox', 'slider', 'spinbutton', 'scrollbar',
+                'tabpanel', 'treeitem', 'switch', 'searchbox', 'grid', 'gridcell', 'row',
+                'rowgroup', 'rowheader', 'columnheader', 'tab', 'tooltip', 'application', 
+                'dialog', 'alertdialog', 'progressbar'
+            ];
+            
+            return interactiveTags.includes(element.tagName.toLowerCase()) ||
+                   interactiveRoles.includes(element.getAttribute('role')) ||
+                   element.onclick != null ||
+                   element.onkeydown != null ||
+                   element.onkeyup != null ||
+                   element.onkeypress != null ||
+                   element.onchange != null ||
+                   element.onfocus != null ||
+                   element.onblur != null ||
+                   element.getAttribute('tabindex') !== null ||
+                   element.getAttribute('contenteditable') === 'true';
+        }
+
         var vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
         var vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
 
@@ -63,8 +90,8 @@ def extract_interactive_elements(page):
             .map(function (element) {
                 var bid = element.getAttribute(browsergymIdAttribute) || "";
 
-                // Only process elements with a non-empty browsergymIdAttribute
-                if (bid === "") {
+                // Only process elements with a non-empty browsergymIdAttribute AND that are interactive
+                if (bid === "" || !isInteractive(element)) {
                     return null;
                 }
 
@@ -96,7 +123,7 @@ def extract_interactive_elements(page):
                 var area = rects.reduce((acc, rect) => acc + rect.width * rect.height, 0);
 
                 return {
-                    include: true, // All elements with non-empty bid are now considered interactive
+                    include: true,
                     area: area,
                     rects: rects,
                     text: textualContent,
