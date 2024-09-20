@@ -65,7 +65,7 @@ python -m main --agent_type FunctionCallingAgent --starting_url https://www.airb
 
 ### (4) search_agent
 ```
-python -m main --agent_type PromptSearchAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table'
+python -m search_main --agent_type PromptSearchAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --search_algorithm 'bfs'
 ```
 
 ### (5) Demos
