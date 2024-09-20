@@ -1,15 +1,14 @@
 import sys
 import os
-import argparse
 import logging
 from dotenv import load_dotenv
 from openai import OpenAI
 from litewebagent.agents.FunctionCallingAgents.FunctionCallingAgent import FunctionCallingAgent
 from litewebagent.agents.FunctionCallingAgents.HighLevelPlanningAgent import HighLevelPlanningAgent
 from litewebagent.agents.FunctionCallingAgents.ContextAwarePlanningAgent import ContextAwarePlanningAgent
-from litewebagent.agents.PromptAgents.PromptSearchAgent import PromptSearchAgent
+from litewebagent.agents.SearchAgents.PromptSearchAgent import PromptSearchAgent
 from litewebagent.agents.PromptAgents.PromptAgent import PromptAgent
-from litewebagent.utils.fc_functions import navigation, upload_file, take_action, select_option
+from litewebagent.utils.fc_functions import navigation, upload_file, select_option
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -205,7 +204,7 @@ def setup_search_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type=
         file.write(starting_url + '\n')
 
     if agent_type == "PromptSearchAgent":
-        agent = PromptSearchAgent(model_name=model_name, tools=tools, available_tools=available_tools,
+        agent = PromptSearchAgent(starting_url=starting_url, model_name=model_name, tools=tools, available_tools=available_tools,
                                        messages=messages, goal=goal, playwright_manager=playwright_manager)
     else:
         error_message = f"Unsupported agent type: {agent_type}. Please use 'FunctionCallingAgent', 'HighLevelPlanningAgent', 'ContextAwarePlanningAgent', 'PromptAgent' or 'PromptSearchAgent' ."

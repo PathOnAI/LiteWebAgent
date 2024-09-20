@@ -31,15 +31,16 @@ def main(args):
     branching_factor = args.branching_factor if args.branching_factor else None
 
     agent = setup_search_agent(args.starting_url, args.goal, model_name=args.model, agent_type=args.agent_type, features=features, branching_factor=branching_factor, playwright_manager=playwright_manager)
-    response = agent.send_prompt(args.plan)
-    print(response)
-    print(agent.messages)
+    trajectories = agent.send_prompt(args.plan, args.search_algorithm)
+    import pdb; pdb.set_trace()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run web automation tasks with different agent types.")
     parser.add_argument('--agent_type', type=str, default="PromptSearchAgent",
                         choices=["PromptSearchAgent"],
                         help="Type of agent to use (default: PromptSearchAgent)")
+    parser.add_argument('--search_algorithm', type=str, default="bfs",
+                        choices=["bfs", "dfs"])
     parser.add_argument('--model', type=str, default="gpt-4o-mini",
                         help="Model to use for the agent (default: gpt-4o-mini)")
     parser.add_argument('--starting_url', type=str, required=True,
