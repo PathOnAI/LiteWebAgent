@@ -2,7 +2,7 @@ import json
 import logging
 import time
 from collections import deque
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from openai import OpenAI
 
@@ -16,7 +16,7 @@ from litewebagent.utils.utils import (
 )
 from litewebagent.utils.evaluators import goal_finished_evaluator
 from litewebagent.utils.replay import take_action
-from litewebagent.utils.prompt_functions import extract_top_actions, is_goal_finished
+from litewebagent.utils.prompt_functions import extract_top_actions
 
 logger = logging.getLogger(__name__)
 openai_client = OpenAI()
@@ -56,18 +56,22 @@ class PromptSearchAgent:
             self.dfs()
         return self.trajectories
 
-    def get_next_actions(self, trajectory: List[Dict[str, Any]], finished_score_threshold: float = 0.9):
+    def get_next_actions(
+        self, trajectory: List[Dict[str, Any]], finished_score_threshold: float = 0.9
+    ):
         logger.debug("Initializing Playwright Manager")
         self.playwright_manager.close()
         self.playwright_manager = PlaywrightManager(storage_state=None)
         self.playwright_manager.initialize()
         page = self.playwright_manager.get_page()
-        self.playwright_manager.playwright.selectors.set_test_id_attribute("data-unique-test-id")
+        self.playwright_manager.playwright.selectors.set_test_id_attribute(
+            "data-unique-test-id"
+        )
         page.goto(self.starting_url)
 
         try:
             for item in trajectory:
-                steps = item["steps"]
+                steps = item.get("steps", [])
                 for step in steps:
                     take_action(step, self.playwright_manager, False)
         except Exception as e:
@@ -79,7 +83,10 @@ class PromptSearchAgent:
         branching_factor = 2
 
         messages = [
-            {"role": "system", "content": f"The goal is {self.goal}, Is the overall goal finished?"}
+            {
+                "role": "system",
+                "content": f"The goal is {self.goal}, Is the overall goal finished?",
+            }
         ]
         for item in trajectory:
             action = item["action"]
@@ -90,7 +97,12 @@ class PromptSearchAgent:
         if not goal_finished or score < finished_score_threshold:
             logger.info(f"Goal not finished or below threshold (Score: {score})")
             updated_actions = extract_top_actions(
-                trajectory, self.goal, page_info, self.action_set, openai_client, branching_factor
+                trajectory,
+                self.goal,
+                page_info,
+                self.action_set,
+                openai_client,
+                branching_factor,
             )
             return False, updated_actions
         else:
@@ -98,17 +110,39 @@ class PromptSearchAgent:
             return True, None
 
     def bfs(self):
-        queue = deque([([], 0)])
+        queue = deque([([], 0)])  # Initialize the queue with an empty trajectory and depth 0
         while queue:
-            trajectory, depth = queue.popleft()
-            goal_finished, next_actions = self.get_next_actions(trajectory)
-            if depth < 3:
-                self.trajectories.append({"goal_finished": goal_finished, "trajectory": trajectory})
-                if not goal_finished and next_actions:
+            trajectory, depth = queue.popleft()  # Dequeue the first element
+
+            # Save the trajectory immediately with status 'pending'
+            trajectory_record = {
+                "trajectory": trajectory.copy(),
+                "status": "pending",
+                "depth": depth,
+            }
+            self.trajectories.append(trajectory_record)
+
+            try:
+                goal_finished, next_actions = self.get_next_actions(trajectory)
+
+                if goal_finished:
+                    # Update the trajectory record
+                    trajectory_record["status"] = "goal_finished"
+                elif depth >= 3:
+                    # Max depth reached
+                    trajectory_record["status"] = "max_depth_reached"
+                elif not next_actions:
+                    # No next actions available
+                    trajectory_record["status"] = "no_next_actions"
+                else:
+                    # Continue with next actions
+                    trajectory_record["status"] = "in_progress"
                     for action in next_actions:
                         page = self.playwright_manager.get_page()
                         page_info = extract_page_info(page)
-                        code, function_calls = self.action_set.to_python_code(action["action"])
+                        code, function_calls = self.action_set.to_python_code(
+                            action["action"]
+                        )
                         steps = []
                         if len(function_calls) == 1:
                             try:
@@ -121,21 +155,59 @@ class PromptSearchAgent:
                                     result["url"] = page.url
                                     steps.append(result)
                                 action["steps"] = steps
-                                queue.append((trajectory + [action], depth + 1))
                             except Exception as e:
                                 logger.error(f"An error occurred: {e}")
+                                action["steps"] = []  # Ensure steps is at least an empty list
+                        else:
+                            # Handle cases where function_calls is not as expected
+                            action["steps"] = []
+                            logger.warning(
+                                "Function calls not as expected, setting steps to empty list"
+                            )
+                        # Ensure 'steps' key exists even if empty
+                        action.setdefault("steps", [])
+                        # Enqueue new trajectory
+                        queue.append((trajectory + [action], depth + 1))
+            except Exception as e:
+                # If an error occurs, update the trajectory status
+                logger.error(f"An error occurred: {e}")
+                trajectory_record["status"] = "error"
+                trajectory_record["error"] = str(e)
+                # Do not go deeper, but trajectory is already saved
 
-    def dfs(self, trajectory: List[Dict[str, Any]] = None, depth: int = 0):
+    def dfs(self, trajectory: Optional[List[Dict[str, Any]]] = None, depth: int = 0):
         if trajectory is None:
             trajectory = []
-        goal_finished, next_actions = self.get_next_actions(trajectory)
-        if depth < 3:
-            self.trajectories.append({"goal_finished": goal_finished, "trajectory": trajectory})
-            if not goal_finished and next_actions:
+
+        # Save the trajectory immediately with status 'pending'
+        trajectory_record = {
+            "trajectory": trajectory.copy(),
+            "status": "pending",
+            "depth": depth,
+        }
+        self.trajectories.append(trajectory_record)
+
+        try:
+            goal_finished, next_actions = self.get_next_actions(trajectory)
+
+            if goal_finished:
+                # Update the trajectory record
+                trajectory_record["status"] = "goal_finished"
+            elif depth >= 3:
+                # Max depth reached
+                trajectory_record["status"] = "max_depth_reached"
+            elif not next_actions:
+                # No next actions available
+                trajectory_record["status"] = "no_next_actions"
+            else:
+                # Continue with next actions
+                trajectory_record["status"] = "in_progress"
                 for action in next_actions:
                     page = self.playwright_manager.get_page()
                     page_info = extract_page_info(page)
-                    code, function_calls = self.action_set.to_python_code(action["action"])
+                    code, function_calls = self.action_set.to_python_code(
+                        action["action"]
+                    )
                     steps = []
                     if len(function_calls) == 1:
                         try:
@@ -148,6 +220,24 @@ class PromptSearchAgent:
                                 result["url"] = page.url
                                 steps.append(result)
                             action["steps"] = steps
-                            self.dfs(trajectory + [action], depth + 1)
                         except Exception as e:
                             logger.error(f"An error occurred: {e}")
+                            action["steps"] = []  # Ensure steps is at least an empty list
+                    else:
+                        # Handle cases where function_calls is not as expected
+                        action["steps"] = []
+                        logger.warning(
+                            "Function calls not as expected, setting steps to empty list"
+                        )
+                    # Ensure 'steps' key exists even if empty
+                    action.setdefault("steps", [])
+                    # Recursion with new trajectory
+                    self.dfs(trajectory + [action], depth + 1)
+        except Exception as e:
+            # If an error occurs, update the trajectory status
+            logger.error(f"An error occurred: {e}")
+            trajectory_record["status"] = "error"
+            trajectory_record["error"] = str(e)
+            # Do not go deeper, but trajectory is already saved
+
+
