@@ -93,10 +93,10 @@ class PromptSearchAgent:
             action = item["action"]
             messages.append({"role": "user", "content": f"Action is: {action}"})
 
-        goal_finished, score = goal_finished_evaluator(messages, openai_client)
+        goal_finished, confidence_score = goal_finished_evaluator(messages, openai_client)
 
-        if not goal_finished or score < finished_score_threshold:
-            logger.info(f"Goal not finished or below threshold (Score: {score})")
+        if not goal_finished or (goal_finished and confidence_score < finished_score_threshold):
+            logger.info(f"Goal not finished or below threshold (Score: {confidence_score})")
             updated_actions = extract_top_actions(
                 trajectory,
                 self.goal,

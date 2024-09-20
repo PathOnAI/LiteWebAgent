@@ -30,10 +30,10 @@ def goal_finished_evaluator(messages, openai_client):
         logprobs=True,        
     )
     message = new_response.choices[0].message.parsed
-    score = parse_oai_logprob(new_response)
+    confidence_score = parse_oai_logprob(new_response)
 
     goal_finished = message.goal_finished
-    return goal_finished, score
+    return goal_finished, confidence_score
 
 
 def goal_finished_value_function():
