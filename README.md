@@ -40,6 +40,10 @@ python -m main --agent_type HighLevelPlanningAgent --starting_url https://www.go
 python -m main --agent_type ContextAwarePlanningAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
 python -m main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
 ```
+https://www.loom.com/share/1018bcc4e21c4a7eb517b60c2931ee3c
+https://www.loom.com/share/aa48256478714d098faac740239c9013
+https://www.loom.com/share/89f5fa69b8cb49c8b6a60368ddcba103
+
 * replay the workflow verified by the web agent
 If you haven't used the web agent to try any tests yet, first copy our example.json file.
 ```bash
@@ -68,7 +72,4 @@ python -m main --agent_type FunctionCallingAgent --starting_url https://www.airb
 python -m search_main --agent_type PromptSearchAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --search_algorithm 'bfs'
 ```
 
-### (5) Demos
-* https://www.loom.com/share/1018bcc4e21c4a7eb517b60c2931ee3c
-* https://www.loom.com/share/aa48256478714d098faac740239c9013
-* https://www.loom.com/share/89f5fa69b8cb49c8b6a60368ddcba103
+https://www.loom.com/share/986f0addf10949d88ae25cd802588a85

@@ -73,6 +73,7 @@ class PromptSearchAgent:
             for item in trajectory:
                 steps = item.get("steps", [])
                 for step in steps:
+                    # TODO: improve the way of taking actions
                     take_action(step, self.playwright_manager, False)
         except Exception as e:
             logger.error(f"An error occurred during action execution: {e}")
@@ -144,6 +145,7 @@ class PromptSearchAgent:
                             action["action"]
                         )
                         steps = []
+                        # TODO: improve error handling
                         if len(function_calls) == 1:
                             try:
                                 for function_name, function_args in function_calls:
@@ -209,6 +211,7 @@ class PromptSearchAgent:
                         action["action"]
                     )
                     steps = []
+                    # TODO: improve error handling
                     if len(function_calls) == 1:
                         try:
                             for function_name, function_args in function_calls:
