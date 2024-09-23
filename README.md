@@ -1,4 +1,8 @@
 # LiteWebAgent
+repo owner: Danni (Danqing) Zhang (danqing.zhang.personal@gmail.com)
+
+main contributors: Balaji Rama (balajirw10@gmail.com), Shiying He (sy.he0303@gmail.com) and Jingyi Ni (jingyi.ni.personal@gmail.com)
+
 Please note that the LiteWebAgent repository is in development mode. We have open-sourced the repository to foster collaboration between contributors.
 
 <a href='https://danqingz.github.io/blog/2024/08/22/LiteWebAgent.html'><img src='https://img.shields.io/badge/BLOG-181717?logo=github&logoColor=white'></a>
