@@ -14,7 +14,6 @@ from litewebagent.observation.observation import (
     MarkingError,
 )
 from litewebagent.observation.extract_elements import (extract_interactive_elements, highlight_elements)
-# , extract_interactive_elements_more_info
 from playwright.sync_api import sync_playwright
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -34,7 +33,6 @@ openai_client = OpenAI()
 import argparse
 from litewebagent.action.highlevel import HighLevelActionSet
 from litewebagent.utils.playwright_manager import PlaywrightManager
-#from litewebagent.playwright_manager import get_browser, get_context, get_page, playwright_manager, close_playwright
 from litewebagent.action.base import execute_python_code
 
 from playwright.sync_api import sync_playwright
@@ -43,26 +41,11 @@ import time
 import inspect
 from bs4 import BeautifulSoup
 import logging
-# from litewebagent.agents.DemoAgent import DemoAgent
-# from litewebagent.agents.HighLevelPlanningAgent import HighLevelPlanningAgent
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("log.txt", mode="w"),
-        logging.StreamHandler()
-    ]
-)
-
-# Create a logger
-logger = logging.getLogger(__name__)
-# "extract all product names of the website screenshot"
-
+from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
 import base64
 
-
-
+logger = logging.getLogger(__name__)
+from litewebagent.utils.utils import setup_logger
 
 def read_steps_json(file_path):
     goal = None
@@ -123,7 +106,7 @@ def replace_number(text, new_number):
     return re.sub(r'\d+', str(new_number), text)
 
 
-def take_action(step, playwright_manager, is_replay=True):
+def take_action(step, playwright_manager, is_replay, log_folder):
     # Setup
     time.sleep(5)
     context = playwright_manager.get_context()
@@ -135,30 +118,21 @@ def take_action(step, playwright_manager, is_replay=True):
         demo_mode="default"
     )
 
-    # Extract page information
-    # screenshot = extract_screenshot(page)
     _pre_extract(page)
     dom = extract_dom_snapshot(page)
     axtree = extract_merged_axtree(page)
     focused_element_bid = extract_focused_element_bid(page)
     extra_properties = extract_dom_extra_properties(dom)
     # Import necessary utilities
-    from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
     dom_txt = flatten_dom_to_str(dom)
     axtree_txt = flatten_axtree_to_str(axtree)
     interactive_elements = extract_interactive_elements(page)
-    # highlight_elements(page, interactive_elements)
-    screenshot_path_pre = os.path.join(os.getcwd(), 'log', 'screenshots', 'screenshot_pre.png')
+    screenshot_path_pre = os.path.join(log_folder, 'screenshots', 'screenshot_pre.png')
     page.screenshot(path=screenshot_path_pre)
     _post_extract(page)
     url = page.url
     element = find_matching_element(interactive_elements, step)
-    print(element)
-    print(step["action"])
-    print(element['bid'])
     action = replace_number(step["action"], element['bid'])
-    print(action)
-    # import pdb; pdb.set_trace()
     code, function_calls = action_set.to_python_code(action)
     logger.info("Executing action script")
     if is_replay:
@@ -167,7 +141,6 @@ def take_action(step, playwright_manager, is_replay=True):
             voice="Rachel",
             model="eleven_multilingual_v2"
         )
-        # play(audio)
 
         from concurrent.futures import ThreadPoolExecutor, as_completed
         from threading import Event
@@ -211,12 +184,10 @@ def take_action(step, playwright_manager, is_replay=True):
     if is_replay:
         task_description = step["task_description"]
         page = playwright_manager.get_page()
-        print(page.url)
-        screenshot_path_post = os.path.join(os.getcwd(), 'log', 'screenshots', 'screenshot_post.png')
+        screenshot_path_post = os.path.join(log_folder, 'screenshots', 'screenshot_post.png')
         time.sleep(3)
         page.screenshot(path=screenshot_path_post)
         base64_image = encode_image(screenshot_path_post)
-        # import pdb; pdb.set_trace()
         prompt = f"""
                     After we take action {action}, a screenshot was captured.
     
@@ -253,14 +224,20 @@ def take_action(step, playwright_manager, is_replay=True):
         return action, None
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--log_folder', type=str, default='log', help='Path to the log folder')
+    args = parser.parse_args()
+
+    log_folder = args.log_folder
+    logger = setup_logger(log_folder, log_file="replay_log.txt")
     # Example usage
-    playwright_manager = PlaywrightManager(storage_state=None)
+    playwright_manager = PlaywrightManager(storage_state=None, video_dir=os.path.join(args.log_folder, 'videos'))
     browser = playwright_manager.get_browser()
     context = playwright_manager.get_context()
     page = playwright_manager.get_page()
     playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
 
-    file_path = os.path.join('log', 'flow', 'steps.json')
+    file_path = os.path.join(log_folder, 'flow', 'steps.json')
     goal, starting_url, steps = read_steps_json(file_path)
     page.goto(starting_url)
     page.set_viewport_size({"width": 1440, "height": 900})
@@ -270,7 +247,7 @@ if __name__ == "__main__":
         print(f"Step {i}:")
         print(json.dumps(step))
         task_description = step["task_description"]
-        action, feedback = take_action(step, playwright_manager)
+        action, feedback = take_action(step, playwright_manager, True, log_folder)
         content = "The task_description is: {}, the action is: {} and the feedback is: {}".format(task_description, action, feedback)
         messages.append({"role": "assistant", "content": content})
     messages.append({"role": "user", "content": "summarize the status of the task, be concise"})

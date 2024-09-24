@@ -23,6 +23,19 @@ import pyparsing as pp
 from typing import Any
 from collections import defaultdict
 
+def setup_logger(log_folder, log_file="log.txt"):
+    if not os.path.exists(log_folder):
+        os.makedirs(log_folder)
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(os.path.join(log_folder, log_file), mode="w"),
+            logging.StreamHandler()
+        ]
+    )
+    return logging.getLogger(__name__)
+
 def build_highlevel_action_parser() -> pp.ParserElement:
     def make_keyword(kwd_str, kwd_value):
         return pp.Keyword(kwd_str).set_parse_action(pp.replace_with(kwd_value))
@@ -164,10 +177,10 @@ def prepare_prompt(page_info, action_set, features):
     return prompt
 
 
-def extract_page_info(page):
+def extract_page_info(page, log_folder):
     page_info = {}
     _pre_extract(page)
-    screenshot_path = os.path.join(os.getcwd(), 'log', 'screenshots', 'screenshot_pre.png')
+    screenshot_path = os.path.join(log_folder, 'screenshots', 'screenshot_pre.png')
     page.screenshot(path=screenshot_path)
     page_info['screenshot'] = screenshot_path
     page_info['dom'] = extract_dom_snapshot(page)
@@ -205,7 +218,7 @@ def query_openai_model(system_msg, prompt, screenshot_path, num_outputs):
     return answer
 
 
-def execute_action(action, action_set, page, context, task_description, interactive_elements):
+def execute_action(action, action_set, page, context, task_description, interactive_elements, log_folder):
     code, function_calls = action_set.to_python_code(action)
     for function_name, function_args in function_calls:
         print(function_name, function_args)
@@ -215,7 +228,7 @@ def execute_action(action, action_set, page, context, task_description, interact
         result['action'] = action
         result["url"] = page.url
         result['task_description'] = task_description
-        file_path = os.path.join('log', 'flow', 'steps.json')
+        file_path = os.path.join(log_folder, 'flow', 'steps.json')
         append_to_steps_json(result, file_path)
 
     logger.info("Executing action script")
@@ -235,8 +248,8 @@ def encode_image(image_path):
         return base64.b64encode(image_file.read()).decode('utf-8')
 
 
-def capture_post_action_feedback(page, action, goal):
-    screenshot_path_post = os.path.join(os.getcwd(), 'log', 'screenshots', 'screenshot_post.png')
+def capture_post_action_feedback(page, action, goal, log_folder):
+    screenshot_path_post = os.path.join(log_folder, 'screenshots', 'screenshot_post.png')
     time.sleep(3)
     page.screenshot(path=screenshot_path_post)
     base64_image = encode_image(screenshot_path_post)

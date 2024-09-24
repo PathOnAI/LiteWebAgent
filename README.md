@@ -35,14 +35,14 @@ cp .env.example .env
 ### (2) QuickStart
 * use web agent to finish some task and save the workflow
 ```bash
-python -m main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table'
-python -m main --agent_type PromptAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' 
-python -m main --agent_type HighLevelPlanningAgent --starting_url https://www.airbnb.com --goal "set destination as San Francisco, then search the results" --plan "(1) enter the 'San Francisco' as destination, (2) and click search"
-python -m main --agent_type ContextAwarePlanningAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table'
-python -m main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
-python -m main --agent_type HighLevelPlanningAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
-python -m main --agent_type ContextAwarePlanningAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
-python -m main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"'
+python -m main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
+python -m main --agent_type PromptAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
+python -m main --agent_type HighLevelPlanningAgent --starting_url https://www.airbnb.com --goal "set destination as San Francisco, then search the results" --plan "(1) enter the 'San Francisco' as destination, (2) and click search" --log_folder log
+python -m main --agent_type ContextAwarePlanningAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
+python -m main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --log_folder log
+python -m main --agent_type HighLevelPlanningAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --log_folder log
+python -m main --agent_type ContextAwarePlanningAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --log_folder log
+python -m main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --plan 'Find the pdf of the paper "GPT-4V(ision) is a Generalist Web Agent, if Grounded"' --log_folder log
 ```
 https://www.loom.com/share/1018bcc4e21c4a7eb517b60c2931ee3c
 https://www.loom.com/share/aa48256478714d098faac740239c9013
@@ -53,12 +53,16 @@ If you haven't used the web agent to try any tests yet, first copy our example.j
 ```bash
 cp log/flow/example.json log/flow/steps.json 
 ```
+then you can replay the session
+```bash
+python litewebagent/utils/replay.py --log_folder log
+```
 * enable user agent interaction
 
 ```bash
-python -m cli_main --agent_type FunctionCallingAgent
-python -m cli_main --agent_type HighLevelPlanningAgent 
-python -m cli_main --agent_type PromptAgent
+python -m cli_main --agent_type FunctionCallingAgent --log_folder log
+python -m cli_main --agent_type HighLevelPlanningAgent --log_folder log
+python -m cli_main --agent_type PromptAgent --log_folder log
 ```
 
 https://www.loom.com/share/93e3490a6d684cddb0fbefce4813902a
@@ -66,14 +70,14 @@ https://www.loom.com/share/93e3490a6d684cddb0fbefce4813902a
 ### (3) test different input features
 We use axtree by default. Alternatively, you can provide a comma-separated string listing the desired input feature types.
 ```bash
-python -m main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search'
-python -m main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features interactive_elements
-python -m main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features axtree,interactive_elements
+python -m main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --log_folder log
+python -m main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features interactive_elements --log_folder log
+python -m main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features axtree,interactive_elements --log_folder log
 ```
 
 ### (4) search_agent
 ```
-python -m search_main --agent_type PromptSearchAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --search_algorithm 'bfs'
+python -m search_main --agent_type PromptSearchAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --search_algorithm 'bfs' --log_folder log
 ```
 
 https://www.loom.com/share/986f0addf10949d88ae25cd802588a85

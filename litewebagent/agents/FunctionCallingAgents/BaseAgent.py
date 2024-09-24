@@ -10,7 +10,7 @@ _ = load_dotenv()
 
 client = OpenAI()
 class BaseAgent:
-    def __init__(self, model_name, tools, available_tools, messages, goal, playwright_manager):
+    def __init__(self, model_name, tools, available_tools, messages, goal, playwright_manager, log_folder):
         self.model_name = model_name
         self.tools = tools
         self.available_tools = available_tools
@@ -18,6 +18,7 @@ class BaseAgent:
         self.goal = goal
         self.playwright_manager = playwright_manager
         self.messages.append({"role": "user", "content": "The goal is:{}".format(self.goal)})
+        self.log_folder = log_folder
 
     def make_plan(self):
         messages = [{"role": "system",
