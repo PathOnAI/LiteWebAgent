@@ -14,15 +14,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 _ = load_dotenv()
 
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-#     handlers=[
-#         logging.FileHandler("log.txt", mode="w"),
-#         logging.StreamHandler()
-#     ]
-# )
-
 logger = logging.getLogger(__name__)
 openai_client = OpenAI()
 
