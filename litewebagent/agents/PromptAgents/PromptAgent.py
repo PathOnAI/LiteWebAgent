@@ -52,7 +52,7 @@ class PromptAgent:
         summary = response.choices[0].message.content
         return summary
 
-    def __init__(self, model_name, tools, available_tools, messages, goal, playwright_manager):
+    def __init__(self, model_name, tools, available_tools, messages, goal, playwright_manager, log_folder):
         self.model_name = model_name
         self.tools = tools
         self.available_tools = available_tools
@@ -67,6 +67,7 @@ class PromptAgent:
             multiaction=True,
             demo_mode="default"
         )
+        self.log_folder = log_folder
 
 
     def send_completion_request(self, plan: str, depth: int = 0, trajectory= []) -> Dict:
@@ -77,13 +78,13 @@ class PromptAgent:
         page = self.playwright_manager.get_page()
         # Extract page information
         time.sleep(3)
-        page_info = extract_page_info(page)
+        page_info = extract_page_info(page, self.log_folder)
         branching_factor = 5
         updated_actions = extract_top_actions(trajectory, self.goal, page_info, self.action_set, openai_client,
                                               branching_factor)
         next_action = updated_actions[0]['action']
-        execute_action(next_action, self.action_set, page, context, self.goal, page_info['interactive_elements'])
-        feedback = capture_post_action_feedback(page, next_action, self.goal)
+        execute_action(next_action, self.action_set, page, context, self.goal, page_info['interactive_elements'], self.log_folder)
+        feedback = capture_post_action_feedback(page, next_action, self.goal, self.log_folder)
         trajectory.append({'action': next_action, 'action_result': feedback})
 
         print(f"The action is: {next_action} - The action result is: {feedback}")

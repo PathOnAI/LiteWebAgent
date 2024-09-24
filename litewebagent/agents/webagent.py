@@ -14,14 +14,14 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 _ = load_dotenv()
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("log.txt", mode="w"),
-        logging.StreamHandler()
-    ]
-)
+# logging.basicConfig(
+#     level=logging.INFO,
+#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+#     handlers=[
+#         logging.FileHandler("log.txt", mode="w"),
+#         logging.StreamHandler()
+#     ]
+# )
 
 logger = logging.getLogger(__name__)
 openai_client = OpenAI()
@@ -30,9 +30,9 @@ openai_client = OpenAI()
 DEFAULT_FEATURES = ['screenshot', 'dom', 'axtree', 'focused_element', 'extra_properties', 'interactive_elements']
 
 
-def create_function_wrapper(func, features, branching_factor, playwright_manager):
+def create_function_wrapper(func, features, branching_factor, playwright_manager, log_folder):
     def wrapper(task_description):
-        return func(task_description, features, branching_factor, playwright_manager)
+        return func(task_description, features, branching_factor, playwright_manager, log_folder)
 
     return wrapper
 
@@ -98,15 +98,15 @@ tools = [
 ]
 
 
-def setup_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="DemoAgent", features=['axtree'], branching_factor = None, playwright_manager = None):
+def setup_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="DemoAgent", features=['axtree'], branching_factor = None, playwright_manager = None, log_folder="log"):
     if features is None:
         features = DEFAULT_FEATURES
 
 
     available_tools = {
-        "navigation": create_function_wrapper(navigation, features, branching_factor, playwright_manager),
-        "upload_file": create_function_wrapper(upload_file, features, branching_factor, playwright_manager),
-        "select_option": create_function_wrapper(select_option, features, branching_factor, playwright_manager),
+        "navigation": create_function_wrapper(navigation, features, branching_factor, playwright_manager, log_folder),
+        "upload_file": create_function_wrapper(upload_file, features, branching_factor, playwright_manager, log_folder),
+        "select_option": create_function_wrapper(select_option, features, branching_factor, playwright_manager, log_folder),
     }
 
     messages = [
@@ -130,7 +130,7 @@ def setup_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="De
     Remember: Your role is to execute the given task precisely as instructed, using only the provided functions and within the confines of the current web page. Do not exceed these boundaries under any circumstances."""
         }
     ]
-    file_path = os.path.join('log', 'flow', 'steps.json')
+    file_path = os.path.join(log_folder, 'flow', 'steps.json')
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     page = playwright_manager.get_page()
     page.goto(starting_url)
@@ -143,16 +143,16 @@ def setup_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="De
 
     if agent_type == "FunctionCallingAgent":
         agent = FunctionCallingAgent(model_name=model_name, tools=tools, available_tools=available_tools, messages=messages,
-                          goal=goal, playwright_manager=playwright_manager)
+                          goal=goal, playwright_manager=playwright_manager, log_folder=log_folder)
     elif agent_type == "PromptAgent":
         agent = PromptAgent(model_name=model_name, tools=tools, available_tools=available_tools,
-                                       messages=messages, goal=goal, playwright_manager=playwright_manager)
+                                       messages=messages, goal=goal, playwright_manager=playwright_manager, log_folder=log_folder)
     elif agent_type == "HighLevelPlanningAgent":
         agent = HighLevelPlanningAgent(model_name=model_name, tools=tools, available_tools=available_tools,
-                                       messages=messages, goal=goal, playwright_manager=playwright_manager)
+                                       messages=messages, goal=goal, playwright_manager=playwright_manager, log_folder=log_folder)
     elif agent_type == "ContextAwarePlanningAgent":
         agent = ContextAwarePlanningAgent(model_name=model_name, tools=tools, available_tools=available_tools,
-                                          messages=messages, goal=goal, playwright_manager=playwright_manager)
+                                          messages=messages, goal=goal, playwright_manager=playwright_manager, log_folder=log_folder)
     else:
         error_message = f"Unsupported agent type: {agent_type}. Please use 'FunctionCallingAgent', 'HighLevelPlanningAgent', 'ContextAwarePlanningAgent', 'PromptAgent' or 'PromptSearchAgent' ."
         logger.error(error_message)
@@ -160,15 +160,15 @@ def setup_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="De
     return agent
 
 
-def setup_search_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="PromptSearchAgent", features=['axtree'], branching_factor = None, playwright_manager = None):
+def setup_search_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="PromptSearchAgent", features=['axtree'], branching_factor = None, playwright_manager = None, log_folder="log"):
     if features is None:
         features = DEFAULT_FEATURES
 
 
     available_tools = {
-        "navigation": create_function_wrapper(navigation, features, branching_factor, playwright_manager),
-        "upload_file": create_function_wrapper(upload_file, features, branching_factor, playwright_manager),
-        "select_option": create_function_wrapper(select_option, features, branching_factor, playwright_manager),
+        "navigation": create_function_wrapper(navigation, features, branching_factor, playwright_manager, log_folder),
+        "upload_file": create_function_wrapper(upload_file, features, branching_factor, playwright_manager, log_folder),
+        "select_option": create_function_wrapper(select_option, features, branching_factor, playwright_manager, log_folder),
     }
 
     messages = [
@@ -192,7 +192,7 @@ def setup_search_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type=
     Remember: Your role is to execute the given task precisely as instructed, using only the provided functions and within the confines of the current web page. Do not exceed these boundaries under any circumstances."""
         }
     ]
-    file_path = os.path.join('log', 'flow', 'steps.json')
+    file_path = os.path.join(log_folder, 'flow', 'steps.json')
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     page = playwright_manager.get_page()
     page.goto(starting_url)
@@ -205,7 +205,7 @@ def setup_search_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type=
 
     if agent_type == "PromptSearchAgent":
         agent = PromptSearchAgent(starting_url=starting_url, model_name=model_name, tools=tools, available_tools=available_tools,
-                                       messages=messages, goal=goal, playwright_manager=playwright_manager)
+                                       messages=messages, goal=goal, playwright_manager=playwright_manager, log_folder=log_folder)
     else:
         error_message = f"Unsupported agent type: {agent_type}. Please use 'FunctionCallingAgent', 'HighLevelPlanningAgent', 'ContextAwarePlanningAgent', 'PromptAgent' or 'PromptSearchAgent' ."
         logger.error(error_message)

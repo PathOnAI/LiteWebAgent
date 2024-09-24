@@ -18,8 +18,6 @@ openai_client = OpenAI()
 
 
 
-
-
 def get_action_probability(responses, branching_factor):
     highlevel_action_parser = build_highlevel_action_parser()
     print(responses)
@@ -43,7 +41,7 @@ def get_action_probability(responses, branching_factor):
     print(updated_actions)
     return updated_actions
 
-def take_action(task_description, agent_type, features=None, branching_factor=None, playwright_manager=None):
+def take_action(task_description, agent_type, features=None, branching_factor=None, playwright_manager=None, log_folder='log'):
     try:
         context = playwright_manager.get_context()
         page = playwright_manager.get_page()
@@ -56,7 +54,7 @@ def take_action(task_description, agent_type, features=None, branching_factor=No
 
         # Extract page information
         time.sleep(3)
-        page_info = extract_page_info(page)
+        page_info = extract_page_info(page, log_folder)
 
         # Prepare messages for AI model
         system_msg = f"""
@@ -80,14 +78,14 @@ def take_action(task_description, agent_type, features=None, branching_factor=No
 
         # Execute the action
         try:
-            execute_action(action, action_set, page, context, task_description, page_info['interactive_elements'])
+            execute_action(action, action_set, page, context, task_description, page_info['interactive_elements'], log_folder)
         except Exception as e:
             last_action_error = f"{type(e).__name__}: {str(e)}"
             logger.error(f"Action execution failed: {last_action_error}")
             return f"Task failed with action error: {last_action_error}"
 
         # Capture post-action feedback
-        feedback = capture_post_action_feedback(page, action, task_description)
+        feedback = capture_post_action_feedback(page, action, task_description, log_folder)
 
         return f"The action is: {action} - the result is: {feedback}"
 
@@ -97,16 +95,16 @@ def take_action(task_description, agent_type, features=None, branching_factor=No
         return f"Task failed: {error_msg}"
 
 
-def navigation(task_description, features=None, branching_factor=None, playwright_manager= None):
-    response = take_action(task_description, ["bid", "nav"], features, branching_factor, playwright_manager)
+def navigation(task_description, features=None, branching_factor=None, playwright_manager= None, log_folder='log'):
+    response = take_action(task_description, ["bid", "nav"], features, branching_factor, playwright_manager, log_folder)
     return response
 
 
-def upload_file(task_description, features=None, branching_factor=None, playwright_manager=None):
-    response = take_action(task_description, ["file"], features, branching_factor, playwright_manager)
+def upload_file(task_description, features=None, branching_factor=None, playwright_manager=None, log_folder='log'):
+    response = take_action(task_description, ["file"], features, branching_factor, playwright_manager, log_folder)
     return response
 
 
-def select_option(task_description, features=None, branching_factor=None, playwright_manager=None):
-    response = take_action(task_description, ["select_option"], features, branching_factor, playwright_manager)
+def select_option(task_description, features=None, branching_factor=None, playwright_manager=None, log_folder='log'):
+    response = take_action(task_description, ["select_option"], features, branching_factor, playwright_manager, log_folder)
     return response

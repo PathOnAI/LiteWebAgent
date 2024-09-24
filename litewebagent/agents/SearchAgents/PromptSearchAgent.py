@@ -32,6 +32,7 @@ class PromptSearchAgent:
         messages: List[Dict[str, Any]],
         goal: str,
         playwright_manager: PlaywrightManager,
+        log_folder
     ):
         self.model_name = model_name
         self.starting_url = starting_url
@@ -46,6 +47,7 @@ class PromptSearchAgent:
             subsets=self.agent_type, strict=False, multiaction=True, demo_mode="default"
         )
         self.trajectories = []
+        self.log_folder = log_folder
 
     def send_prompt(self, plan: str, search_algorithm: str = "bfs") -> List[Dict[str, Any]]:
         if search_algorithm == "bfs":
@@ -74,13 +76,13 @@ class PromptSearchAgent:
                 steps = item.get("steps", [])
                 for step in steps:
                     # TODO: improve the way of taking actions
-                    take_action(step, self.playwright_manager, False)
+                    take_action(step, self.playwright_manager, is_replay=False, log_folder=self.log_folder)
         except Exception as e:
             logger.error(f"An error occurred during action execution: {e}")
             return False, None
 
         time.sleep(3)
-        page_info = extract_page_info(page)
+        page_info = extract_page_info(page, self.log_folder)
         branching_factor = 2
 
         messages = [
@@ -140,7 +142,7 @@ class PromptSearchAgent:
                     trajectory_record["status"] = "in_progress"
                     for action in next_actions:
                         page = self.playwright_manager.get_page()
-                        page_info = extract_page_info(page)
+                        page_info = extract_page_info(page, self.log_folder)
                         code, function_calls = self.action_set.to_python_code(
                             action["action"]
                         )
@@ -206,7 +208,7 @@ class PromptSearchAgent:
                 trajectory_record["status"] = "in_progress"
                 for action in next_actions:
                     page = self.playwright_manager.get_page()
-                    page_info = extract_page_info(page)
+                    page_info = extract_page_info(page, self.log_folder)
                     code, function_calls = self.action_set.to_python_code(
                         action["action"]
                     )
