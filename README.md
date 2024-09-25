@@ -81,3 +81,10 @@ python -m search_main --agent_type PromptSearchAgent --starting_url https://www.
 ```
 
 https://www.loom.com/share/986f0addf10949d88ae25cd802588a85
+
+## 3. Paper reimplementation
+| Paper                                                                    | Agent                                                                                                                                                  |
+|--------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [Mind2Web](https://osu-nlp-group.github.io/Mind2Web/)                    | [ContextAwarePlanningAgent](https://github.com/PathOnAI/LiteWebAgent/blob/main/litewebagent/agents/FunctionCallingAgents/ContextAwarePlanningAgent.py) |
+| [Tree Search for Language Model Agents](https://jykoh.com/search-agents) | [PromptSearchAgent](https://github.com/PathOnAI/LiteWebAgent/blob/main/litewebagent/agents/SearchAgents/PromptSearchAgent.py)                          |
+
