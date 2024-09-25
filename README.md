@@ -89,3 +89,12 @@ https://www.loom.com/share/986f0addf10949d88ae25cd802588a85
 | [Mind2Web](https://osu-nlp-group.github.io/Mind2Web/)                    | [ContextAwarePlanningAgent](https://github.com/PathOnAI/LiteWebAgent/blob/main/litewebagent/agents/FunctionCallingAgents/ContextAwarePlanningAgent.py) |
 | [Tree Search for Language Model Agents](https://jykoh.com/search-agents) | [PromptSearchAgent](https://github.com/PathOnAI/LiteWebAgent/blob/main/litewebagent/agents/SearchAgents/PromptSearchAgent.py)                          |
 
+## 4. Citing LiteWebAgent
+```
+@misc{zhang2024litewebagent,
+  title={LiteWebAgent},
+  author={Zhang, Danqing and Rama, Balaji and He, Shiying and Ni, Jingyi},
+  journal={https://danqingz.github.io/blog/2024/08/22/LiteWebAgent.html},
+  year={2024}
+}
+```
