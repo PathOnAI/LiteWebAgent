@@ -123,6 +123,7 @@ class PromptSearchAgent:
                 "status": "pending",
                 "depth": depth,
             }
+            logger.info(trajectory_record)
             self.trajectories.append(trajectory_record)
 
             try:

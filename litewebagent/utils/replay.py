@@ -132,7 +132,10 @@ def take_action(step, playwright_manager, is_replay, log_folder):
     _post_extract(page)
     url = page.url
     element = find_matching_element(interactive_elements, step)
-    action = replace_number(step["action"], element['bid'])
+    if element:
+        action = replace_number(step["action"], element['bid'])
+    else:
+        action = step["action"]
     code, function_calls = action_set.to_python_code(action)
     logger.info("Executing action script")
     if is_replay:
