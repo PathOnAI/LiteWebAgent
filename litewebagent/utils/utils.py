@@ -221,13 +221,12 @@ def query_openai_model(system_msg, prompt, screenshot_path, num_outputs):
 def execute_action(action, action_set, page, context, task_description, interactive_elements, log_folder):
     code, function_calls = action_set.to_python_code(action)
     for function_name, function_args in function_calls:
-        print(function_name, function_args)
         extracted_number = parse_function_args(function_args)
         result = search_interactive_elements(interactive_elements, extracted_number)
-        print(result)
         result['action'] = action
         result["url"] = page.url
         result['task_description'] = task_description
+        logger.info(result)
         file_path = os.path.join(log_folder, 'flow', 'steps.json')
         append_to_steps_json(result, file_path)
 
@@ -297,7 +296,7 @@ def search_interactive_elements(interactive_elements, extracted_number):
                 'title': element.get('title'),
                 'ariaLabel': element.get('ariaLabel')
             }
-    return None  # Return None if no matching element is found
+    return {}  # Return empty dictionary if no matching element is found
 
 
 def parse_function_args(function_args):

@@ -497,16 +497,20 @@ def extract_bid_from_action(action: str) -> str:
     if match:
         return match.group(1)
     else:
-        raise ValueError("No bid found in the action string")
+        return None  # Return None if no bid is found
 
 # Modified execute_action function
 def execute_action(action: str):
     # Extract the bid from the action
     extracted_code = extract_code(action)
     bid = extract_bid_from_action(extracted_code)
-
     # Highlight the element
-    highlight_element_by_bid(page, bid, action)
+    if bid:
+        # Highlight the element only if a bid is found
+        highlight_element_by_bid(page, bid, action)
+    else:
+        # Log that no bid was found, no highlight will be made
+        print("No bid found in the action string. Skipping highlight.")
         """
         python_code += """\n"""
         python_code += f'action="""{highlevel_code}"""\n'
