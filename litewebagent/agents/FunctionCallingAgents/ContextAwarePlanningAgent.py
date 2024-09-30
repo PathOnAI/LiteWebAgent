@@ -1,36 +1,25 @@
 # Reference: https://github.com/OSU-NLP-Group/SeeAct/blob/main/seeact_package/seeact/agent.py#L163
 from litellm import completion
 from litewebagent.agents.FunctionCallingAgents.BaseAgent import BaseAgent
-from typing import List, Dict, Any
+from typing import Dict
 import json
 import logging
 from openai import OpenAI
 from dotenv import load_dotenv
-import threading
-from concurrent.futures import ThreadPoolExecutor, TimeoutError
-from litewebagent.utils.playwright_manager import PlaywrightManager
 import os
+from litewebagent.utils.utils import encode_image
 import time
-from litewebagent.observation.observation import (
+from litewebagent.browser_env.observation import (
     _pre_extract,
-    _post_extract,
-    extract_screenshot,
     extract_dom_snapshot,
-    extract_dom_extra_properties,
     extract_merged_axtree,
-    extract_focused_element_bid,
-    MarkingError,
 )
+
 _ = load_dotenv()
 
 openai_client = OpenAI()
-
 logger = logging.getLogger(__name__)
-import base64
 
-def encode_image(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
 
 class ContextAwarePlanningAgent(BaseAgent):
 
@@ -51,8 +40,6 @@ class ContextAwarePlanningAgent(BaseAgent):
 
         logger.info("last message: %s", json.dumps(self.messages[-1]))
         logger.info('current plan: %s', plan)
-
-
 
         if depth > 0:
             from pydantic import BaseModel
@@ -137,7 +124,7 @@ class ContextAwarePlanningAgent(BaseAgent):
             question_description_prompt = '''The screenshot below shows the webpage you see. Think step by step before outlining the next action step at the current stage. Clearly outline which element in the webpage users will operate with as the first next target element, its detailed location, and the corresponding operation.
 
             To be successful, it is important to follow the following rules: 
-            1. You should only issue a valid action given the current observation. 
+            1. You should only issue a valid action given the current browser_env. 
             2. You should only issue one action at a time
             3. For handling the select dropdown elements on the webpage, it's not necessary for you to provide completely accurate options right now. The full list of options for these elements will be supplied later.
             4. Unlike humans, for typing (e.g., in text areas, text boxes) and selecting (e.g., from dropdown menus or <select> elements), you should try directly typing the input or selecting the choice, bypassing the need for an initial click. 
@@ -155,16 +142,16 @@ class ContextAwarePlanningAgent(BaseAgent):
             self.messages.append({"role": "user", "content": action_space_prompt})
             self.messages.append({"role": "user", "content": question_description_prompt})
             self.messages.append({"role": "user",
-                     "content": [
-                         {"type": "text", "text": prompt},
-                         {"type": "image_url",
-                          "image_url": {
-                              "url": f"data:image/jpeg;base64,{base64_image}",
-                              "detail": "high"
-                          }
-                          }
-                     ]
-                     })
+                                  "content": [
+                                      {"type": "text", "text": prompt},
+                                      {"type": "image_url",
+                                       "image_url": {
+                                           "url": f"data:image/jpeg;base64,{base64_image}",
+                                           "detail": "high"
+                                       }
+                                       }
+                                  ]
+                                  })
             response = openai_client.chat.completions.create(
                 model="gpt-4o",
                 messages=self.messages
@@ -173,7 +160,8 @@ class ContextAwarePlanningAgent(BaseAgent):
             plan = response.choices[0].message.content
             new_response = openai_client.beta.chat.completions.parse(
                 model=self.model_name,
-                messages=[{"role": "system", "content": "Is the overall goal finished?"}, {"role": "user", "content": plan}],
+                messages=[{"role": "system", "content": "Is the overall goal finished?"},
+                          {"role": "user", "content": plan}],
                 response_format=Plan
             )
             message = new_response.choices[0].message.parsed
@@ -183,7 +171,6 @@ class ContextAwarePlanningAgent(BaseAgent):
                 return response
             else:
                 self.messages.append({"role": "user", "content": plan})
-
 
         logger.info('updated plan: %s', plan)
         response = completion(model=self.model_name, messages=self.messages, tools=self.tools, tool_choice="auto")

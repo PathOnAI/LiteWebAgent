@@ -1,31 +1,23 @@
 # copied and modified from https://github.com/ServiceNow/BrowserGym
-import base64
-import io
-import logging
-import numpy as np
-import playwright.sync_api
-import PIL.Image
-import pkgutil
-import re
 
+import logging
+import playwright.sync_api
+import pkgutil
 from .constants import BROWSERGYM_ID_ATTRIBUTE as BID_ATTR
-from .constants import BROWSERGYM_VISIBILITY_ATTRIBUTE as VIS_ATTR
-from .constants import BROWSERGYM_SETOFMARKS_ATTRIBUTE as SOM_ATTR
+import os
 
 MARK_FRAMES_MAX_TRIES = 3
-
 
 logger = logging.getLogger(__name__)
 from browsergym.core.observation import (
     _post_extract,
-    extract_all_frame_axtrees,
     extract_dom_snapshot,
     extract_merged_axtree,
-    extract_screenshot,
     extract_focused_element_bid,
     extract_dom_extra_properties,
-    extract_data_items_from_aria,
 )
+from litewebagent.browser_env.extract_elements import extract_interactive_elements, highlight_elements
+
 
 class MarkingError(Exception):
     pass
@@ -81,6 +73,17 @@ def _pre_extract(page: playwright.sync_api.Page):
     mark_frames_recursive(page.main_frame, frame_bid="")
 
 
-
-
-
+def extract_page_info(page, log_folder):
+    page_info = {}
+    _pre_extract(page)
+    screenshot_path = os.path.join(log_folder, 'screenshots', 'screenshot_pre.png')
+    page.screenshot(path=screenshot_path)
+    page_info['screenshot'] = screenshot_path
+    page_info['dom'] = extract_dom_snapshot(page)
+    page_info['axtree'] = extract_merged_axtree(page)
+    page_info['focused_element'] = extract_focused_element_bid(page)
+    page_info['extra_properties'] = extract_dom_extra_properties(page_info.get('dom'))
+    page_info['interactive_elements'] = extract_interactive_elements(page)
+    highlight_elements(page, page_info['interactive_elements'])
+    _post_extract(page)
+    return page_info

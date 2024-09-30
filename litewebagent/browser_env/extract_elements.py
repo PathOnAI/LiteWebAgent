@@ -1,12 +1,8 @@
-from playwright.sync_api import sync_playwright
 import logging
-import os
-import time
-import json
-
 from .constants import BROWSERGYM_ID_ATTRIBUTE as BID_ATTR
 
 logger = logging.getLogger(__name__)
+
 
 class MarkingError(Exception):
     pass
@@ -151,7 +147,6 @@ def extract_interactive_elements(page):
     return page.evaluate(js_code, BID_ATTR)
 
 
-
 def highlight_elements(page, elements):
     js_code = """
     (elements) => {
@@ -204,6 +199,7 @@ def highlight_elements(page, elements):
     """
     page.evaluate(js_code, elements)
 
+
 def remove_highlights(page):
     js_code = """
     () => {
@@ -220,3 +216,37 @@ def remove_highlights(page):
     page.evaluate(js_code)
 
 
+def flatten_interactive_elements_to_str(
+        interactive_elements,
+        indent_char="\t"
+):
+    """
+    Formats a list of interactive elements into a string, including only text, type, and bid.
+    Skips elements where the type is 'html'.
+
+    :param interactive_elements: List of dictionaries containing interactive element data
+    :param indent_char: Character used for indentation (default: tab)
+    :return: Formatted string representation of interactive elements
+    """
+
+    def format_element(element):
+        # Skip if element type is 'html'
+        if element.get('type', '').lower() == 'html' or element.get('type', '').lower() == 'body':
+            return None
+
+        # Add bid if present
+        bid = f"[{element['bid']}] " if 'bid' in element else ""
+
+        # Basic element info
+        element_type = element.get('type', 'Unknown')
+        text = element.get('text', '').replace('\n', ' ')
+
+        return f"{bid}{element_type} {repr(text)}"
+
+    formatted_elements = [
+        formatted_elem for elem in interactive_elements
+        if elem.get('include', True)
+        for formatted_elem in [format_element(elem)]
+        if formatted_elem is not None
+    ]
+    return "\n".join(formatted_elements)

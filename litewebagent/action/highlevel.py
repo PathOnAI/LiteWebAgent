@@ -3,14 +3,10 @@
 # all these symbols will be available in browsergym actions
 import playwright.sync_api
 from typing import Literal
-
 from browsergym.core.action import utils
-from browsergym.core.action.utils import (
-    add_demo_mode_effects,
-    get_elem_by_bid,
-    highlight_by_box,
-    smooth_move_visual_cursor_to,
-)
+import logging
+
+logger = logging.getLogger(__name__)
 
 page: playwright.sync_api.Page = None
 send_message_to_user: callable = None
@@ -21,6 +17,7 @@ demo_mode: Literal["off", "default", "all_blue", "only_visible_elements"] = None
 The following primitives are meant to be included in the browsergym action using
 inspect.getsource().
 """
+
 
 def new_tab():
     """
@@ -35,6 +32,7 @@ def new_tab():
     # trigger the callback that sets this page as active in browsergym
     page.evaluate("() => document.documentElement.dispatchEvent(new Event('pageshow'))")
     return page
+
 
 import inspect
 import random
@@ -146,22 +144,21 @@ class HighLevelAction:
 
 
 class HighLevelActionSet(AbstractActionSet):
-
     ActionSubset = Literal["chat", "infeas", "bid", "coord", "nav", "tab", "custom"]
 
     def __init__(
-        self,
-        subsets: Optional[ActionSubset | list[ActionSubset]] = [
-            "chat",
-            "infeas",
-            "bid",
-            "nav",
-            "tab",
-        ],
-        custom_actions: Optional[list[callable]] = None,
-        multiaction: bool = True,
-        demo_mode: Literal["off", "default", "all_blue", "only_visible_elements"] = "off",
-        strict: bool = False,
+            self,
+            subsets: Optional[ActionSubset | list[ActionSubset]] = [
+                "chat",
+                "infeas",
+                "bid",
+                "nav",
+                "tab",
+            ],
+            custom_actions: Optional[list[callable]] = None,
+            multiaction: bool = True,
+            demo_mode: Literal["off", "default", "all_blue", "only_visible_elements"] = "off",
+            strict: bool = False,
     ):
         super().__init__(strict)
         self.multiaction = multiaction
@@ -520,7 +517,7 @@ def execute_action(action: str):
             if function_name not in self.action_set:
                 raise NameError(f"Invalid action type '{function_name}'.")
             python_code += (
-                function_name + "(" + ", ".join([repr(arg) for arg in function_args]) + ")\n"
+                    function_name + "(" + ", ".join([repr(arg) for arg in function_args]) + ")\n"
             )
         # return the constructed python code
         return python_code, function_calls

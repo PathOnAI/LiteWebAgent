@@ -2,26 +2,21 @@ import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from litewebagent.observation.constants import TEXT_MAX_LENGTH, BROWSERGYM_ID_ATTRIBUTE, EXTRACT_OBS_MAX_TRIES
-from litewebagent.observation.observation import (
+from litewebagent.browser_env.observation import (
     _pre_extract,
     _post_extract,
-    extract_screenshot,
     extract_dom_snapshot,
     extract_dom_extra_properties,
     extract_merged_axtree,
     extract_focused_element_bid,
-    MarkingError,
 )
-from litewebagent.observation.extract_elements import (extract_interactive_elements, highlight_elements)
-from playwright.sync_api import sync_playwright
-from openai import OpenAI
+from litewebagent.browser_env.extract_elements import extract_interactive_elements
 from dotenv import load_dotenv
 from openai import OpenAI
-# from litellm import completion
 import os
 import re
 import json
+from litewebagent.utils.utils import encode_image
 
 _ = load_dotenv()
 from elevenlabs.client import ElevenLabs
@@ -34,18 +29,13 @@ import argparse
 from litewebagent.action.highlevel import HighLevelActionSet
 from litewebagent.utils.playwright_manager import PlaywrightManager
 from litewebagent.action.base import execute_python_code
-
-from playwright.sync_api import sync_playwright
-from urllib.parse import urlparse
 import time
-import inspect
-from bs4 import BeautifulSoup
 import logging
-from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str, prune_html
-import base64
+from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str
 
 logger = logging.getLogger(__name__)
 from litewebagent.utils.utils import setup_logger
+
 
 def read_steps_json(file_path):
     goal = None
@@ -77,9 +67,6 @@ def read_steps_json(file_path):
     return goal, starting_url, steps
 
 
-
-
-
 def find_matching_element(interactive_elements, target):
     for element in interactive_elements:
         if (element.get('text', '').lower() == target.get('text', '').lower() and
@@ -87,11 +74,6 @@ def find_matching_element(interactive_elements, target):
                 target.get('id') == element.get('id')):
             return element
     return None
-
-
-def encode_image(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
 
 
 def find_match(interactive_elements, key, value):
@@ -226,6 +208,7 @@ def take_action(step, playwright_manager, is_replay, log_folder):
     else:
         return action, None
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--log_folder', type=str, default='log', help='Path to the log folder')
@@ -251,7 +234,8 @@ if __name__ == "__main__":
         print(json.dumps(step))
         task_description = step["task_description"]
         action, feedback = take_action(step, playwright_manager, True, log_folder)
-        content = "The task_description is: {}, the action is: {} and the feedback is: {}".format(task_description, action, feedback)
+        content = "The task_description is: {}, the action is: {} and the feedback is: {}".format(task_description,
+                                                                                                  action, feedback)
         messages.append({"role": "assistant", "content": content})
     messages.append({"role": "user", "content": "summarize the status of the task, be concise"})
     response = openai_client.chat.completions.create(model="gpt-4o", messages=messages)

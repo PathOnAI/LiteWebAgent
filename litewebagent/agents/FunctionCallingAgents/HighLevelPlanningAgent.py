@@ -1,18 +1,17 @@
 from litellm import completion
 from litewebagent.agents.FunctionCallingAgents.BaseAgent import BaseAgent
-from typing import List, Dict, Any
+from typing import Dict
 import json
 import logging
 from openai import OpenAI
 from dotenv import load_dotenv
-import threading
-from concurrent.futures import ThreadPoolExecutor, TimeoutError
-import os
+
 _ = load_dotenv()
 
 openai_client = OpenAI()
 
 logger = logging.getLogger(__name__)
+
 
 class HighLevelPlanningAgent(BaseAgent):
 
@@ -33,8 +32,6 @@ class HighLevelPlanningAgent(BaseAgent):
 
         logger.info("last message: %s", json.dumps(self.messages[-1]))
         logger.info('current plan: %s', plan)
-
-
 
         if depth > 0:
             from pydantic import BaseModel
@@ -71,7 +68,8 @@ class HighLevelPlanningAgent(BaseAgent):
             plan = response.choices[0].message.content
             new_response = openai_client.beta.chat.completions.parse(
                 model=self.model_name,
-                messages=[{"role": "system", "content": "Is the overall goal finished?"}, {"role": "user", "content": plan}],
+                messages=[{"role": "system", "content": "Is the overall goal finished?"},
+                          {"role": "user", "content": plan}],
                 response_format=Plan
             )
             message = new_response.choices[0].message.parsed
@@ -81,8 +79,6 @@ class HighLevelPlanningAgent(BaseAgent):
                 return response
             else:
                 self.messages.append({"role": "user", "content": plan})
-
-
 
         logger.info('updated plan: %s', plan)
         response = completion(model=self.model_name, messages=self.messages, tools=self.tools, tool_choice="auto")
