@@ -2,6 +2,7 @@ from playwright.sync_api import sync_playwright
 import os
 import threading
 
+
 class PlaywrightManager:
     def __init__(self, storage_state=None, video_dir='./log/videos'):
         self.playwright = None
@@ -63,17 +64,11 @@ class PlaywrightManager:
             self.browser = None
             self.playwright = None
 
-# # Initialize the PlaywrightManager with the storage state and video directory
-# playwright_manager = PlaywrightManager(storage_state=None, video_dir='./litewebagent/videos')
-#
-# def get_browser():
-#     return playwright_manager.browser
-#
-# def get_context():
-#     return playwright_manager.context
-#
-# def get_page():
-#     return playwright_manager.get_page()
-#
-# def close_playwright():
-#     playwright_manager.close()
+
+def setup_playwright(log_folder, storage_state='state.json'):
+    playwright_manager = PlaywrightManager(storage_state=storage_state, video_dir=os.path.join(log_folder, 'videos'))
+    browser = playwright_manager.get_browser()
+    context = playwright_manager.get_context()
+    page = playwright_manager.get_page()
+    playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
+    return playwright_manager
