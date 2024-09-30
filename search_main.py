@@ -1,31 +1,20 @@
-from litewebagent.utils.playwright_manager import PlaywrightManager
 from dotenv import load_dotenv
 import argparse
-import json
-import playwright
+
 _ = load_dotenv()
-import time
-import logging
-from litewebagent.utils.utils import setup_logger
-
-
 from litewebagent.agents.webagent import setup_search_agent
-import os
+
+
 def main(args):
-    log_folder = args.log_folder
-    logger = setup_logger(log_folder)
-    playwright_manager = PlaywrightManager(storage_state='state.json', video_dir=os.path.join(args.log_folder, 'videos'))
-    browser = playwright_manager.get_browser()
-    context = playwright_manager.get_context()
-    page = playwright_manager.get_page()
-    playwright_manager.playwright.selectors.set_test_id_attribute('data-unique-test-id')
-    # Use the features from command-line arguments
     features = args.features.split(',') if args.features else None
     branching_factor = args.branching_factor if args.branching_factor else None
 
-    agent = setup_search_agent(args.starting_url, args.goal, model_name=args.model, agent_type=args.agent_type, features=features, branching_factor=branching_factor, playwright_manager=playwright_manager, log_folder=args.log_folder)
+    agent = setup_search_agent(args.starting_url, args.goal, model_name=args.model, agent_type=args.agent_type,
+                               features=features, branching_factor=branching_factor, log_folder=args.log_folder,
+                               storage_state=args.storage_state)
     trajectories = agent.send_prompt(args.plan, args.search_algorithm)
-    import pdb; pdb.set_trace()
+    print(trajectories)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run web automation tasks with different agent types.")
@@ -40,6 +29,8 @@ if __name__ == "__main__":
                         help="Starting URL for the web automation task")
     parser.add_argument('--plan', type=str, required=True,
                         help="Plan for the web automation task")
+    parser.add_argument('--storage_state', type=str, default="state.json",
+                        help="Storage state json file")
     parser.add_argument('--goal', type=str, required=True,
                         help="Goal for the web automation task")
     parser.add_argument('--features', type=str, default="axtree",
