@@ -3,6 +3,8 @@ import os
 import json
 import logging
 from openai import OpenAI
+from dotenv import load_dotenv
+_ = load_dotenv()
 
 logger = logging.getLogger(__name__)
 openai_client = OpenAI()

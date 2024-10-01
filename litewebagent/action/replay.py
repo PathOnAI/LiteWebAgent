@@ -11,20 +11,19 @@ from litewebagent.browser_env.observation import (
     extract_focused_element_bid,
 )
 from litewebagent.browser_env.extract_elements import extract_interactive_elements
-from dotenv import load_dotenv
 from openai import OpenAI
 import os
 import re
 import json
 from litewebagent.utils.utils import encode_image
-
+from dotenv import load_dotenv
 _ = load_dotenv()
 from elevenlabs.client import ElevenLabs
 from elevenlabs import play
 
 # Initialize the Eleven Labs client
 elevenlabs_client = ElevenLabs(api_key=os.getenv("ELEVEN_API_KEY"))
-openai_client = OpenAI()
+openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 import argparse
 from litewebagent.action.highlevel import HighLevelActionSet
 from litewebagent.utils.playwright_manager import PlaywrightManager

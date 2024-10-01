@@ -1,12 +1,14 @@
 from typing import Dict, Any, Callable, List
 from typing import Optional
 
+
 class Tool:
     def __init__(self, name: str, func: Callable, description: str, parameters: Dict[str, Any]):
         self.name = name
         self.func = func
         self.description = description
         self.parameters = parameters
+
 
 class ToolRegistry:
     _instance = None
@@ -61,11 +63,12 @@ class ToolRegistry:
 
     @classmethod
     def _register_all_tools(cls):
-        # Import the tool registration functions here
         try:
-            pass
+            from litewebagent.tools.navigation import register_navigation_tool
+            register_navigation_tool()
+            from litewebagent.tools.select_option import register_select_option_tool
+            register_select_option_tool()
+            from litewebagent.tools.upload_file import register_upload_file_tool
+            register_upload_file_tool()
         except Exception as e:
             print(f"Error while registering tools: {e}")  # Debug statement to catch any import or registration issues
-
-
-

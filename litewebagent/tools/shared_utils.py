@@ -92,19 +92,3 @@ def take_action(task_description, agent_type, features=None, branching_factor=No
         error_msg = f"{type(e).__name__}: {str(e)}"
         logger.error(f"Task failed: {error_msg}")
         return f"Task failed: {error_msg}"
-
-
-def navigation(task_description, features=None, branching_factor=None, playwright_manager=None, log_folder='log'):
-    response = take_action(task_description, ["bid", "nav"], features, branching_factor, playwright_manager, log_folder)
-    return response
-
-
-def upload_file(task_description, features=None, branching_factor=None, playwright_manager=None, log_folder='log'):
-    response = take_action(task_description, ["file"], features, branching_factor, playwright_manager, log_folder)
-    return response
-
-
-def select_option(task_description, features=None, branching_factor=None, playwright_manager=None, log_folder='log'):
-    response = take_action(task_description, ["select_option"], features, branching_factor, playwright_manager,
-                           log_folder)
-    return response
