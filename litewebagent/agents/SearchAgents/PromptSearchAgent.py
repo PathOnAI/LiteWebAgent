@@ -25,8 +25,6 @@ class PromptSearchAgent:
             self,
             starting_url: str,
             model_name: str,
-            tools: List[str],
-            available_tools: List[str],
             messages: List[Dict[str, Any]],
             goal: str,
             playwright_manager: PlaywrightManager,
@@ -34,8 +32,6 @@ class PromptSearchAgent:
     ):
         self.model_name = model_name
         self.starting_url = starting_url
-        self.tools = tools
-        self.available_tools = available_tools
         self.messages = messages
         self.goal = goal
         self.playwright_manager = playwright_manager

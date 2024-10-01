@@ -34,10 +34,8 @@ class PromptAgent:
         summary = response.choices[0].message.content
         return summary
 
-    def __init__(self, model_name, tools, available_tools, messages, goal, playwright_manager, log_folder):
+    def __init__(self, model_name, messages, goal, playwright_manager, log_folder):
         self.model_name = model_name
-        self.tools = tools
-        self.available_tools = available_tools
         self.messages = messages
         self.goal = goal
         self.playwright_manager = playwright_manager
