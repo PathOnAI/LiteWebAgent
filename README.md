@@ -33,6 +33,18 @@ cp .env.example .env
 ```
 
 ### (2) QuickStart
+Try FunctionCallingAgent on google.com
+```
+python examples/google_test.py
+```
+
+Try PromptSearchAgent on google.com
+```
+python examples/google_search_agent_test.py
+```
+
+
+### (3) Try different agent
 * use prompting-based web agent to finish some task and save the workflow
 ```bash
 python -m prompting_main --agent_type PromptAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
