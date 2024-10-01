@@ -1,21 +1,16 @@
 import time
-import os
-import json
 import logging
 from openai import OpenAI
-from litewebagent.observation.observation import (
-    _pre_extract, _post_extract, extract_screenshot, extract_dom_snapshot,
-    extract_dom_extra_properties, extract_merged_axtree, extract_focused_element_bid
-)
-from litewebagent.observation.extract_elements import extract_interactive_elements, highlight_elements
 from litewebagent.action.highlevel import HighLevelActionSet
-from litewebagent.action.base import execute_python_code
-from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str
-from litewebagent.utils.utils import *
+from collections import defaultdict
+from litewebagent.utils.utils import query_openai_model
+from litewebagent.action.utils import prepare_prompt, execute_action
+from litewebagent.action.utils import build_highlevel_action_parser
+from litewebagent.browser_env.observation import extract_page_info
+from litewebagent.evaluation.feedback import capture_post_action_feedback
 
 logger = logging.getLogger(__name__)
 openai_client = OpenAI()
-
 
 
 def get_action_probability(responses, branching_factor):
@@ -41,7 +36,9 @@ def get_action_probability(responses, branching_factor):
     print(updated_actions)
     return updated_actions
 
-def take_action(task_description, agent_type, features=None, branching_factor=None, playwright_manager=None, log_folder='log'):
+
+def take_action(task_description, agent_type, features=None, branching_factor=None, playwright_manager=None,
+                log_folder='log'):
     try:
         context = playwright_manager.get_context()
         page = playwright_manager.get_page()
@@ -72,13 +69,15 @@ def take_action(task_description, agent_type, features=None, branching_factor=No
         if branching_factor == None:
             responses = query_openai_model(system_msg, prompt, page_info['screenshot'], num_outputs=20)
         else:
-            responses = query_openai_model(system_msg, prompt, page_info['screenshot'], num_outputs=max(branching_factor * 2, 20))
+            responses = query_openai_model(system_msg, prompt, page_info['screenshot'],
+                                           num_outputs=max(branching_factor * 2, 20))
         updated_actions = get_action_probability(responses, branching_factor)
         action = updated_actions[0]['action']
 
         # Execute the action
         try:
-            execute_action(action, action_set, page, context, task_description, page_info['interactive_elements'], log_folder)
+            execute_action(action, action_set, page, context, task_description, page_info['interactive_elements'],
+                           log_folder)
         except Exception as e:
             last_action_error = f"{type(e).__name__}: {str(e)}"
             logger.error(f"Action execution failed: {last_action_error}")
@@ -95,7 +94,7 @@ def take_action(task_description, agent_type, features=None, branching_factor=No
         return f"Task failed: {error_msg}"
 
 
-def navigation(task_description, features=None, branching_factor=None, playwright_manager= None, log_folder='log'):
+def navigation(task_description, features=None, branching_factor=None, playwright_manager=None, log_folder='log'):
     response = take_action(task_description, ["bid", "nav"], features, branching_factor, playwright_manager, log_folder)
     return response
 
@@ -106,5 +105,6 @@ def upload_file(task_description, features=None, branching_factor=None, playwrig
 
 
 def select_option(task_description, features=None, branching_factor=None, playwright_manager=None, log_folder='log'):
-    response = take_action(task_description, ["select_option"], features, branching_factor, playwright_manager, log_folder)
+    response = take_action(task_description, ["select_option"], features, branching_factor, playwright_manager,
+                           log_folder)
     return response

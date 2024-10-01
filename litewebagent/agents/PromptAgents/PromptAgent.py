@@ -1,45 +1,27 @@
-from litellm import completion
-from typing import List, Dict, Any
-import json
-import logging
-import time
-import os
-import json
-import logging
+from typing import Dict
 from openai import OpenAI
-from litewebagent.observation.observation import (
-    _pre_extract, _post_extract, extract_screenshot, extract_dom_snapshot,
-    extract_dom_extra_properties, extract_merged_axtree, extract_focused_element_bid
-)
-from litewebagent.observation.extract_elements import extract_interactive_elements, highlight_elements
 from litewebagent.action.highlevel import HighLevelActionSet
-from litewebagent.action.base import execute_python_code
-from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str
-from litewebagent.utils.utils import build_highlevel_action_parser
-from litewebagent.utils.utils import *
-import ast
-import pyparsing as pp
-from typing import Any
-from collections import defaultdict
-from collections import deque
-from litewebagent.utils.utils import *
-from litewebagent.utils.prompt_functions import extract_top_actions, is_goal_finished
+from litewebagent.action.utils import execute_action
+from litewebagent.action.prompt_functions import extract_top_actions, is_goal_finished
+from litewebagent.browser_env.observation import extract_page_info
+from litewebagent.evaluation.feedback import capture_post_action_feedback
+import time
+import logging
 
 logger = logging.getLogger(__name__)
 
-# very basic chain of thought by providing the message list to OpenAI API
 openai_client = OpenAI()
 
 
-
 class PromptAgent:
-
 
     def send_prompt(self, plan: str) -> Dict:
         if plan is not None:
             self.messages.append({"role": "user", "content": "The plan is: {}".format(plan)})
         trajectory = self.send_completion_request(plan, 0, [])
-        messages = [{"role": "system", "content": "The goal is {}, summarize the actions and result taken by the web agent in one sentence, be concise.".format(self.goal)}]
+        messages = [{"role": "system",
+                     "content": "The goal is {}, summarize the actions and result taken by the web agent in one sentence, be concise.".format(
+                         self.goal)}]
         for item in trajectory:
             action = item['action']
             action_result = item['action_result']
@@ -69,8 +51,7 @@ class PromptAgent:
         )
         self.log_folder = log_folder
 
-
-    def send_completion_request(self, plan: str, depth: int = 0, trajectory= []) -> Dict:
+    def send_completion_request(self, plan: str, depth: int = 0, trajectory=[]) -> Dict:
         if depth >= 8:
             return None
 
@@ -83,7 +64,8 @@ class PromptAgent:
         updated_actions = extract_top_actions(trajectory, self.goal, page_info, self.action_set, openai_client,
                                               branching_factor)
         next_action = updated_actions[0]['action']
-        execute_action(next_action, self.action_set, page, context, self.goal, page_info['interactive_elements'], self.log_folder)
+        execute_action(next_action, self.action_set, page, context, self.goal, page_info['interactive_elements'],
+                       self.log_folder)
         feedback = capture_post_action_feedback(page, next_action, self.goal, self.log_folder)
         trajectory.append({'action': next_action, 'action_result': feedback})
 

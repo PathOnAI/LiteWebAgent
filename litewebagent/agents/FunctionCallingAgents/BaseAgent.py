@@ -1,14 +1,16 @@
 import json
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict
 
 logger = logging.getLogger(__name__)
 from openai import OpenAI
 from dotenv import load_dotenv
-import os
+
 _ = load_dotenv()
 
 client = OpenAI()
+
+
 class BaseAgent:
     def __init__(self, model_name, tools, available_tools, messages, goal, playwright_manager, log_folder):
         self.model_name = model_name
@@ -29,6 +31,7 @@ class BaseAgent:
         )
         plan = chat_completion.choices[0].message.content
         return plan
+
     def process_tool_calls(self, tool_calls: List[Dict]) -> List[Dict]:
         tool_call_responses = []
         logger.info("Number of function calls: %i", len(tool_calls))

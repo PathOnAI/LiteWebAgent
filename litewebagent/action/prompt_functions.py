@@ -1,14 +1,13 @@
-from litewebagent.utils.utils import prepare_prompt, encode_image
-from litewebagent.utils.utils import build_highlevel_action_parser
+from litewebagent.utils.utils import encode_image
+from litewebagent.action.utils import prepare_prompt
+from litewebagent.action.utils import build_highlevel_action_parser
 from collections import defaultdict
-
 
 
 def is_goal_finished(messages, openai_client):
     from pydantic import BaseModel
     class Plan(BaseModel):
         goal_finished: bool
-
 
     new_response = openai_client.beta.chat.completions.parse(
         model='gpt-4o-mini',
@@ -19,6 +18,8 @@ def is_goal_finished(messages, openai_client):
 
     goal_finished = message.goal_finished
     return goal_finished
+
+
 def extract_top_actions(trajectory, goal, page_info, action_set, openai_client, branching_factor):
     system_msg = f"""
             # Instructions

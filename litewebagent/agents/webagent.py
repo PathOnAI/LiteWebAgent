@@ -8,7 +8,7 @@ from litewebagent.agents.FunctionCallingAgents.HighLevelPlanningAgent import Hig
 from litewebagent.agents.FunctionCallingAgents.ContextAwarePlanningAgent import ContextAwarePlanningAgent
 from litewebagent.agents.SearchAgents.PromptSearchAgent import PromptSearchAgent
 from litewebagent.agents.PromptAgents.PromptAgent import PromptAgent
-from litewebagent.utils.fc_functions import navigation, upload_file, select_option
+from litewebagent.tools.fc_functions import navigation, upload_file, select_option
 from litewebagent.utils.utils import setup_logger
 from litewebagent.utils.playwright_manager import setup_playwright
 

@@ -1,4 +1,3 @@
-import json
 import logging
 import time
 from collections import deque
@@ -9,14 +8,13 @@ from openai import OpenAI
 from litewebagent.action.highlevel import HighLevelActionSet
 from litewebagent.utils.playwright_manager import PlaywrightManager
 from litewebagent.utils.utils import (
-    encode_image,
-    extract_page_info,
     parse_function_args,
     search_interactive_elements,
 )
-from litewebagent.utils.evaluators import goal_finished_evaluator
-from litewebagent.utils.replay import take_action
-from litewebagent.utils.prompt_functions import extract_top_actions
+from litewebagent.evaluation.evaluators import goal_finished_evaluator
+from litewebagent.action.replay import take_action
+from litewebagent.action.prompt_functions import extract_top_actions
+from litewebagent.browser_env.observation import extract_page_info
 
 logger = logging.getLogger(__name__)
 openai_client = OpenAI()
@@ -24,15 +22,15 @@ openai_client = OpenAI()
 
 class PromptSearchAgent:
     def __init__(
-        self,
-        starting_url: str,
-        model_name: str,
-        tools: List[str],
-        available_tools: List[str],
-        messages: List[Dict[str, Any]],
-        goal: str,
-        playwright_manager: PlaywrightManager,
-        log_folder
+            self,
+            starting_url: str,
+            model_name: str,
+            tools: List[str],
+            available_tools: List[str],
+            messages: List[Dict[str, Any]],
+            goal: str,
+            playwright_manager: PlaywrightManager,
+            log_folder
     ):
         self.model_name = model_name
         self.starting_url = starting_url
@@ -59,7 +57,7 @@ class PromptSearchAgent:
         return self.trajectories
 
     def get_next_actions(
-        self, trajectory: List[Dict[str, Any]], finished_score_threshold: float = 0.9
+            self, trajectory: List[Dict[str, Any]], finished_score_threshold: float = 0.9
     ):
         logger.debug("Initializing Playwright Manager")
         self.playwright_manager.close()
@@ -245,5 +243,3 @@ class PromptSearchAgent:
             trajectory_record["status"] = "error"
             trajectory_record["error"] = str(e)
             # Do not go deeper, but trajectory is already saved
-
-
