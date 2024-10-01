@@ -7,7 +7,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='litewebagent',
-    version='0.1.4',
+    version='0.1.5',
     packages=find_packages(),
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
