@@ -8,9 +8,13 @@ Please note that the LiteWebAgent repository is in development mode. We have ope
 <a href='https://danqingz.github.io/blog/2024/08/22/LiteWebAgent.html'><img src='https://img.shields.io/badge/BLOG-181717?logo=github&logoColor=white'></a>
 <a href='https://litewebagent.readthedocs.io/en/latest/'><img src='https://img.shields.io/badge/Documentation-green'></a>
 
-## 2. Development mode
-### (1) Installation
-* From PyPI: https://pypi.org/project/litewebagent/
+## 📰 News
+* [2024-10-01] Completed a major refactoring of LiteWebAgent to make it flexible for importing the package, enabling the addition of web browsing capabilities to any AI agent.
+* [2024-09-20] We reimplemented the paper Tree Search for Language Model Agents in the LiteWebAgent framework. Now, the search agent is capable of exploring different trajectories for accomplishing web browsing tasks and returning the most promising one. This is useful for finding the optimal path to complete complex web browsing tasks in an offline manner.
+* [2024-08-22] The initial version of LiteWebAgent was released, providing a robust framework for using natural language to control a web agent.
+
+## 1. QuickStart
+From PyPI: https://pypi.org/project/litewebagent/
 ```
 pip install litewebagent 
 ```
@@ -18,7 +22,19 @@ Then, a required step is to setup playwright by running
 ```
 playwright install chromium
 ```
-* Set up locally
+Then please create a .env file, and update your API keys:
+
+```bash
+cp .env.example .env
+```
+You are ready to go! Try FunctionCallingAgent on google.com
+```
+python examples/google_test.py
+```
+
+## 2. Development mode
+### (1) Installation
+Set up locally
 
 First set up virtual environment, and allow your code to be able to see 'litewebagent'
 ```bash
@@ -32,19 +48,7 @@ Then please create a .env file, and update your API keys:
 cp .env.example .env
 ```
 
-### (2) QuickStart
-Try FunctionCallingAgent on google.com
-```
-python examples/google_test.py
-```
-
-Try PromptSearchAgent on google.com
-```
-python examples/google_search_agent_test.py
-```
-
-
-### (3) Try different agent
+### (2) Try different agents
 * use prompting-based web agent to finish some task and save the workflow
 ```bash
 python -m prompting_main --agent_type PromptAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
@@ -58,7 +62,6 @@ python -m function_calling_main --agent_type ContextAwarePlanningAgent --startin
 https://www.loom.com/share/1018bcc4e21c4a7eb517b60c2931ee3c
 https://www.loom.com/share/aa48256478714d098faac740239c9013
 https://www.loom.com/share/89f5fa69b8cb49c8b6a60368ddcba103
-
 
 * replay the workflow verified by the web agent
 If you haven't used the web agent to try any tests yet, first copy our example.json file.
