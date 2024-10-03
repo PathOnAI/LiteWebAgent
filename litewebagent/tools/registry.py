@@ -70,5 +70,7 @@ class ToolRegistry:
             register_select_option_tool()
             from litewebagent.tools.upload_file import register_upload_file_tool
             register_upload_file_tool()
+            from litewebagent.tools.webscraping import register_webscraping_tool
+            register_webscraping_tool()
         except Exception as e:
             print(f"Error while registering tools: {e}")  # Debug statement to catch any import or registration issues

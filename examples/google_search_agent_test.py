@@ -1,12 +1,12 @@
 from dotenv import load_dotenv
 
 _ = load_dotenv()
-from litewebagent.agents.webagent import setup_search_agent
+from litewebagent.core.agent_factory import setup_search_agent
 
 agent_type = "PromptSearchAgent"
 starting_url = "https://www.google.com"
 goal = 'search dining table'
-plan = ''
+plan = None
 log_folder = "log"
 model = "gpt-4o-mini"
 features = "axtree"
