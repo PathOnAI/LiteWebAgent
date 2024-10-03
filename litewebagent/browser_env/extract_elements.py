@@ -147,13 +147,12 @@ def extract_interactive_elements(page):
     return page.evaluate(js_code, BID_ATTR)
 
 
-def highlight_elements(page, elements):
+def highlight_elements(page, elements, max_retries=3, retry_delay=1000):
     js_code = """
     (elements) => {
         if (!window.litewebagentLabels) {
             window.litewebagentLabels = [];
         }
-
         function unmarkPage() {
             for (const label of window.litewebagentLabels) {
                 if (label && label.parentNode) {
@@ -162,9 +161,8 @@ def highlight_elements(page, elements):
             }
             window.litewebagentLabels.length = 0;
         }
-
         unmarkPage();
-
+        let highlightedCount = 0;
         elements.forEach((item, index) => {
             item.rects.forEach((bbox) => {
                 const newElement = document.createElement("div");
@@ -178,7 +176,6 @@ def highlight_elements(page, elements):
                 newElement.style.pointerEvents = "none";
                 newElement.style.boxSizing = "border-box";
                 newElement.style.zIndex = 2147483647;
-
                 const label = document.createElement("span");
                 label.textContent = `${item.bid}`;
                 label.style.position = "absolute";
@@ -190,14 +187,26 @@ def highlight_elements(page, elements):
                 label.style.fontSize = "12px";
                 label.style.borderRadius = "2px";
                 newElement.appendChild(label);
-
                 document.body.appendChild(newElement);
                 window.litewebagentLabels.push(newElement);
+                highlightedCount++;
             });
         });
+        return highlightedCount;
     }
     """
-    page.evaluate(js_code, elements)
+
+    for attempt in range(max_retries):
+        highlighted_count = page.evaluate(js_code, elements)
+        if highlighted_count == len(elements):
+            logger.info(f"All {highlighted_count} elements highlighted successfully.")
+            return
+
+        logger.info(
+            f"Attempt {attempt + 1}: Highlighted {highlighted_count}/{len(elements)} elements. Retrying in {retry_delay}ms...")
+        page.wait_for_timeout(retry_delay)
+
+    logger.info(f"Warning: Only {highlighted_count}/{len(elements)} elements were highlighted after {max_retries} attempts.")
 
 
 def remove_highlights(page):
