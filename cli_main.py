@@ -8,7 +8,7 @@ import os
 
 _ = load_dotenv()
 from litewebagent.utils.utils import setup_logger
-from litewebagent.agents.webagent import setup_web_agent
+from litewebagent.core.agent_factory import setup_web_agent
 
 
 def progress_indicator():

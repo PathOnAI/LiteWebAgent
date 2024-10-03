@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import argparse
 
 _ = load_dotenv()
-from litewebagent.agents.webagent import setup_prompting_web_agent
+from litewebagent.core.agent_factory import setup_prompting_web_agent
 
 
 def main(args):

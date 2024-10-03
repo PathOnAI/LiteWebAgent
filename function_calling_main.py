@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import argparse
 
 _ = load_dotenv()
-from litewebagent.agents.webagent import setup_function_calling_web_agent
+from litewebagent.core.agent_factory import setup_function_calling_web_agent
 
 def main(args):
     # Use the features from command-line arguments
@@ -10,7 +10,7 @@ def main(args):
     branching_factor = args.branching_factor if args.branching_factor else None
 
     # Use the tool_names from command-line arguments
-    tool_names = args.tool_names.split(',') if args.tool_names else ["navigation", "select_option", "upload_file"]
+    tool_names = args.tool_names.split(',') if args.tool_names else ["navigation", "select_option", "upload_file", "webscraping"]
 
     agent = setup_function_calling_web_agent(args.starting_url, args.goal, model_name=args.model, agent_type=args.agent_type,
                             features=features, tool_names=tool_names, branching_factor=branching_factor, log_folder=args.log_folder,
@@ -37,8 +37,8 @@ if __name__ == "__main__":
                         help="Storage state json file")
     parser.add_argument('--features', type=str, default="axtree",
                         help="Comma-separated list of features to use (default: axtree)")
-    parser.add_argument('--tool_names', type=str, default="navigation,select_option,upload_file",
-                        help="Comma-separated list of tool names to use (default: navigation,select_option,upload_file)")
+    parser.add_argument('--tool_names', type=str, default="navigation,select_option,upload_file,webscraping",
+                        help="Comma-separated list of tool names to use (default: navigation,select_option,upload_file,webscraping)")
     parser.add_argument('--branching_factor', type=int, default=None)
     parser.add_argument('--log_folder', type=str, default='log', help='Path to the log folder')
     args = parser.parse_args()

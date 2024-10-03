@@ -31,7 +31,7 @@ def create_function_wrapper(func, features, branching_factor, playwright_manager
 
 
 def setup_function_calling_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="DemoAgent",
-                                     features=['axtree'], tool_names = ["navigation", "select_option", "upload_file"],
+                                     features=['axtree'], tool_names = ["navigation", "select_option", "upload_file", "webscraping"],
                                      branching_factor=None, log_folder="log", storage_state='state.json'):
     logger = setup_logger(log_folder)
     playwright_manager = setup_playwright(log_folder=log_folder, storage_state=storage_state)
