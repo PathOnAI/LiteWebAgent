@@ -85,5 +85,7 @@ def extract_page_info(page, log_folder):
     page_info['extra_properties'] = extract_dom_extra_properties(page_info.get('dom'))
     page_info['interactive_elements'] = extract_interactive_elements(page)
     highlight_elements(page, page_info['interactive_elements'])
+    screenshot_path = os.path.join(log_folder, 'screenshots', 'screenshot_SoM.png')
+    page.screenshot(path=screenshot_path)
     _post_extract(page)
     return page_info
