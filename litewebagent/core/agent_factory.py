@@ -32,9 +32,9 @@ def create_function_wrapper(func, features, branching_factor, playwright_manager
 
 def setup_function_calling_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="DemoAgent",
                                      features=['axtree'], tool_names = ["navigation", "select_option", "upload_file", "webscraping"],
-                                     branching_factor=None, log_folder="log", storage_state='state.json'):
+                                     branching_factor=None, log_folder="log", storage_state='state.json', headless=False):
     logger = setup_logger(log_folder)
-    playwright_manager = setup_playwright(log_folder=log_folder, storage_state=storage_state)
+    playwright_manager = setup_playwright(log_folder=log_folder, storage_state=storage_state, headless=headless)
     if features is None:
         features = DEFAULT_FEATURES
 
@@ -98,9 +98,9 @@ def setup_function_calling_web_agent(starting_url, goal, model_name="gpt-4o-mini
 
 
 def setup_prompting_web_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="DemoAgent", features=['axtree'],
-                              branching_factor=None, log_folder="log", storage_state='state.json'):
+                              branching_factor=None, log_folder="log", storage_state='state.json', headless=False):
     logger = setup_logger(log_folder)
-    playwright_manager = setup_playwright(log_folder=log_folder, storage_state=storage_state)
+    playwright_manager = setup_playwright(log_folder=log_folder, storage_state=storage_state, headless=headless)
     if features is None:
         features = DEFAULT_FEATURES
 
@@ -147,9 +147,13 @@ def setup_prompting_web_agent(starting_url, goal, model_name="gpt-4o-mini", agen
 
 
 def setup_search_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type="PromptSearchAgent",
-                       features=['axtree'], branching_factor=None, log_folder="log", storage_state='state.json'):
+                       features=['axtree'], branching_factor=None, log_folder="log", storage_state='state.json', headless=False):
     logger = setup_logger(log_folder)
-    playwright_manager = setup_playwright(log_folder=log_folder, storage_state=storage_state)
+    playwright_manager = setup_playwright(log_folder=log_folder, storage_state=storage_state, headless=headless)
+    from litewebagent.tools.navigation import navigation
+    from litewebagent.tools.upload_file import upload_file
+    from litewebagent.tools.select_option import select_option
+
     if features is None:
         features = DEFAULT_FEATURES
 
