@@ -107,9 +107,9 @@ https://www.loom.com/share/986f0addf10949d88ae25cd802588a85
 ## 4. Citing LiteWebAgent
 ```
 @misc{zhang2024litewebagent,
-  title={LiteWebAgent},
+  title={LiteWebAgent: The Library for LLM-based web-agent applications},
   author={Zhang, Danqing and Rama, Balaji and He, Shiying and Ni, Jingyi},
-  journal={https://danqingz.github.io/blog/2024/08/22/LiteWebAgent.html},
+  journal={https://github.com/PathOnAI/LiteWebAgent},
   year={2024}
 }
 ```
