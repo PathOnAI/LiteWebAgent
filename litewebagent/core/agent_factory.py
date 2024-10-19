@@ -60,7 +60,6 @@ def setup_function_calling_web_agent(starting_url, goal, model_name="gpt-4o-mini
     - Strictly limit your actions to the current task. Do not attempt additional tasks or next steps.
     - Use only the functions provided to you. Do not attempt to use functions or methods that are not explicitly available.
     - For navigation or interaction with page elements, always use the appropriate bid (browser element ID) when required by a function.
-    - Do not try to navigate to external websites or use URLs directly.
     - If a task cannot be completed with the available functions, report the limitation rather than attempting unsupported actions.
     - After completing a task, report its completion and await new instructions. Do not suggest or initiate further actions.
 
@@ -119,7 +118,6 @@ def setup_prompting_web_agent(starting_url, goal, model_name="gpt-4o-mini", agen
     - Strictly limit your actions to the current task. Do not attempt additional tasks or next steps.
     - Use only the functions provided to you. Do not attempt to use functions or methods that are not explicitly available.
     - For navigation or interaction with page elements, always use the appropriate bid (browser element ID) when required by a function.
-    - Do not try to navigate to external websites or use URLs directly.
     - If a task cannot be completed with the available functions, report the limitation rather than attempting unsupported actions.
     - After completing a task, report its completion and await new instructions. Do not suggest or initiate further actions.
 
@@ -141,7 +139,7 @@ def setup_prompting_web_agent(starting_url, goal, model_name="gpt-4o-mini", agen
         agent = PromptAgent(model_name=model_name,
                             messages=messages, goal=goal, playwright_manager=playwright_manager, log_folder=log_folder)
     else:
-        error_message = f"Unsupported agent type: {agent_type}. Please use 'FunctionCallingAgent', 'HighLevelPlanningAgent', 'ContextAwarePlanningAgent', 'PromptAgent' or 'PromptSearchAgent' ."
+        error_message = f"Unsupported agent type: {agent_type}. Please use 'PromptAgent'."
         logger.error(error_message)
         return {"error": error_message}
     return agent
@@ -179,7 +177,6 @@ def setup_search_agent(starting_url, goal, model_name="gpt-4o-mini", agent_type=
     - Strictly limit your actions to the current task. Do not attempt additional tasks or next steps.
     - Use only the functions provided to you. Do not attempt to use functions or methods that are not explicitly available.
     - For navigation or interaction with page elements, always use the appropriate bid (browser element ID) when required by a function.
-    - Do not try to navigate to external websites or use URLs directly.
     - If a task cannot be completed with the available functions, report the limitation rather than attempting unsupported actions.
     - After completing a task, report its completion and await new instructions. Do not suggest or initiate further actions.
 
