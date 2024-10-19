@@ -1,21 +1,16 @@
-from playwright.sync_api import sync_playwright
 import os
 import threading
-
+from playwright.sync_api import sync_playwright
 
 class PlaywrightManager:
-    def __init__(self, storage_state=None, video_dir='./log/videos', headless=False):
+    def __init__(self, storage_state=None, headless=False):
         self.playwright = None
         self.browser = None
         self.context = None
         self.page = None
         self.storage_state = storage_state
-        self.video_dir = video_dir
         self.lock = threading.Lock()
         self.headless = headless
-
-        # Ensure the video directory exists
-        os.makedirs(self.video_dir, exist_ok=True)
 
     def initialize(self):
         with self.lock:
@@ -23,10 +18,7 @@ class PlaywrightManager:
                 self.playwright = sync_playwright().start()
                 self.browser = self.playwright.chromium.launch(headless=self.headless)
 
-                context_options = {
-                    "record_video_dir": self.video_dir,
-                    "record_video_size": {"width": 1280, "height": 720}
-                }
+                context_options = {}
 
                 if self.storage_state:
                     context_options["storage_state"] = self.storage_state
@@ -67,7 +59,7 @@ class PlaywrightManager:
 
 
 def setup_playwright(log_folder, storage_state='state.json', headless=False):
-    playwright_manager = PlaywrightManager(storage_state=storage_state, video_dir=os.path.join(log_folder, 'videos'), headless=headless)
+    playwright_manager = PlaywrightManager(storage_state=storage_state, headless=headless)
     browser = playwright_manager.get_browser()
     context = playwright_manager.get_context()
     page = playwright_manager.get_page()
