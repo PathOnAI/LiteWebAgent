@@ -70,8 +70,8 @@ def setup_function_calling_web_agent(starting_url, goal, model_name="gpt-4o-mini
     file_path = os.path.join(log_folder, 'flow', 'steps.json')
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     page = playwright_manager.get_page()
-    # increase to 10s
-    page.goto(starting_url, timeout=10000)
+    # increase to 60s
+    page.goto(starting_url, timeout=60000)
     # Maximize the window on macOS
     page.set_viewport_size({"width": 1440, "height": 900})
 
