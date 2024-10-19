@@ -22,8 +22,11 @@ Then, a required step is to setup playwright by running
 ```
 playwright install chromium
 ```
+Test playwright & chromium installation by running this script
+```bash
+python /Users/danqingzhang/Desktop/test_installation.py 
+```
 Then please create a .env file, and update your API keys:
-
 ```bash
 cp .env.example .env
 ```
@@ -46,6 +49,11 @@ Then please create a .env file, and update your API keys:
 
 ```bash
 cp .env.example .env
+```
+
+Test playwright & chromium installation by running this script
+```bash
+python /Users/danqingzhang/Desktop/test_installation.py 
 ```
 
 ### (2) Try different agents
