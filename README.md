@@ -1,10 +1,6 @@
 # LiteWebAgent
 repo owner: Danni (Danqing) Zhang (danqing.zhang.personal@gmail.com)
 
-main contributors: Balaji Rama (balajirw10@gmail.com), Shiying He (sy.he0303@gmail.com) and Jingyi Ni (jingyi.ni.personal@gmail.com)
-
-Please note that the LiteWebAgent repository is in development mode. We have open-sourced the repository to foster collaboration between contributors.
-
 <a href='https://danqingz.github.io/blog/2024/08/22/LiteWebAgent.html'><img src='https://img.shields.io/badge/BLOG-181717?logo=github&logoColor=white'></a>
 <a href='https://litewebagent.readthedocs.io/en/latest/'><img src='https://img.shields.io/badge/Documentation-green'></a>
 
@@ -112,7 +108,11 @@ https://www.loom.com/share/986f0addf10949d88ae25cd802588a85
 | [Mind2Web](https://osu-nlp-group.github.io/Mind2Web/)                    | [ContextAwarePlanningAgent](https://github.com/PathOnAI/LiteWebAgent/blob/main/litewebagent/agents/FunctionCallingAgents/ContextAwarePlanningAgent.py) |
 | [Tree Search for Language Model Agents](https://jykoh.com/search-agents) | [PromptSearchAgent](https://github.com/PathOnAI/LiteWebAgent/blob/main/litewebagent/agents/SearchAgents/PromptSearchAgent.py)                          |
 
-## 4. Citing LiteWebAgent
+## 🚀 4. Contributions
+[![LiteWebiAgent contributors](https://contrib.rocks/image?repo=PathOnAI/LiteWebAgent)](https://github.com/PathOnAI/LiteWebAgent/graphs/contributors)
+
+
+## 5. Citing LiteWebAgent
 ```
 @misc{zhang2024litewebagent,
   title={LiteWebAgent: The Library for LLM-based web-agent applications},
