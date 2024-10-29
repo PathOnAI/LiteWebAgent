@@ -111,7 +111,6 @@ https://www.loom.com/share/986f0addf10949d88ae25cd802588a85
 ## 🚀 4. Contributions
 [![LiteWebiAgent contributors](https://contrib.rocks/image?repo=PathOnAI/LiteWebAgent)](https://github.com/PathOnAI/LiteWebAgent/graphs/contributors)
 
-
 ## 5. Citing LiteWebAgent
 ```
 @misc{zhang2024litewebagent,
@@ -121,3 +120,7 @@ https://www.loom.com/share/986f0addf10949d88ae25cd802588a85
   year={2024}
 }
 ```
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=PathOnAI/LiteWebAgent&type=Date)](https://star-history.com/#PathOnAI/LiteWebAgent&Date)
