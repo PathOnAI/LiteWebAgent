@@ -1,7 +1,6 @@
 # LiteWebAgent
 repo owner: Danni (Danqing) Zhang (danqing.zhang.personal@gmail.com)
 
-<a href='https://danqingz.github.io/blog/2024/08/22/LiteWebAgent.html'><img src='https://img.shields.io/badge/BLOG-181717?logo=github&logoColor=white'></a>
 <a href='https://litewebagent.readthedocs.io/en/latest/'><img src='https://img.shields.io/badge/Documentation-green'></a>
 
 ## 📰 News
