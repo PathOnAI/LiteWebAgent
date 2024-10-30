@@ -19,7 +19,7 @@ playwright install chromium
 ```
 Test playwright & chromium installation by running this script
 ```bash
-python /Users/danqingzhang/Desktop/test_installation.py 
+python test_installation.py 
 ```
 Then please create a .env file, and update your API keys:
 ```bash
