@@ -1,7 +1,12 @@
 # LiteWebAgent
 repo owner: Danni (Danqing) Zhang (danqing.zhang.personal@gmail.com)
 
-<a href='https://litewebagent.readthedocs.io/en/latest/'><img src='https://img.shields.io/badge/Documentation-green'></a>
+<p align="left">
+    <a href='https://litewebagent.readthedocs.io/en/latest/'>
+        <img src='https://img.shields.io/badge/Documentation-green?style=for-the-badge' height="28"></a>
+    <a href="https://discord.gg/XwvEyVhdw3">
+        <img src="https://img.shields.io/badge/Community-Discord-8A2BE2" height="28"></a>
+</p>
 
 ## 📰 News
 * [2024-10-01] Completed a major refactoring of LiteWebAgent to make it flexible for importing the package, enabling the addition of web browsing capabilities to any AI agent.
