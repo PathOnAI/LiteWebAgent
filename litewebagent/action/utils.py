@@ -1,3 +1,4 @@
+# copied and modified from https://github.com/ServiceNow/BrowserGym
 import os
 from ..browser_env.extract_elements import remove_highlights
 from .base import execute_python_code_safely

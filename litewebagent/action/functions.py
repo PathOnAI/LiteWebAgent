@@ -1,3 +1,4 @@
+# copied and modified from https://github.com/ServiceNow/BrowserGym
 # these are placeholders
 # all these symbols will be available in browsergym actions
 import playwright.sync_api

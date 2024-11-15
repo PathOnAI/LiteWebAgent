@@ -1,3 +1,4 @@
+# copied and modified from https://github.com/ServiceNow/BrowserGym
 import ast
 import logging
 # import numpy as np

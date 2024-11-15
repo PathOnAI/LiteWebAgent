@@ -1,3 +1,4 @@
+# copied and modified from https://github.com/ServiceNow/BrowserGym
 TEXT_MAX_LENGTH = 2**32 - 1
 
 BROWSERGYM_ID_ATTRIBUTE = "data-unique-test-id"  # Playwright's default is "data-testid"

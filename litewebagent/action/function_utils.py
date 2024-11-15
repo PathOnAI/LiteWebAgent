@@ -1,3 +1,4 @@
+# copied and modified from https://github.com/ServiceNow/BrowserGym
 import playwright.sync_api
 from typing import Literal
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
