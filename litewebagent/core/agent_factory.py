@@ -127,7 +127,7 @@ def setup_prompting_web_agent(starting_url, goal, playwright_manager, model_name
     page = playwright_manager.get_page()
     page.goto(starting_url)
     # Maximize the window on macOS
-    page.set_viewport_size({"width": 1440, "height": 900})
+    # page.set_viewport_size({"width": 1440, "height": 900})
 
     with open(file_path, 'w') as file:
         file.write(goal + '\n')

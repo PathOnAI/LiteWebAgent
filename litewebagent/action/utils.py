@@ -1,6 +1,6 @@
 import os
 from ..browser_env.extract_elements import remove_highlights
-from .base import execute_python_code
+from .base import execute_python_code_safely
 import ast
 import pyparsing as pp
 from ..browser_env.extract_elements import flatten_interactive_elements_to_str
@@ -12,8 +12,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+
 def execute_action(action, action_set, page, context, task_description, interactive_elements, log_folder):
     code, function_calls = action_set.to_python_code(action)
+    results = []
     for function_name, function_args in function_calls:
         extracted_number = parse_function_args(function_args)
         result = locate_element(page, extracted_number)
@@ -21,19 +23,26 @@ def execute_action(action, action_set, page, context, task_description, interact
         result["url"] = page.url
         result['task_description'] = task_description
         logger.info(result)
-        # file_path = os.path.join(log_folder, 'flow', 'steps.json')
-        # append_to_steps_json(result, file_path)
+        results.append(result)
 
     logger.info("Executing action script")
     remove_highlights(page)
-    execute_python_code(
+
+    code_file_path = execute_python_code_safely(
         code,
         page,
         context,
+        log_folder,
         send_message_to_user=None,
-        report_infeasible_instructions=None,
+        report_infeasible_instructions=None
     )
-    return result
+    
+    # Add the code file path to the result
+    if results:
+        results[-1]['code_file'] = code_file_path
+    
+    return results[-1] if results else None
+    # return result
 
 
 def build_highlevel_action_parser() -> pp.ParserElement:
