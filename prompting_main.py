@@ -11,7 +11,7 @@ def main(args):
     features = args.features.split(',') if args.features else None
     branching_factor = args.branching_factor if args.branching_factor else None
 
-    playwright_manager = setup_playwright(log_folder=args.log_folder, storage_state=None, headless=False)
+    playwright_manager = setup_playwright(log_folder=args.log_folder, storage_state='state.json', headless=False)
     agent = setup_prompting_web_agent(args.starting_url, args.goal, playwright_manager=playwright_manager, model_name=args.model, agent_type=args.agent_type,
                             features=features, branching_factor=branching_factor, log_folder=args.log_folder,
                             storage_state=args.storage_state)
