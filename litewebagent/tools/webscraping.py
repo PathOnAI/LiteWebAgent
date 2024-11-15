@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 import time
 import random
-from litewebagent.tools.registry import ToolRegistry, Tool
+from .registry import ToolRegistry, Tool
 
 def webscraping(task_description, features=None, branching_factor=None, playwright_manager=None, log_folder='log'):
     max_retries = 3

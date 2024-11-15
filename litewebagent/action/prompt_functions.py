@@ -2,6 +2,7 @@ from litewebagent.utils.utils import encode_image
 from litewebagent.action.utils import prepare_prompt
 from litewebagent.action.utils import build_highlevel_action_parser
 from collections import defaultdict
+import base64
 
 
 def is_goal_finished(messages, openai_client):
@@ -34,7 +35,8 @@ def extract_top_actions(trajectory, goal, page_info, action_set, openai_client, 
             {goal}"""
 
     prompt = prepare_prompt(page_info, action_set, 'axtree')
-    base64_image = encode_image(page_info['screenshot'])
+    # base64_image = encode_image(page_info['screenshot'])
+    base64_image = base64.b64encode(page_info['screenshot']).decode('utf-8')
 
     response = openai_client.chat.completions.create(
         model="gpt-4o",

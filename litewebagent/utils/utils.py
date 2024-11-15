@@ -10,22 +10,21 @@ logger = logging.getLogger(__name__)
 openai_client = OpenAI()
 
 
-def setup_logger(log_folder, log_file="log.txt"):
-    if not os.path.exists(log_folder):
-        os.makedirs(log_folder)
+def setup_logger():
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(os.path.join(log_folder, log_file), mode="w"),
             logging.StreamHandler()
         ]
     )
     return logging.getLogger(__name__)
 
 
-def query_openai_model(system_msg, prompt, screenshot_path, num_outputs):
-    base64_image = encode_image(screenshot_path)
+def query_openai_model(system_msg, prompt, screenshot, num_outputs):
+    # base64_image = encode_image(screenshot_path)
+    base64_image = base64.b64encode(screenshot).decode('utf-8')
+
     response = openai_client.chat.completions.create(
         model="gpt-4o",
         messages=[
@@ -68,6 +67,90 @@ def search_interactive_elements(interactive_elements, extracted_number):
             }
     return {}  # Return empty dictionary if no matching element is found
 
+def locate_element(page, extracted_number):
+    """
+    Safely locate and extract information about an element on a page using Playwright.
+    Synchronous version.
+    
+    Args:
+        page: Playwright page object
+        extracted_number: ID or data-unique-test-id to search for
+        
+    Returns:
+        dict: Element information or empty dict if not found
+    """
+    try:
+        # Define selectors for potentially interactive elements
+        selectors = [
+            'a', 'button', 'input', 'select', 'textarea', 'summary', 
+            'video', 'audio', 'iframe', 'embed', 'object', 'menu', 
+            'label', 'fieldset', 'datalist', 'output', 'details', 
+            'dialog', 'option', '[role="button"]', '[role="link"]', 
+            '[role="checkbox"]', '[role="radio"]', '[role="menuitem"]', 
+            '[role="tab"]', '[tabindex]', '[contenteditable="true"]'
+        ]
+        
+        # Verify page is valid
+        if not page or not page.evaluate('() => document.readyState') == 'complete':
+            print("Page is not ready or invalid")
+            return {}
+
+        # Search for element by ID first (more efficient)
+        element = page.query_selector(f'[data-unique-test-id="{extracted_number}"], [id="{extracted_number}"]')
+        
+        # If not found, then search through individual selectors
+        if not element:
+            for selector in selectors:
+                try:
+                    elements = page.query_selector_all(selector)
+                    if not elements:
+                        continue
+                        
+                    for el in elements:
+                        bid = el.get_attribute('data-unique-test-id') or el.get_attribute('id') or ''
+                        if bid == extracted_number:
+                            element = el
+                            break
+                    if element:
+                        break
+                except Exception as e:
+                    print(f"Error searching selector {selector}: {str(e)}")
+                    continue
+        
+        if not element:
+            print(f"No element found with ID {extracted_number}")
+            return {}
+            
+        # Extract element properties
+        result = {}
+        try:
+            result = {
+                'text': element.inner_text(),
+                'type': element.get_attribute('type'),
+                'tag': element.evaluate('el => el.tagName.toLowerCase()'),
+                'id': element.get_attribute('id'),
+                'href': element.get_attribute('href'),
+                'title': element.get_attribute('title'),
+                'ariaLabel': element.get_attribute('aria-label'),
+                'name': element.get_attribute('name'),
+                'value': element.get_attribute('value'),
+                'placeholder': element.get_attribute('placeholder'),
+                'class': element.get_attribute('class'),
+                'role': element.get_attribute('role')
+            }
+            
+            # Clean up None values
+            result = {k: v for k, v in result.items() if v is not None}
+            
+        except Exception as e:
+            print(f"Error extracting element properties: {str(e)}")
+            return {}
+                
+        return result
+
+    except Exception as e:
+        print(f"Error in locate_element: {str(e)}")
+        return {}
 
 def parse_function_args(function_args):
     if not function_args or not isinstance(function_args, list):

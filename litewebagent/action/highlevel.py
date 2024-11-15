@@ -3,7 +3,7 @@
 # all these symbols will be available in browsergym actions
 import playwright.sync_api
 from typing import Literal
-from browsergym.core.action import utils
+from . import function_utils
 import logging
 
 logger = logging.getLogger(__name__)
@@ -40,10 +40,10 @@ import random
 from dataclasses import dataclass
 from typing import Literal, Optional
 
-from browsergym.core.action.base import AbstractActionSet
-from browsergym.core.action.parsers import highlevel_action_parser, action_docstring_parser
+from .base import AbstractActionSet
+from .parsers import highlevel_action_parser, action_docstring_parser
 
-from browsergym.core.action.functions import (
+from .functions import (
     noop,
     send_msg_to_user,
     report_infeasible,
@@ -224,7 +224,7 @@ demo_mode={repr(demo_mode)}
 """
 
         # include utility functions
-        for _, func in inspect.getmembers(utils, inspect.isfunction):
+        for _, func in inspect.getmembers(function_utils, inspect.isfunction):
             self.python_includes += f"""\
 {inspect.getsource(func)}
 
@@ -404,6 +404,7 @@ def highlight_element_by_bid(page: playwright.sync_api.Page, bid: str, text: str
     \"\"\"
     # Get the element using the bid
     elem = get_elem_by_bid(page, bid)
+    print("done extracting element")
 
     # Get the bounding box of the element
     box = elem.bounding_box()
@@ -519,5 +520,4 @@ def execute_action(action: str):
             python_code += (
                     function_name + "(" + ", ".join([repr(arg) for arg in function_args]) + ")\n"
             )
-        # return the constructed python code
         return python_code, function_calls

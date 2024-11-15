@@ -1,5 +1,5 @@
 from litellm import completion
-from litewebagent.agents.FunctionCallingAgents.BaseAgent import BaseAgent
+from .BaseAgent import BaseAgent
 from typing import Dict
 import json
 import logging
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class HighLevelPlanningAgent(BaseAgent):
 
-    def send_completion_request(self, plan: str, depth: int = 0) -> Dict:
+    def send_completion_request(self, plan: str, depth: int = 0, emitter=None) -> Dict:
         if plan is None and depth == 0:
             plan = self.make_plan()
         if depth >= 8:
@@ -109,4 +109,4 @@ class HighLevelPlanningAgent(BaseAgent):
         tool_responses = self.process_tool_calls(tool_calls)
         self.messages.extend(tool_responses)
 
-        return self.send_completion_request(plan, depth + 1)
+        return self.send_completion_request(plan, depth + 1, emitter=None)
