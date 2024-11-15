@@ -210,8 +210,8 @@ def click(
             print("Click performed successfully")
 
             # Wait for any potential page load or navigation
-            page.wait_for_load_state("networkidle", timeout=timeout)
-            print("Page load state: networkidle")
+            # page.wait_for_load_state("networkidle", timeout=timeout)
+            # print("Page load state: networkidle")
 
             return  # Success, exit the function
 
@@ -231,7 +231,7 @@ def click(
             print(f"Current page URL: {page.url()}")
             raise  # Re-raise unexpected exceptions immediately
 
-    print("Click operation failed after all retry attempts")
+    # print("Click operation failed after all retry attempts")
 
 
 # https://playwright.dev/python/docs/api/class-locator#locator-dblclick
