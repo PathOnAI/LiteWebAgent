@@ -1,12 +1,12 @@
 import os
-from litewebagent.browser_env.extract_elements import remove_highlights
-from litewebagent.action.base import execute_python_code
+from ..browser_env.extract_elements import remove_highlights
+from .base import execute_python_code
 import ast
 import pyparsing as pp
-from litewebagent.browser_env.extract_elements import flatten_interactive_elements_to_str
-from browsergym.utils.obs import flatten_axtree_to_str, flatten_dom_to_str
+from ..browser_env.extract_elements import flatten_interactive_elements_to_str
+from ..browser_env.obs import flatten_axtree_to_str, flatten_dom_to_str
 
-from litewebagent.utils.utils import parse_function_args, append_to_steps_json, search_interactive_elements
+from ..utils.utils import parse_function_args, append_to_steps_json, locate_element
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,13 +16,13 @@ def execute_action(action, action_set, page, context, task_description, interact
     code, function_calls = action_set.to_python_code(action)
     for function_name, function_args in function_calls:
         extracted_number = parse_function_args(function_args)
-        result = search_interactive_elements(interactive_elements, extracted_number)
+        result = locate_element(page, extracted_number)
         result['action'] = action
         result["url"] = page.url
         result['task_description'] = task_description
         logger.info(result)
-        file_path = os.path.join(log_folder, 'flow', 'steps.json')
-        append_to_steps_json(result, file_path)
+        # file_path = os.path.join(log_folder, 'flow', 'steps.json')
+        # append_to_steps_json(result, file_path)
 
     logger.info("Executing action script")
     remove_highlights(page)

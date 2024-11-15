@@ -1,13 +1,13 @@
 import time
 import logging
 from openai import OpenAI
-from litewebagent.action.highlevel import HighLevelActionSet
+from ..action.highlevel import HighLevelActionSet
 from collections import defaultdict
-from litewebagent.utils.utils import query_openai_model
-from litewebagent.action.utils import prepare_prompt, execute_action
-from litewebagent.action.utils import build_highlevel_action_parser
-from litewebagent.browser_env.observation import extract_page_info
-from litewebagent.evaluation.feedback import capture_post_action_feedback
+from ..utils.utils import query_openai_model
+from ..action.utils import prepare_prompt, execute_action
+from ..action.utils import build_highlevel_action_parser
+from ..browser_env.observation import extract_page_info
+from ..evaluation.feedback import capture_post_action_feedback
 
 logger = logging.getLogger(__name__)
 openai_client = OpenAI()

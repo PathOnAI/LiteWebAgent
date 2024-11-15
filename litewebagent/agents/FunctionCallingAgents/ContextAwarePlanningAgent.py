@@ -1,20 +1,20 @@
 # Reference: https://github.com/OSU-NLP-Group/SeeAct/blob/main/seeact_package/seeact/agent.py#L163
 from litellm import completion
-from litewebagent.agents.FunctionCallingAgents.BaseAgent import BaseAgent
+from .BaseAgent import BaseAgent
 from typing import Dict
 import json
 import logging
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
-from litewebagent.utils.utils import encode_image
+from ...utils.utils import encode_image
 import time
-from litewebagent.browser_env.observation import (
+from ...browser_env.observation import (
     _pre_extract,
     extract_dom_snapshot,
     extract_merged_axtree,
 )
-
+import base64
 _ = load_dotenv()
 
 openai_client = OpenAI()
@@ -54,10 +54,18 @@ class ContextAwarePlanningAgent(BaseAgent):
             dom = extract_dom_snapshot(page)
             axtree = extract_merged_axtree(page)
             # update plan, and next action generation
-            screenshot_path_post = os.path.join(self.log_folder, 'screenshots', 'screenshot_next.png')
+            # screenshot_path_post = os.path.join(self.log_folder, 'screenshots', 'screenshot_next.png')
+            # time.sleep(3)
+            # page.screenshot(path=screenshot_path_post)
+            # base64_image = encode_image(screenshot_path_post)
+            # Wait for 3 seconds (if this wait is necessary)
             time.sleep(3)
-            page.screenshot(path=screenshot_path_post)
-            base64_image = encode_image(screenshot_path_post)
+
+            # Capture screenshot as bytes
+            screenshot_bytes = page.screenshot()
+
+            # Encode the bytes directly to base64
+            base64_image = base64.b64encode(screenshot_bytes).decode('utf-8')
             prompt = f"""
             After we take action, a screenshot was captured.
 

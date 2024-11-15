@@ -2,17 +2,22 @@ import time
 import os
 import logging
 from openai import OpenAI
-from litewebagent.utils.utils import encode_image
+import base64
+from ..utils.utils import encode_image
 
 logger = logging.getLogger(__name__)
 openai_client = OpenAI()
 
 
 def capture_post_action_feedback(page, action, goal, log_folder):
-    screenshot_path_post = os.path.join(log_folder, 'screenshots', 'screenshot_post.png')
+    # screenshot_path_post = os.path.join(log_folder, 'screenshots', 'screenshot_post.png')
     time.sleep(3)
-    page.screenshot(path=screenshot_path_post)
-    base64_image = encode_image(screenshot_path_post)
+    # page.screenshot(path=screenshot_path_post)
+    # base64_image = encode_image(screenshot_path_post)
+    screenshot_bytes = page.screenshot()
+
+    # Encode the bytes to base64
+    base64_image = base64.b64encode(screenshot_bytes).decode('utf-8')
     prompt = f"""
     After we take action {action}, a screenshot was captured.
 

@@ -41,7 +41,7 @@ Set up locally
 
 First set up virtual environment, and allow your code to be able to see 'litewebagent'
 ```bash
-python3 -m venv venv
+python3.11 -m venv venv
 . venv/bin/activate
 pip install -e .
 ```
@@ -66,6 +66,8 @@ python -m prompting_main --agent_type PromptAgent --starting_url https://www.goo
 python -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
 python -m function_calling_main --agent_type HighLevelPlanningAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
 python -m function_calling_main --agent_type ContextAwarePlanningAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
+
+python -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.amazon.com/ --goal 'add a bag of dog food to the cart.' --plan 'add a bag of dog food to the cart.' --log_folder log
 ```
 https://www.loom.com/share/1018bcc4e21c4a7eb517b60c2931ee3c
 https://www.loom.com/share/aa48256478714d098faac740239c9013

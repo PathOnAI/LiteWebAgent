@@ -1,5 +1,5 @@
-from litewebagent.tools.shared_utils import take_action
-from litewebagent.tools.registry import ToolRegistry, Tool
+from .shared_utils import take_action
+from .registry import ToolRegistry, Tool
 
 
 def navigation(task_description, features=None, branching_factor=None, playwright_manager=None, log_folder='log'):

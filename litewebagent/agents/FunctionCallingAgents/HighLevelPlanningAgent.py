@@ -1,5 +1,5 @@
 from litellm import completion
-from litewebagent.agents.FunctionCallingAgents.BaseAgent import BaseAgent
+from .BaseAgent import BaseAgent
 from typing import Dict
 import json
 import logging

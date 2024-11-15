@@ -63,10 +63,10 @@ class BaseAgent:
 
         return tool_call_responses
 
-    def send_completion_request(self, plan: str, depth: int = 0) -> Dict:
+    def send_completion_request(self, plan: str, depth: int = 0, emitter=None) -> Dict:
         raise NotImplementedError("This method should be implemented by subclasses")
 
-    def send_prompt(self, plan: str) -> Dict:
+    def send_prompt(self, plan: str, emitter=None) -> Dict:
         if plan is not None:
             self.messages.append({"role": "user", "content": "The plan is: {}".format(plan)})
-        return self.send_completion_request(plan, 0)
+        return self.send_completion_request(plan, 0, emitter)
