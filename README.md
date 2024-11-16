@@ -43,7 +43,7 @@ First set up virtual environment, and allow your code to be able to see 'liteweb
 ```bash
 python3.11 -m venv venv
 . venv/bin/activate
-pip install -e .
+pip3.11 install -e .
 ```
 Then please create a .env file, and update your API keys:
 
@@ -53,25 +53,25 @@ cp .env.example .env
 
 Test playwright & chromium installation by running this script
 ```bash
-python /Users/danqingzhang/Desktop/test_installation.py 
+python3.11 test_installation.py 
 ```
 
 ### (2) Try different agents
 * use prompting-based web agent to finish some task and save the workflow
 ```bash
 ## easy case
-python -m prompting_main --agent_type PromptAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
+python3.11 -m prompting_main --agent_type PromptAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
 ## more complicated case
-python -m prompting_main --agent_type PromptAgent --starting_url https://www.amazon.com/ --goal 'add a bag of dog food to the cart.' --plan 'add a bag of dog food to the cart.' --log_folder log
+python3.11 -m prompting_main --agent_type PromptAgent --starting_url https://www.amazon.com/ --goal 'add a bag of dog food to the cart.' --plan 'add a bag of dog food to the cart.' --log_folder log
 ```
 * we also provide function-calling-based web agent
 ```bash
 ## easy case
-python -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
-python -m function_calling_main --agent_type HighLevelPlanningAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
-python -m function_calling_main --agent_type ContextAwarePlanningAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
+python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
+python3.11 -m function_calling_main --agent_type HighLevelPlanningAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
+python3.11 -m function_calling_main --agent_type ContextAwarePlanningAgent --starting_url https://www.google.com --goal 'search dining table' --plan 'search dining table' --log_folder log
 ## more complicated case
-python -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.amazon.com/ --goal 'add a bag of dog food to the cart.' --plan 'add a bag of dog food to the cart.' --log_folder log
+python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.amazon.com/ --goal 'add a bag of dog food to the cart.' --plan 'add a bag of dog food to the cart.' --log_folder log
 ```
 https://www.loom.com/share/1018bcc4e21c4a7eb517b60c2931ee3c
 https://www.loom.com/share/aa48256478714d098faac740239c9013
@@ -82,9 +82,9 @@ https://www.loom.com/share/8c59dc1a6f264641b6a448fb6b7b4a5c
 ### (3) test different input features
 We use axtree by default. Alternatively, you can provide a comma-separated string listing the desired input feature types.
 ```bash
-python -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --log_folder log
-python -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features interactive_elements --log_folder log
-python -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features axtree,interactive_elements --log_folder log
+python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --log_folder log
+python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features interactive_elements --log_folder log
+python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.airbnb.com --goal 'set destination as San Francisco, then search the results' --plan '(1) enter the "San Francisco" as destination, (2) and click search' --features axtree,interactive_elements --log_folder log
 ```
 
 ## 3. Paper reimplementation
