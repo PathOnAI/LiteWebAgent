@@ -17,4 +17,5 @@ __pycache__
 .idea/
 .env
 venv
-
+.vscode
+temp
