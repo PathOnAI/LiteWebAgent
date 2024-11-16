@@ -89,10 +89,14 @@ python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting
 
 ### (4) auto login
 First, tell Git to ignore future changes to state.json:
-```git update-index --skip-worktree state.json```
+```
+git update-index --skip-worktree state.json
+```
 
 Then run the load_state.py script and log into the websites to enable auto-login:
-```python3.11 load_state.py save```
+```
+python3.11 load_state.py save
+```
 
 ## 3. Paper reimplementation
 | Paper                                                                    | Agent                                                                                                                                                  |
