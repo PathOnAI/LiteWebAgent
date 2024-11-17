@@ -21,7 +21,8 @@ def is_goal_finished(messages, openai_client):
     return goal_finished
 
 
-def extract_top_actions(trajectory, goal, page_info, action_set, openai_client, branching_factor):
+def extract_top_actions(trajectory, goal, page_info, action_set, openai_client,
+                        features, elements_filter, branching_factor, log_folder):
     system_msg = f"""
             # Instructions
             Review the current state of the page and all other information to find the best
@@ -34,7 +35,7 @@ def extract_top_actions(trajectory, goal, page_info, action_set, openai_client, 
             # Goal:
             {goal}"""
 
-    prompt = prepare_prompt(page_info, action_set, 'axtree')
+    prompt = prepare_prompt(page_info, action_set, features, elements_filter, log_folder)
     # base64_image = encode_image(page_info['screenshot'])
     base64_image = base64.b64encode(page_info['screenshot']).decode('utf-8')
 
@@ -54,7 +55,7 @@ def extract_top_actions(trajectory, goal, page_info, action_set, openai_client, 
              ]
              },
         ],
-        n=max(branching_factor * 2, 20)
+        n=min(branching_factor * 2, 20)
     )
     responses: list[str] = [x.message.content for x in response.choices]
     highlevel_action_parser = build_highlevel_action_parser()

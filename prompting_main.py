@@ -13,7 +13,7 @@ def main(args):
 
     playwright_manager = setup_playwright(log_folder=args.log_folder, storage_state='state.json', headless=False)
     agent = setup_prompting_web_agent(args.starting_url, args.goal, playwright_manager=playwright_manager, model_name=args.model, agent_type=args.agent_type,
-                            features=features, branching_factor=branching_factor, log_folder=args.log_folder,
+                            features=features, elements_filter=args.elements_filter, branching_factor=branching_factor, log_folder=args.log_folder,
                             storage_state=args.storage_state)
 
     response = agent.send_prompt(args.plan)
@@ -37,8 +37,12 @@ if __name__ == "__main__":
     parser.add_argument('--storage_state', type=str, default="state.json",
                         help="Storage state json file")
     parser.add_argument('--features', type=str, default="axtree",
-                        help="Comma-separated list of features to use (default: None, which uses all features)")
-    parser.add_argument('--branching_factor', type=int, default=None)
+                        help="Comma-separated list of features to use (default: axtree, which uses accessibility tree)")  
+    parser.add_argument('--elements_filter', type=str, default="som",
+                        choices=["som", "visibility", "none"],
+                        help="Filter for dom elements"
+                        )
+    parser.add_argument('--branching_factor', type=int, default=5, help='Branching factor')
     parser.add_argument('--log_folder', type=str, default='log', help='Path to the log folder')
     args = parser.parse_args()
     main(args)

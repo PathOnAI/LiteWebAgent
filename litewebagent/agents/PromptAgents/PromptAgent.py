@@ -34,11 +34,14 @@ class PromptAgent:
         summary = response.choices[0].message.content
         return summary
 
-    def __init__(self, model_name, messages, goal, playwright_manager, log_folder):
+    def __init__(self, model_name, messages, goal, playwright_manager, features, elements_filter, branching_factor, log_folder):
         self.model_name = model_name
         self.messages = messages
         self.goal = goal
         self.playwright_manager = playwright_manager
+        self.features = features
+        self.elements_filter = elements_filter
+        self.branching_factor = branching_factor
         self.messages.append({"role": "user", "content": "The goal is:{}".format(self.goal)})
         self.agent_type = ["bid", "nav", "file", "select_option"]
         self.action_set = HighLevelActionSet(
@@ -58,9 +61,8 @@ class PromptAgent:
         # Extract page information
         time.sleep(3)
         page_info = extract_page_info(page, self.log_folder)
-        branching_factor = 5
         updated_actions = extract_top_actions(trajectory, self.goal, page_info, self.action_set, openai_client,
-                                              branching_factor)
+                                              self.features, self.elements_filter, self.branching_factor, self.log_folder)
         next_action = updated_actions[0]['action']
         execute_action(next_action, self.action_set, page, context, self.goal, page_info['interactive_elements'],
                        self.log_folder)
