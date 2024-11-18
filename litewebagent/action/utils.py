@@ -6,7 +6,7 @@ import ast
 import pyparsing as pp
 from ..browser_env.extract_elements import flatten_interactive_elements_to_str
 from ..browser_env.obs import flatten_axtree_to_str, flatten_dom_to_str
-
+from datetime import datetime
 from ..utils.utils import parse_function_args, append_to_steps_json, locate_element
 import logging
 
@@ -124,7 +124,9 @@ def prepare_prompt(page_info, action_set, features, elements_filter, log_folder)
         # Current Accessibility Tree:
         {axtree_str}
         """
-        file_path = os.path.join(log_folder, 'prompt', 'axtree.txt')
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        filename = f"axtree_{timestamp}.txt"
+        file_path = os.path.join(log_folder, 'prompt', filename)
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, 'w', encoding='utf8') as file:
             file.write(axtree_str)
@@ -136,7 +138,9 @@ def prepare_prompt(page_info, action_set, features, elements_filter, log_folder)
         # Interactive elements:
         {interactive_elements_str}
         """
-        file_path = os.path.join(log_folder, 'prompt', 'interactive_elements.txt')
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        filename = f"interactive_elements_{timestamp}.txt"
+        file_path = os.path.join(log_folder, 'prompt', filename)
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, 'w', encoding='utf8') as file:
             file.write(interactive_elements_str)
@@ -148,7 +152,9 @@ def prepare_prompt(page_info, action_set, features, elements_filter, log_folder)
         # Current DOM:
         {dom_str}
         """
-        file_path = os.path.join(log_folder, 'prompt', 'dom.txt')
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        filename = f"dom_{timestamp}.txt"
+        file_path = os.path.join(log_folder, 'prompt', filename)
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, 'w', encoding='utf8') as file:
             file.write(dom_str)
