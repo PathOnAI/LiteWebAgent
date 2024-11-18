@@ -15,7 +15,7 @@ def main(args):
 
     playwright_manager = setup_playwright(log_folder=args.log_folder, storage_state='state.json', headless=False)
     agent = setup_function_calling_web_agent(starting_url=args.starting_url, goal=args.goal, playwright_manager=playwright_manager, model_name=args.model, agent_type=args.agent_type,
-                            features=features, tool_names=tool_names, branching_factor=branching_factor, log_folder=args.log_folder)
+                            features=features, elements_filter=args.elements_filter,tool_names=tool_names, branching_factor=branching_factor, log_folder=args.log_folder)
 
     response = agent.send_prompt(args.plan)
     print(response)
@@ -37,7 +37,11 @@ if __name__ == "__main__":
     parser.add_argument('--storage_state', type=str, default="state.json",
                         help="Storage state json file")
     parser.add_argument('--features', type=str, default="axtree",
-                        help="Comma-separated list of features to use (default: axtree)")
+                        help="Comma-separated list of features to use (default: axtree, which uses accessibility tree)")  
+    parser.add_argument('--elements_filter', type=str, default="som",
+                    choices=["som", "visibility", "none"],
+                    help="Filter for dom elements"
+                    )
     parser.add_argument('--tool_names', type=str, default="navigation,select_option,upload_file,webscraping",
                         help="Comma-separated list of tool names to use (default: navigation,select_option,upload_file,webscraping)")
     parser.add_argument('--branching_factor', type=int, default=None)

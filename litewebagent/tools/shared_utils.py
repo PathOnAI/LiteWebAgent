@@ -37,8 +37,7 @@ def get_action_probability(responses, branching_factor):
     return updated_actions
 
 
-def take_action(task_description, agent_type, features=None, branching_factor=None, playwright_manager=None,
-                log_folder='log'):
+def take_action(task_description, agent_type, features=None, elements_filter=None, branching_factor=None, playwright_manager=None, log_folder='log'):
     try:
         context = playwright_manager.get_context()
         page = playwright_manager.get_page()
@@ -63,14 +62,14 @@ def take_action(task_description, agent_type, features=None, branching_factor=No
         Provide ONLY ONE action. Do not suggest multiple actions or a sequence of actions.
         # Goal:
         {task_description}"""
-        prompt = prepare_prompt(page_info, action_set, features)
+        prompt = prepare_prompt(page_info, action_set, features, elements_filter, log_folder)
 
         # Query OpenAI model
         if branching_factor == None:
             responses = query_openai_model(system_msg, prompt, page_info['screenshot'], num_outputs=20)
         else:
             responses = query_openai_model(system_msg, prompt, page_info['screenshot'],
-                                           num_outputs=max(branching_factor * 2, 20))
+                                           num_outputs=min(branching_factor * 2, 20))
         updated_actions = get_action_probability(responses, branching_factor)
         action = updated_actions[0]['action']
 

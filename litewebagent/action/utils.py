@@ -109,29 +109,49 @@ def build_highlevel_action_parser() -> pp.ParserElement:
     return parser
 
 
-def prepare_prompt(page_info, action_set, features):
+def prepare_prompt(page_info, action_set, features, elements_filter, log_folder):
     logger.info("features used: {}".format(features))
+    logger.info(f"elements_filter: {elements_filter}")
+
+    filter_som_only = elements_filter == 'som'
+    filter_visible_only = elements_filter == 'visibility'
+
     prompt = f"""
     """
     if "axtree" in features:
+        axtree_str = flatten_axtree_to_str(page_info.get('axtree', ''), extra_properties=page_info['extra_properties'], filter_som_only=filter_som_only, filter_visible_only=filter_visible_only)
         prompt += f"""
         # Current Accessibility Tree:
-        {flatten_axtree_to_str(page_info.get('axtree', ''))}
+        {axtree_str}
         """
+        file_path = os.path.join(log_folder, 'prompt', 'axtree.txt')
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, 'w', encoding='utf8') as file:
+            file.write(axtree_str)
 
     # TODO: flatten interactive elements
     if "interactive_elements" in features:
+        interactive_elements_str = flatten_interactive_elements_to_str(page_info.get('interactive_elements', ''))
         prompt += f"""
         # Interactive elements:
-        {flatten_interactive_elements_to_str(page_info.get('interactive_elements', ''))}
+        {interactive_elements_str}
         """
+        file_path = os.path.join(log_folder, 'prompt', 'interactive_elements.txt')
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, 'w', encoding='utf8') as file:
+            file.write(interactive_elements_str)
 
     # TODO: clean dom elements
     if "dom" in features:
+        dom_str = flatten_dom_to_str(page_info.get('dom', ''), extra_properties=page_info['extra_properties'], filter_som_only=filter_som_only, filter_visible_only=filter_visible_only)
         prompt += f"""
         # Current DOM:
-        {flatten_dom_to_str(page_info.get('dom', ''))}
+        {dom_str}
         """
+        file_path = os.path.join(log_folder, 'prompt', 'dom.txt')
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, 'w', encoding='utf8') as file:
+            file.write(dom_str)
 
     prompt += f"""
         # Action Space
