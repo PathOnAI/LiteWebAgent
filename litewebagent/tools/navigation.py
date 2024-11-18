@@ -2,8 +2,8 @@ from .shared_utils import take_action
 from .registry import ToolRegistry, Tool
 
 
-def navigation(task_description, features=None, branching_factor=None, playwright_manager=None, log_folder='log'):
-    response = take_action(task_description, ["bid", "nav"], features, branching_factor, playwright_manager, log_folder)
+def navigation(task_description, **kwargs):
+    response = take_action(task_description, ["bid", "nav"], **kwargs)
     return response
 
 

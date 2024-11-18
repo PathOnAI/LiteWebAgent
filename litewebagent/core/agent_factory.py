@@ -21,16 +21,21 @@ openai_client = OpenAI()
 # Define the default features
 DEFAULT_FEATURES = ['screenshot', 'dom', 'axtree', 'focused_element', 'extra_properties', 'interactive_elements']
 
+AGENT_CLASSES = {
+    "FunctionCallingAgent": FunctionCallingAgent,
+    "HighLevelPlanningAgent": HighLevelPlanningAgent,
+    "ContextAwarePlanningAgent": ContextAwarePlanningAgent,
+}
 
-def create_function_wrapper(func, features, branching_factor, playwright_manager, log_folder):
+def create_function_wrapper(func, **kwargs):
     def wrapper(task_description):
-        return func(task_description, features, branching_factor, playwright_manager, log_folder)
+        return func(task_description, **kwargs)
 
     return wrapper
 
 
-def setup_function_calling_web_agent(starting_url, goal, playwright_manager, model_name="gpt-4o-mini", agent_type="DemoAgent",
-                                     features=['axtree'], tool_names = ["navigation", "select_option", "upload_file", "webscraping"],
+def setup_function_calling_web_agent(starting_url, goal, playwright_manager, model_name="gpt-4o-mini", agent_type="DemoAgent", tool_names = ["navigation", "select_option", "upload_file", "webscraping"],
+                                     features=['axtree'], elements_filter=None,
                                      branching_factor=None, log_folder="log"):
     logger = setup_logger()
 
@@ -41,8 +46,7 @@ def setup_function_calling_web_agent(starting_url, goal, playwright_manager, mod
     available_tools = {}
     tools = []
     for tool_name in tool_names:
-        available_tools[tool_name] = create_function_wrapper(tool_registry.get_tool(tool_name).func, features,
-                                                             branching_factor, playwright_manager, log_folder)
+        available_tools[tool_name] = create_function_wrapper(tool_registry.get_tool(tool_name).func, features=features, elements_filter=elements_filter, branching_factor=branching_factor, playwright_manager=playwright_manager, log_folder=log_folder)
         tools.append(tool_registry.get_tool_description(tool_name))
 
     messages = [
@@ -77,19 +81,12 @@ def setup_function_calling_web_agent(starting_url, goal, playwright_manager, mod
     #     file.write(goal + '\n')
     #     file.write(starting_url + '\n')
 
-    if agent_type == "FunctionCallingAgent":
-        agent = FunctionCallingAgent(model_name=model_name, tools=tools, available_tools=available_tools,
-                                     messages=messages,
-                                     goal=goal, playwright_manager=playwright_manager, log_folder=log_folder)
-    elif agent_type == "HighLevelPlanningAgent":
-        agent = HighLevelPlanningAgent(model_name=model_name, tools=tools, available_tools=available_tools,
+    try:
+        agent_class = AGENT_CLASSES[agent_type]
+        agent = agent_class(model_name=model_name, tools=tools, available_tools=available_tools,
                                        messages=messages, goal=goal, playwright_manager=playwright_manager,
                                        log_folder=log_folder)
-    elif agent_type == "ContextAwarePlanningAgent":
-        agent = ContextAwarePlanningAgent(model_name=model_name, tools=tools, available_tools=available_tools,
-                                          messages=messages, goal=goal, playwright_manager=playwright_manager,
-                                          log_folder=log_folder)
-    else:
+    except KeyError:
         error_message = f"Unsupported agent type: {agent_type}. Please use 'FunctionCallingAgent', 'HighLevelPlanningAgent', 'ContextAwarePlanningAgent', 'PromptAgent' or 'PromptSearchAgent' ."
         logger.error(error_message)
         return {"error": error_message}
