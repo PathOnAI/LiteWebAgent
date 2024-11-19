@@ -1,0 +1,35 @@
+### Shopping Website Workflows (Amazon)
+1. **open_category_and_filter**
+   - **Purpose**: Open a product category and apply a specific filter, like ��4 Stars & Up.��
+   - **Steps**:
+     1. Click "Open Menu" to access categories.
+     2. Select the desired main category (e.g., "Movies, Music & Games," "Computers").
+     3. Click on the relevant subcategory (e.g., "Video Games").
+     4. Apply filters such as "4 Stars & Up" to refine results.
+
+2. **sort_by_price_low_to_high**
+   - **Purpose**: Sort items in a category by ascending price.
+   - **Steps**:
+     1. After navigating to a category, locate the "Sort by" dropdown.
+     2. Select "Price: Low to High" to view items from cheapest to most expensive.
+
+3. **add_to_cart_with_quantity**
+   - **Purpose**: Add an item to the cart with a specified quantity.
+   - **Steps**:
+     1. Find the desired item and click it to open the product page.
+     2. Select the quantity dropdown and choose the desired amount.
+     3. Click "Add to Cart."
+
+4. **search_and_add_to_cart**
+   - **Purpose**: Search for a specific item and add it to the cart.
+   - **Steps**:
+     1. Enter the product keyword in the search bar and click "Go."
+     2. Select the item from the search results.
+     3. On the product page, click "Add to Cart."
+
+5. **filter_and_sort_results**
+   - **Purpose**: Apply multiple filters and sort the results.
+   - **Steps**:
+     1. Enter a keyword in the search bar and click "Go."
+     2. Apply filters like price range or rating (e.g., "4 Stars & Up").
+     3. Choose sorting option "Price: Low to High."
