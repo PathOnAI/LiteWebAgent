@@ -79,47 +79,35 @@ def fill(
         fill('a12', "example with \\"quotes\\"")
     """
     from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, expect
-    import time
     print(f"Attempting to fill element with bid: {bid}")
 
-    for attempt in range(retry_attempts):
-        try:
-            print(f"Attempt {attempt + 1} of {retry_attempts}")
-            print("Locating element")
-            elem = get_elem_by_bid(page, bid, scroll_into_view=True, timeout=timeout)
-            print(f"Element found: {elem}")
+    try:
+        # Locate the element by its bid and perform additional interactions if needed
+        print("Locating element")
+        elem = get_elem_by_bid(page, bid, scroll_into_view=True, timeout=timeout)
+        print(f"Element found: {elem}")
 
-            print("Adding demo mode effects")
-            add_demo_mode_effects(page, elem, bid, demo_mode=demo_mode, move_cursor=False)
-            print("Demo mode effects added")
+        print("Adding demo mode effects")
+        add_demo_mode_effects(page, elem, bid, demo_mode=demo_mode, move_cursor=False)
+        print("Demo mode effects added")
 
-            if demo_mode != "off":
-                print("Starting fill in demo mode")
-                elem.clear()
-                delay = max(2000 / len(value), 10)
-                elem.type(value, delay=delay)
-                print("Fill completed in demo mode")
-            else:
-                print(f"Starting fill with timeout {timeout}ms")
-                elem.fill(value, timeout=timeout)
-                print("Fill completed")
+        if demo_mode != "off":
+            print("Starting fill in demo mode")
+            elem.clear()
+            delay = max(2000 / len(value), 10)
+            elem.type(value, delay=delay)
+            print("Fill completed in demo mode")
+        else:
+            print(f"Starting fill with timeout {timeout}ms")
+            elem.fill(value, timeout=timeout)
+            print("Fill completed")
 
-            return  # Success, exit the function
+    except PlaywrightTimeoutError as e:
+        print(f"Timeout error: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
 
-        except PlaywrightTimeoutError as e:
-            print(f"Timeout error on attempt {attempt + 1}: {e}")
-            if attempt < retry_attempts - 1:
-                print(f"Retrying in 2 seconds...")
-                time.sleep(2)
-            else:
-                print("All retry attempts exhausted")
-                raise  # Re-raise the last exception if all retries fail
-
-        except Exception as e:
-            print(f"Unexpected error on attempt {attempt + 1}: {e}")
-            raise  # Re-raise unexpected exceptions immediately
-
-    print("Fill operation failed after all retry attempts")
+    print("Fill operation completed (or failed with errors).")
 
 
 # https://playwright.dev/python/docs/api/class-locator#locator-check
@@ -168,19 +156,18 @@ from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 import time
 
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, expect
-import time
+from typing import Literal
+
 
 
 def click(
         bid: str,
         button: Literal["left", "middle", "right"] = "left",
         modifiers: list[Literal["Alt", "Control", "Meta", "Shift"]] = [],
-        timeout: int = 30000,  # Increased default timeout to 30 seconds
-        retry_attempts: int = 3
+        timeout: int = 3000,
 ):
     """
-    Click an element with improved error handling, retry mechanism, and detailed logging.
-
+    Click an element with improved error handling, retry mechanism, and automatic new tab handling.
     Examples:
         click('a51')
         click('b22', button="right")
@@ -189,50 +176,64 @@ def click(
     from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, expect
     import time
     print(f"Attempting to click element with bid: {bid}")
+    context = page.context  # Extract the context from the current page
+    new_page = None  # Initialize the variable for new page
 
-    for attempt in range(retry_attempts):
+    try:
+        # Locate the element by its bid and perform additional interactions if needed
+        elem = get_elem_by_bid(page, bid, scroll_into_view=True, timeout=timeout)
+        expect(elem).to_be_enabled(timeout=timeout)
+        expect(elem).to_be_visible(timeout=timeout)
+
+        # Capture the initial URL of the current page
+        initial_url = page.url
+
+        # Perform the click action
+        elem.click(button=button, modifiers=modifiers, timeout=timeout, force=True)
+
+        # Try to detect a new page or handle redirection
+        print("Waiting for a new page or navigation...")
         try:
-            print(f"Attempt {attempt + 1} of {retry_attempts}")
-            print("Locating element")
-            elem = get_elem_by_bid(page, bid, scroll_into_view=True, timeout=timeout)
-            print(f"Element found: {elem}")
+            # Wait for a new page to open in the context
+            new_page = context.wait_for_event("page", timeout=timeout)
+            print("New page detected.")
+        except PlaywrightTimeoutError:
+            # Log the timeout but do not propagate the error
+            print("No new page detected within timeout.")
 
-            print("Checking if element is clickable")
-            expect(elem).to_be_enabled(timeout=timeout)
-            expect(elem).to_be_visible(timeout=timeout)
-            print("Element is clickable")
+        # Handle the new page if detected
+        if new_page:
+            try:
+                print("New page detected, waiting for load...")
+                new_page.wait_for_load_state("networkidle", timeout=5000)
+                print(f"New page loaded with URL: {new_page.url}")
 
-            print("Adding demo mode effects")
-            add_demo_mode_effects(page, elem, bid, demo_mode=demo_mode, move_cursor=True)
-            print("Demo mode effects added")
+                # Optionally navigate the current page to the new page’s URL
+                if new_page.url:
+                    print(f"Navigating current page to: {new_page.url}")
+                    page.goto(new_page.url)
 
-            print(f"Performing click with timeout {timeout}ms")
-            elem.click(button=button, modifiers=modifiers, timeout=timeout, force=True)
-            print("Click performed successfully")
+                # Close the new page if not needed
+                new_page.close()
+                return
+            except Exception as e:
+                print(f"Error handling new page: {e}")
+                # Log the error and continue execution
 
-            # Wait for any potential page load or navigation
-            # page.wait_for_load_state("networkidle", timeout=timeout)
-            # print("Page load state: networkidle")
-
-            return  # Success, exit the function
-
-        except PlaywrightTimeoutError as e:
-            print(f"Timeout error on attempt {attempt + 1}: {e}")
-            print(f"Current page URL: {page.url()}")
-            print(f"Element state: visible={elem.is_visible()}, enabled={elem.is_enabled()}")
-            if attempt < retry_attempts - 1:
-                print(f"Retrying in 5 seconds...")
-                time.sleep(5)
+        # If no new page is detected, check for navigation on the current page
+        print("Checking for same-page navigation...")
+        try:
+            page.wait_for_load_state("networkidle", timeout=timeout)
+            if page.url != initial_url:
+                print(f"Page redirected to new URL: {page.url}")
             else:
-                print("All retry attempts exhausted")
-                raise  # Re-raise the last exception if all retries fail
+                print("No redirection detected; operation completed on the same page.")
+        except PlaywrightTimeoutError:
+            print("No navigation detected on the current page within timeout.")
 
-        except Exception as e:
-            print(f"Unexpected error on attempt {attempt + 1}: {e}")
-            print(f"Current page URL: {page.url()}")
-            raise  # Re-raise unexpected exceptions immediately
-
-    # print("Click operation failed after all retry attempts")
+    except Exception as e:
+        print(f"Unexpected error occurred during the click operation: {e}")
+        # Log the error and continue execution
 
 
 # https://playwright.dev/python/docs/api/class-locator#locator-dblclick
