@@ -107,6 +107,8 @@ python3.11 load_state.py save
 ## 4. Chrome Extension
 Check [how to set up a Chrome extension using LiteWebAgent as an AI backend server](https://github.com/PathOnAI/LiteWebAgent/tree/main/chrome_extension)
 
+https://www.loom.com/share/d2b03e39c13044d8b25fcf1644e88867
+
 ## 🚀 5. Contributions
 [![LiteWebiAgent contributors](https://contrib.rocks/image?repo=PathOnAI/LiteWebAgent)](https://github.com/PathOnAI/LiteWebAgent/graphs/contributors)
 
