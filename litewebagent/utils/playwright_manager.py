@@ -2,6 +2,26 @@ import os
 import threading
 from playwright.sync_api import sync_playwright
 
+def debug_browser_state(browser):
+    """
+    Print detailed information about browser contexts and their pages.
+    """
+    print("\n=== Browser State Debug ===")
+    
+    # List all contexts
+    contexts = browser.contexts
+    print(f"\nTotal contexts: {len(contexts)}")
+    
+    for i, context in enumerate(contexts):
+        print(f"\nContext {i}:")
+        pages = context.pages
+        print(f"- Number of pages: {len(pages)}")
+        
+        for j, page in enumerate(pages):
+            print(f"  - Page {j}: {page.url}")
+            
+    print("\n========================")
+
 class PlaywrightManager:
     def __init__(self, storage_state=None, headless=False):
         self.playwright = None
@@ -16,15 +36,22 @@ class PlaywrightManager:
         with self.lock:
             if self.playwright is None:
                 self.playwright = sync_playwright().start()
-                self.browser = self.playwright.chromium.launch(headless=self.headless)
+                # self.browser = self.playwright.chromium.launch(headless=self.headless)
+                chrome_url = "http://localhost:9222"
+                self.browser = self.playwright.chromium.connect_over_cdp(chrome_url)
 
-                context_options = {}
+                # context_options = {}
 
-                if self.storage_state:
-                    context_options["storage_state"] = self.storage_state
+                # if self.storage_state:
+                #     context_options["storage_state"] = self.storage_state
 
-                self.context = self.browser.new_context(**context_options)
-                self.page = self.context.new_page()
+                # self.context = self.browser.new_context(**context_options)
+                # self.page = self.context.new_page()
+                debug_browser_state(self.browser)
+                self.context = self.browser.contexts[0]
+                self.page = self.context.pages[0]
+                debug_browser_state(self.browser)
+
 
     def get_browser(self):
         if self.browser is None:
