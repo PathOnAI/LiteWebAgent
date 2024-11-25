@@ -34,7 +34,8 @@ def run_automation(config: AutomationConfig):
     playwright_manager = setup_playwright(
         log_folder=config.log_folder,
         storage_state=config.storage_state,
-        headless=False
+        headless=False,
+        mode="cdp"
     )
     
     agent = setup_prompting_web_agent(
