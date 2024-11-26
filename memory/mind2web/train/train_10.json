@@ -1,0 +1,1106 @@
+[
+    {
+        "website": "sports.yahoo",
+        "domain": "Entertainment",
+        "subdomain": "Sports",
+        "annotation_id": "37564222-bb58-4a55-b47b-e9ffbbc1d160",
+        "confirmed_task": "Find the results of the most recent NFL games.",
+        "action_reprs": [
+            "[link]  NFL . -> CLICK",
+            "[link]  Scores/Schedule -> CLICK"
+        ],
+        "actions": [
+            {
+                "action_uid": "c62fa753-fdf3-4a97-a464-d6e1a2d7c20f",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "a",
+                        "attributes": "{\"backend_node_id\": \"170\", \"bounding_box_rect\": \"339,117.5,27,17\", \"class\": \"_yb_1larr   rapid-noclick-resp\", \"id\": \"root_3\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "170"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "53c60b2d-adf4-4d28-b1d2-bf611ed7b011",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "a",
+                        "attributes": "{\"backend_node_id\": \"5124\", \"bounding_box_rect\": \"155,155,114,16\", \"class\": \"nr-applet-nav-item Td(n) Fz(13px) Fw(b) C(#000) C($c-fuji-grey-f):h Td(n) Lh(34px)\", \"title\": \"Scores/Schedule\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "5124"
+                    }
+                ],
+                "neg_candidates": []
+            }
+        ]
+    },
+    {
+        "website": "sports.yahoo",
+        "domain": "Entertainment",
+        "subdomain": "Sports",
+        "annotation_id": "3e142eee-7a62-4ad7-ae16-419d596ab63b",
+        "confirmed_task": "Find the list of injured NBA players.",
+        "action_reprs": [
+            "[link]  NBA . -> HOVER",
+            "[link]  Injuries . -> CLICK"
+        ],
+        "actions": [
+            {
+                "action_uid": "fddf53b9-c162-4b31-9ab7-90a60f30363f",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "HOVER",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "a",
+                        "attributes": "{\"backend_node_id\": \"105\", \"bounding_box_rect\": \"398,117.5,31,17\", \"class\": \"_yb_1larr   rapid-noclick-resp\", \"id\": \"root_4\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "105"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "3dc1e759-467e-4110-808d-1475731bc2e3",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [],
+                "neg_candidates": []
+            }
+        ]
+    },
+    {
+        "website": "sports.yahoo",
+        "domain": "Entertainment",
+        "subdomain": "Sports",
+        "annotation_id": "56e4a9c1-d39e-4173-9857-9cf980c0fba9",
+        "confirmed_task": "Follow the Denver Nuggets NBA team.",
+        "action_reprs": [
+            "[link]  NBA . -> HOVER",
+            "[div]  Denver -> CLICK",
+            "[button]  Follow team -> CLICK"
+        ],
+        "actions": [
+            {
+                "action_uid": "05b31466-ca97-48e8-a8b5-d7be869d2c7f",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "HOVER",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "a",
+                        "attributes": "{\"backend_node_id\": \"117\", \"bounding_box_rect\": \"398,117.5,31,17\", \"class\": \"_yb_12l1d   rapid-noclick-resp\", \"id\": \"root_4\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "117"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "b1bcbe57-cc95-4da7-8f3c-cda255f60603",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "80f11b1b-c7f8-4ad7-be9d-68556e06ba5d",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "button",
+                        "attributes": "{\"backend_node_id\": \"19606\", \"bounding_box_rect\": \"588,234.171875,86,29\", \"class\": \"follow-button Mstart(10px) D(ib) Va(m) P(6px) Bdrs(20px)                 Whs(nw) Fw(600) Bdw(1px) Bds(s) Fz(12px) C(#fff) Bgc($c-fuji-blue-1-a) Bdc($c-fuji-blue-1-a)\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "19606"
+                    }
+                ],
+                "neg_candidates": []
+            }
+        ]
+    },
+    {
+        "website": "sports.yahoo",
+        "domain": "Entertainment",
+        "subdomain": "Sports",
+        "annotation_id": "63d1f820-37bf-4adb-aabb-65eb7925790c",
+        "confirmed_task": "Find the current roster of the Miami Heat.",
+        "action_reprs": [
+            "[link]  NBA . -> HOVER",
+            "[img]   -> CLICK",
+            "[link]  Roster -> CLICK"
+        ],
+        "actions": [
+            {
+                "action_uid": "73adafc4-ae3f-4cc6-89c4-64510b8e7910",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "HOVER",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "a",
+                        "attributes": "{\"backend_node_id\": \"96\", \"bounding_box_rect\": \"398,117.5,31,17\", \"class\": \"_yb_12l1d   rapid-noclick-resp\", \"id\": \"root_4\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "96"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "0db9a9df-7582-4552-8681-b94b91988ff3",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "99c79398-3d2e-47f4-9ba3-1df19f5f70cc",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "a",
+                        "attributes": "{\"backend_node_id\": \"18346\", \"bounding_box_rect\": \"210,451.5,42,42.03125\", \"class\": \"M(0) Bd(n) Fz(13px) Px(0) C(primary-text) Td(n) Py(12px) D(ib)\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "18346"
+                    }
+                ],
+                "neg_candidates": []
+            }
+        ]
+    },
+    {
+        "website": "kohls",
+        "domain": "Shopping",
+        "subdomain": "Department",
+        "annotation_id": "1a16a98f-4e8f-4ff9-9fa2-b97d2d403cc3",
+        "confirmed_task": "Add a set of sonoma bath towels to the cart and apply a coupon code for free shipping.",
+        "action_reprs": [
+            "[textbox]  Search by keyword or web id -> TYPE: bath towels",
+            "[span]  bath towels -> CLICK",
+            "[img]  Sonoma Goods For Life\u00ae Ultimate Bath Towel with Hy... -> CLICK",
+            "[link]  BATH TOWEL -> CLICK",
+            "[button]  Add to Cart -> CLICK",
+            "[button]  View Cart & Checkout -> CLICK",
+            "[textbox]  Add Kohl's Cash or Coupons -> TYPE: FREESHIP3093",
+            "[button]  Add Kohl's Cash or Coupon button -> CLICK"
+        ],
+        "actions": [
+            {
+                "action_uid": "37e3a163-4d51-41c1-bd49-ec440145578d",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "TYPE",
+                    "value": "bath towels",
+                    "op": "TYPE"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "input",
+                        "attributes": "{\"backend_node_id\": \"159\", \"bounding_box_rect\": \"248.859375,56,459,44\", \"type\": \"text\", \"placeholder\": \"Hi James, what are you looking for today?\", \"class\": \"input-text\", \"id\": \"search\", \"name\": \"search\", \"input_value\": \"\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "159"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "3ee8c662-4498-4f40-8eff-7320a2470dd6",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "li",
+                        "attributes": "{\"backend_node_id\": \"8917\", \"bounding_box_rect\": \"193,115,245,30.890625\", \"id\": \"K1000_0\", \"class\": \"suggestion\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "8917"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "bbaa21de-6ebe-4cb2-b0f1-5f078bc25883",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "img",
+                        "attributes": "{\"backend_node_id\": \"12690\", \"bounding_box_rect\": \"252.296875,428.171875,240,240\", \"alt\": \"Sonoma Goods For Life Ultimate Bath Towel with Hygro Technology\", \"class\": \"pmp-hero-img\", \"title\": \"Sonoma Goods For Life Ultimate Bath Towel with Hygro Technology\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "12690"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "a824cebd-8374-4f3a-b76d-df0f6a9f45ae",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "a",
+                        "attributes": "{\"backend_node_id\": \"21732\", \"bounding_box_rect\": \"857.984375,664.375,114,38.1875\", \"class\": \"pdp-size-swatch active\", \"title\": \"BATH TOWEL\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "21732"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "67ca7cd9-6200-4e87-a045-d7b4cc5e6c72",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "input",
+                        "attributes": "{\"backend_node_id\": \"38683\", \"bounding_box_rect\": \"983.578125,813.75,208.59375,56\", \"type\": \"button\", \"title\": \"Add To Cart\", \"alt\": \"Add To Cart\", \"class\": \"pdp-addtobag\", \"id\": \"addtobagID\", \"name\": \"pdp-addtobag\", \"value\": \"Add to Cart\", \"input_value\": \"Add to Cart\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "38683"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "5a7f29fc-db45-4eee-8795-c0ab17f04f05",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "button",
+                        "attributes": "{\"backend_node_id\": \"56423\", \"bounding_box_rect\": \"647.75,608.5,274,48\", \"class\": \"btn btn-primary\", \"title\": \"View Cart & Checkout\", \"id\": \"button-panel87432638\", \"aria_label\": \"View Cart & Checkout\", \"type\": \"button\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "56423"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "8b608f62-98ad-4a30-98fb-39c4d74a95d6",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "TYPE",
+                    "value": "FREESHIP3093",
+                    "op": "TYPE"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "input",
+                        "attributes": "{\"backend_node_id\": \"65578\", \"bounding_box_rect\": \"149,607.15625,355.15625,42\", \"type\": \"text\", \"name\": \"promoCode\", \"aria_label\": \"Add Kohl's Cash or Coupons\", \"placeholder\": \"\", \"class\": \"kcCodeTxt required action-panel-kc-number\", \"id\": \"panel1102\", \"input_value\": \"\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "65578"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "00e931ae-8251-49ff-9ac5-8409c46d5204",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "button",
+                        "attributes": "{\"backend_node_id\": \"69715\", \"bounding_box_rect\": \"589.265625,618.15625,88,32\", \"title\": \"Add\", \"class\": \"btn btn-secondary\", \"id\": \"button-panel1104\", \"aria_label\": \"Add Kohl's Cash or Coupon button\", \"type\": \"button\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "69715"
+                    }
+                ],
+                "neg_candidates": []
+            }
+        ]
+    },
+    {
+        "website": "travelzoo",
+        "domain": "Travel",
+        "subdomain": "General",
+        "annotation_id": "0633c328-f1ad-42bd-8aec-7a1883b5898d",
+        "confirmed_task": "Find a luxury trip deal anywhere to go in spring",
+        "action_reprs": [
+            "[textbox]  What type of deals? -> CLICK",
+            "[div]  Luxury Trips -> CLICK",
+            "[div]  Anywhere -> CLICK",
+            "[textbox]  When? -> CLICK",
+            "[li]  Spring -> CLICK",
+            "[button]  SEARCH DEALS -> CLICK"
+        ],
+        "actions": [
+            {
+                "action_uid": "d86079d3-0dbc-483f-a352-a5b6b204d119",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "input",
+                        "attributes": "{\"backend_node_id\": \"101\", \"bounding_box_rect\": \"125.5,140,504.484375,60\", \"id\": \"what-field-1\", \"class\": \"input-clear js-input-clear ui-autocomplete-input\", \"type\": \"text\", \"placeholder\": \"e.g. Hotels, beach, Disney\", \"value\": \"All Deals\", \"input_value\": \"\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "101"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "b770f788-e3a6-45d2-96df-e3a62380ac46",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "li",
+                        "attributes": "{\"backend_node_id\": \"8394\", \"bounding_box_rect\": \"126,645,495.46875,37\", \"class\": \"ui-menu-item\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "8394"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "c9c98fc1-8b2b-42ba-a708-893695e385df",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "li",
+                        "attributes": "{\"backend_node_id\": \"14798\", \"bounding_box_rect\": \"643.46875,238,495.46875,37\", \"class\": \"ui-menu-item\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "14798"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "be3cf6de-378f-44d3-bcd7-8c7d715c04f0",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "input",
+                        "attributes": "{\"backend_node_id\": \"16140\", \"bounding_box_rect\": \"750,20,250,40\", \"id\": \"when-field-1\", \"type\": \"text\", \"placeholder\": \"Anytime...\", \"value\": \"All Dates\", \"input_value\": \"All Dates\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "16140"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "f7ef0388-f470-4a60-8d1d-a720b444c577",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "li",
+                        "attributes": "{\"backend_node_id\": \"30713\", \"bounding_box_rect\": \"597.5,101,64,37\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "30713"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "7426506d-f253-4977-9475-faa2e4975689",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "button",
+                        "attributes": "{\"backend_node_id\": \"45267\", \"bounding_box_rect\": \"1010,20,40,40\", \"id\": \"search-button-1\", \"type\": \"submit\", \"title\": \"Search\", \"class\": \"highlight\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "45267"
+                    }
+                ],
+                "neg_candidates": []
+            }
+        ]
+    },
+    {
+        "website": "travelzoo",
+        "domain": "Travel",
+        "subdomain": "General",
+        "annotation_id": "1ba150cb-3b4a-4f0a-bff0-b448c78608ae",
+        "confirmed_task": "Find hotel deals in Las Vegas for four adults starting on May 17 and ending on May 20, and if deal is not available, set an alert for the same.",
+        "action_reprs": [
+            "[textbox]  What type of deals? -> CLICK",
+            "[div]  Hotels -> CLICK",
+            "[textbox]  Where? -> TYPE: las vegas",
+            "[div]  Las Vegas, NV -> CLICK",
+            "[textbox]  When? -> CLICK",
+            "[link]  17 -> CLICK",
+            "[link]  20 -> CLICK",
+            "[combobox]  How many guests? -> SELECT: 4 Guests",
+            "[button]  SEARCH DEALS -> CLICK",
+            "[button]  SET AN ALERT FOR LAS VEGAS -> CLICK"
+        ],
+        "actions": [
+            {
+                "action_uid": "71404d12-c5cf-47c9-8128-8390e15252db",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "input",
+                        "attributes": "{\"backend_node_id\": \"93\", \"bounding_box_rect\": \"125.5,140,504.484375,60\", \"id\": \"what-field-1\", \"class\": \"input-clear js-input-clear ui-autocomplete-input\", \"type\": \"text\", \"placeholder\": \"e.g. Hotels, beach, Disney\", \"value\": \"All Deals\", \"input_value\": \"All Deals\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "93"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "627981ff-61e9-46da-ab13-3e011fe1a748",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "li",
+                        "attributes": "{\"backend_node_id\": \"8218\", \"bounding_box_rect\": \"277.125,387,572.46875,37\", \"class\": \"ui-menu-item\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "8218"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "90a2701a-0940-4f95-a93c-d61d8a2cecaa",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "TYPE",
+                    "value": "las vegas",
+                    "op": "TYPE"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "input",
+                        "attributes": "{\"backend_node_id\": \"12940\", \"bounding_box_rect\": \"387.734375,140,242.234375,60\", \"id\": \"where-field-1\", \"class\": \"input-clear js-input-clear ui-autocomplete-input\", \"type\": \"text\", \"placeholder\": \"Start typing or select a destination\", \"input_value\": \"\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "12940"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "14157082-7e93-422c-9c85-b1595ec919f6",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "li",
+                        "attributes": "{\"backend_node_id\": \"22282\", \"bounding_box_rect\": \"539.375,350,310.21875,37\", \"class\": \"ui-menu-item\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "22282"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "a0318c58-8752-4304-9f6b-235154d272b0",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "input",
+                        "attributes": "{\"backend_node_id\": \"26954\", \"bounding_box_rect\": \"649.96875,140,242.234375,60\", \"id\": \"when-field-1\", \"type\": \"text\", \"placeholder\": \"Anytime...\", \"value\": \"All Dates\", \"input_value\": \"All Dates\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "26954"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "eef7bfcb-4ff5-42d2-b573-855aa991eb4e",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "a",
+                        "attributes": "{\"backend_node_id\": \"33960\", \"bounding_box_rect\": \"1016.96875,529.5,50,50\", \"class\": \"ui-state-default\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "33960"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "502cb52a-b1bc-4917-b8a3-05b5c0d471eb",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "a",
+                        "attributes": "{\"backend_node_id\": \"40998\", \"bounding_box_rect\": \"1169.96875,529.5,50,50\", \"class\": \"ui-state-default\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "40998"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "1755a651-6a6c-470d-8c28-8470e6038b82",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "SELECT",
+                    "value": "4 Guests",
+                    "op": "SELECT"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "select",
+                        "attributes": "{\"backend_node_id\": \"48003\", \"bounding_box_rect\": \"912.203125,140,242.234375,60\", \"id\": \"guests-field-1\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "48003"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "a6f3a180-c5b5-4939-9b17-8493fda922f6",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "button",
+                        "attributes": "{\"backend_node_id\": \"54934\", \"bounding_box_rect\": \"1174.5,140,60,60\", \"id\": \"search-button-1\", \"type\": \"submit\", \"title\": \"Search\", \"class\": \"highlight\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "54934"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "dd0d509f-3050-4610-baa3-cd8f57e8ab83",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "button",
+                        "attributes": "{\"backend_node_id\": \"58562\", \"bounding_box_rect\": \"517.5,695.265625,245,40\", \"type\": \"button\", \"class\": \"button-alert dest-alerts-off text-uppercase js-btnAlert hidden-xs\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "58562"
+                    }
+                ],
+                "neg_candidates": []
+            }
+        ]
+    },
+    {
+        "website": "travelzoo",
+        "domain": "Travel",
+        "subdomain": "General",
+        "annotation_id": "1c1af35c-a0d7-4fe8-bcd3-baf30862235b",
+        "confirmed_task": "Show most expensive cruise deals in Europe and Mediterranean.",
+        "action_reprs": [
+            "[link]  Cruises -> CLICK",
+            "[link]  Europe & Mediterranean Cruises 16 DEALS -> CLICK",
+            "[button]  Filter -> CLICK",
+            "[button]  $ Price: High to Low -> CLICK",
+            "[button]  DONE -> CLICK"
+        ],
+        "actions": [
+            {
+                "action_uid": "1c9cfff8-1391-492c-8dc1-3071bbfe0f64",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "a",
+                        "attributes": "{\"backend_node_id\": \"655\", \"bounding_box_rect\": \"824.8125,240,154.828125,50\", \"class\": \"no-touch\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "655"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "20b8aff4-4269-4cf8-a6a7-d1232bab53a4",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "a",
+                        "attributes": "{\"backend_node_id\": \"4236\", \"bounding_box_rect\": \"859.8125,293,399.65625,199.828125\", \"title\": \"Europe & Mediterranean Cruises\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "4236"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "084b94a2-6e3c-4b64-baa1-ba2dc61777a7",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "button",
+                        "attributes": "{\"backend_node_id\": \"7022\", \"bounding_box_rect\": \"20.5,639.984375,80,30\", \"type\": \"button\", \"id\": \"refine-search-toggle\", \"class\": \"button-refine-search\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "7022"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "f2b10367-aef5-46ac-805f-5d684a9c958d",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "div",
+                        "attributes": "{\"backend_node_id\": \"18682\", \"bounding_box_rect\": \"709.890625,739.5625,137.796875,60\", \"role\": \"button\", \"class\": \"btn-group-item\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "18682"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "a45c4879-9bb8-4c59-b2af-754d7f00f809",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "button",
+                        "attributes": "{\"backend_node_id\": \"23253\", \"bounding_box_rect\": \"906.5,1070.75,82,40\", \"type\": \"button\", \"class\": \"button-primary button-done right\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "23253"
+                    }
+                ],
+                "neg_candidates": []
+            }
+        ]
+    },
+    {
+        "website": "travelzoo",
+        "domain": "Travel",
+        "subdomain": "General",
+        "annotation_id": "33964bc4-fc1d-417c-ba5a-2c1c45ed8d8b",
+        "confirmed_task": "Show me the most expensive things to do anywhere in December in a map",
+        "action_reprs": [
+            "[textbox]  What type of deals? -> CLICK",
+            "[div]  Things To Do -> CLICK",
+            "[div]  Anywhere -> CLICK",
+            "[textbox]  When? -> CLICK",
+            "[tab]  Select a Month -> CLICK",
+            "[li]  December -> CLICK",
+            "[button]  Filter -> CLICK",
+            "[button]  $ Price: High to Low -> CLICK",
+            "[button]  DONE -> CLICK",
+            "[span]  Map -> CLICK"
+        ],
+        "actions": [
+            {
+                "action_uid": "33c00f88-b578-4fac-9e0c-a9a0520fc6f8",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "input",
+                        "attributes": "{\"backend_node_id\": \"114\", \"bounding_box_rect\": \"125.5,140,504.484375,60\", \"id\": \"what-field-1\", \"class\": \"input-clear js-input-clear ui-autocomplete-input\", \"type\": \"text\", \"placeholder\": \"e.g. Hotels, beach, Disney\", \"value\": \"All Deals\", \"input_value\": \"All Deals\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "114"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "d04d30d3-199f-40a7-a804-6bf215c11519",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "li",
+                        "attributes": "{\"backend_node_id\": \"8292\", \"bounding_box_rect\": \"126,663,495.46875,37\", \"class\": \"ui-menu-item\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "8292"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "cceccde0-e4da-420c-a4c0-3dc9ef3191a8",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "li",
+                        "attributes": "{\"backend_node_id\": \"14686\", \"bounding_box_rect\": \"643.46875,426,495.46875,37\", \"class\": \"ui-menu-item\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "14686"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "eb02273c-148b-4fdf-9b98-90ddaec0236a",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "input",
+                        "attributes": "{\"backend_node_id\": \"16016\", \"bounding_box_rect\": \"750,20,250,40\", \"id\": \"when-field-1\", \"type\": \"text\", \"placeholder\": \"Anytime...\", \"value\": \"All Dates\", \"input_value\": \"All Dates\", \"is_clickable\": \"true\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "16016"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "97b19ffb-e2c9-4bab-97f3-735bdb136ad7",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "h3",
+                        "attributes": "{\"backend_node_id\": \"30672\", \"bounding_box_rect\": \"278.5,139,758,37\", \"class\": \"ui-accordion-header ui-corner-top ui-accordion-header-collapsed ui-corner-all ui-state-default ui-accordion-icons\", \"role\": \"tab\", \"id\": \"ui-id-7\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "30672"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "63a284bf-17b9-4a58-81c7-7545cc57a69f",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "li",
+                        "attributes": "{\"backend_node_id\": \"45323\", \"bounding_box_rect\": \"387.5,175,89,37\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "45323"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "6a9be6b6-2a46-47a5-baff-fe468a69a2da",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "button",
+                        "attributes": "{\"backend_node_id\": \"59989\", \"bounding_box_rect\": \"260,248.390625,80,30\", \"type\": \"button\", \"id\": \"refine-search-toggle\", \"class\": \"button-refine-search\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "59989"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "0191e556-51aa-4851-928d-12a02ca30a6c",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "div",
+                        "attributes": "{\"backend_node_id\": \"81782\", \"bounding_box_rect\": \"709.890625,313.5625,137.796875,60\", \"role\": \"button\", \"class\": \"btn-group-item\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "81782"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "b655d9a9-a403-46c8-8b35-5686ceb8c895",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "button",
+                        "attributes": "{\"backend_node_id\": \"89586\", \"bounding_box_rect\": \"906.5,776.75,82,40\", \"type\": \"button\", \"class\": \"button-primary button-done right\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": true,
+                        "is_top_level_target": true,
+                        "backend_node_id": "89586"
+                    }
+                ],
+                "neg_candidates": []
+            },
+            {
+                "action_uid": "96597d17-6899-4300-8c45-7ae8387e89dd",
+                "raw_html": "",
+                "cleaned_html": "",
+                "operation": {
+                    "original_op": "CLICK",
+                    "value": "",
+                    "op": "CLICK"
+                },
+                "pos_candidates": [
+                    {
+                        "tag": "button",
+                        "attributes": "{\"backend_node_id\": \"105162\", \"bounding_box_rect\": \"125,248.390625,125,30\", \"type\": \"button\", \"id\": \"maplist-toggle\", \"class\": \"maplist-toggle\", \"data_pw_testid_buckeye_candidate\": \"1\"}",
+                        "is_original_target": false,
+                        "is_top_level_target": true,
+                        "backend_node_id": "105162"
+                    }
+                ],
+                "neg_candidates": []
+            }
+        ]
+    }
+]
