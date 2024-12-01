@@ -28,7 +28,8 @@ class BaseAgent:
         messages = [{"role": "system",
                      "content": "You are are helpful assistant to make a plan for navigating the web. Please provide a plan in the next few sentences."}]
         if self.memory != None:
-            messages.append({"role": "user", "content": self.memory})
+            memory_txt = self.memory.retrieve(self.goal)
+            messages.append({"role": "user", "content": memory_txt})
         messages.append({"role": "user", "content": "The goal is{}".format(self.goal)})
         chat_completion = client.chat.completions.create(
             model=self.model_name, messages=messages,

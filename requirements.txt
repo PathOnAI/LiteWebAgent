@@ -8,3 +8,7 @@ Pillow>=10.1
 beautifulsoup4>=4.12
 fastapi
 uvicorn
+chromadb
+llama-index-core
+llama-index-vector-stores-chroma
+llama-index-embeddings-openai
