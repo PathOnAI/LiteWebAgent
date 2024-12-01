@@ -1,0 +1,75 @@
+## Summary Workflows for AA Website:
+
+1. **enter_flight_locations**  
+   **Purpose**: Enter departure and destination cities for flight searches.  
+   **Steps**:  
+   1. Click the "From" field and type the departure city/airport.  
+   2. Select the matching option from the suggestions.  
+   3. Click the "To" field and type the destination city/airport.  
+   4. Select the matching option from the suggestions.
+
+2. **select_flight_date**  
+   **Purpose**: Choose a departure (and optionally return) date for a flight.  
+   **Steps**:  
+   1. Click the "Depart" field to open the date selector.  
+   2. Choose the desired departure date.  
+   3. (Optional) Repeat the process for the "Return" field for round-trip bookings.
+
+3. **check_flight_status**  
+   **Purpose**: Check the status of a specific flight or route.  
+   **Steps**:  
+   1. Click "Flight status."  
+   2. Enter the flight number or departure and destination cities.  
+   3. Select the date of the flight.  
+   4. Click "Search" to retrieve flight status.
+
+4. **find_trip**  
+   **Purpose**: Locate a specific reservation using booking information.  
+   **Steps**:  
+   1. Click "Manage trips / Check-in."  
+   2. Enter the passenger's last name and confirmation or record locator.  
+   3. Click "Find your trip."
+
+5. **search_jobs**  
+   **Purpose**: Search for job openings in a specific location.  
+   **Steps**:  
+   1. Click "We're hiring! Join our team."  
+   2. Enter the job title or keywords in the search box.  
+   3. Type the location (e.g., city, state) in the location field.  
+   4. Click "Search Jobs" to view results.
+
+6. **retrieve_ticket_details**  
+   **Purpose**: Access information related to tickets, such as receipts or refund status.  
+   **Steps**:  
+   1. Click "Receipts and refunds."  
+   2. Choose the relevant option (e.g., "Check the status of a refund" or "Receipts for tickets").  
+   3. Enter the ticket number and passenger information.  
+   4. Click "Search" or "Find."
+
+7. **book_multi-city_flight**  
+   **Purpose**: Plan and book a multi-city flight itinerary.  
+   **Steps**:  
+   1. Click "PLAN TRAVEL" and select "Search flights multiple cities."  
+   2. Enter the departure and destination cities for each segment.  
+   3. Choose the departure dates for each segment.  
+   4. Add additional flight segments if needed.  
+   5. Click "Search."
+
+8. **create_flight_alert**  
+   **Purpose**: Set up email notifications for flight status.  
+   **Steps**:  
+   1. Click "Flight status" and then "Create flight status notification."  
+   2. Enter the departure and destination cities or flight number.  
+   3. Select the flight date.  
+   4. Enter the recipient email and confirm it.  
+   5. Click "Save."
+
+9. **search_hotels**  
+   **Purpose**: Find accommodations based on destination and dates.  
+   **Steps**:  
+   1. Click "Hotel" to navigate to the hotel booking section.  
+   2. Enter the destination city in the search box.  
+   3. Select check-in and check-out dates.  
+   4. Click "Search" and sort results by price or preference.  
+
+These workflows encapsulate the commonly repeated actions across the tasks, ensuring clarity and modularity.

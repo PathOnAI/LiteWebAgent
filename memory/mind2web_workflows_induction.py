@@ -47,7 +47,7 @@ def get_data_dict(paths: list[str]) -> dict:
     print("Start loading data files...")
     data_dict = {}
     for p in paths:
-        data = json.load(open(p, 'r'))
+        data = json.load(open(p, 'r', encoding='utf-8'))
         for ex in data:
             website = ex["website"]
             if website not in data_dict:
@@ -75,7 +75,7 @@ def filter_workflows(text: str, website: str) -> str:
 
 def save_to_txt(text: str, output_dir: str, website: str):
     """Save text to a .txt file."""
-    with open(get_output_path(output_dir, website), 'w') as fw:
+    with open(get_output_path(output_dir, website), 'w', encoding='utf-8') as fw:
         fw.write(text)
 
 def get_output_path(output_dir: str, website: str):
@@ -86,7 +86,7 @@ def get_output_path(output_dir: str, website: str):
 def save_log(text: str, name):
     log_dir = "memory/log/"
     os.makedirs(log_dir, exist_ok=True)
-    with open(f'{log_dir}/{name}.txt', 'w') as fw:
+    with open(f'{log_dir}/{name}.txt', 'w', encoding='utf-8') as fw:
         fw.write(text)
 
 def main():
@@ -94,8 +94,8 @@ def main():
     instruction_path = "memory/prompt/instruction_action.txt"
     oneshot_path = "memory/prompt/one_shot_action.txt"
 
-    INSTRUCTION = open(instruction_path, "r").read()
-    ONE_SHOT = open(oneshot_path, "r").read()
+    INSTRUCTION = open(instruction_path, "r", encoding='utf-8').read()
+    ONE_SHOT = open(oneshot_path, "r", encoding='utf-8').read()
 
     data_dir, websites, model_name, temperature, verbose, skip = \
         args.data_dir, args.websites, args.model_name, args.temperature, args.verbose, args.skip
