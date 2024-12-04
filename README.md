@@ -8,6 +8,7 @@
 </p>
 
 ## 📰 News
+* [2024-12-03] [zzfoo](https://github.com/zzfoo) integrated [AWM (Agent Workflow Memory)](https://github.com/zorazrw/agent-workflow-memory) into the LiteWebAgent framework.
 * [2024-11-25] We set up a Chrome extension prototype using LiteWebAgent as an AI backend server to control the Chrome browser via Chrome DevTools Protocol.
 * [2024-11-01] We refactored LiteWebAgent's tree search into a new repository called [LLMWebAgentTreeSearch](https://github.com/PathOnAI/LLMWebAgentTreeSearch).
 * [2024-10-01] Completed a major refactoring of LiteWebAgent to make it flexible for importing the package, enabling the addition of web browsing capabilities to any AI agent.
@@ -99,15 +100,26 @@ Then run the load_state.py script and log into the websites to enable auto-login
 python3.11 load_state.py save
 ```
 ### (5) memory
+We integrated [AWM (Agent Workflow Memory)](https://github.com/zorazrw/agent-workflow-memory) into the LiteWebAgent framework. You can follow these three steps to include induced workflows as memory for the web agent, we use 'add a bag of dog food to the cart' on amazon website as an example:
 
-Induce workflows from mind2web datasets
-`python memory/mind2web_workflows_induction.py --websites amazon`
+Step 1: Induce workflows from mind2web datasets
+```
+python memory/mind2web_workflows_induction.py --websites amazon
+```
+Please note that you can induce workflows for multiple websites by passing a comma-separated list of website names to the `--websites` parameter:
+```
+python memory/mind2web_workflows_induction.py --websites amazon,aa
+```
 
-Embed and store workflows
-`python memory/update_vector_store.py`
+Step 2: Embed and store workflows in DB for retrieval
+```
+python memory/update_vector_store.py
+```
 
-Run function calling agent with memory
-`python -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.amazon.com/ --goal 'add a bag of dog food to the cart.' --workflow_memory_website amazon`
+Step 3: Run function calling agent with memory
+```
+python -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.amazon.com/ --goal 'add a bag of dog food to the cart.' --workflow_memory_website amazon
+```
 
 ## 3. Paper reimplementation
 | Paper                                                                    | Agent                                                                                                                                                  |
