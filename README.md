@@ -1,5 +1,4 @@
 # LiteWebAgent
-repo owner: Danni (Danqing) Zhang (danqing.zhang.personal@gmail.com)
 
 <p align="left">
     <a href='https://litewebagent.readthedocs.io/en/latest/'>
@@ -9,6 +8,8 @@ repo owner: Danni (Danqing) Zhang (danqing.zhang.personal@gmail.com)
 </p>
 
 ## 📰 News
+* [2024-11-25] We set up a Chrome extension prototype using LiteWebAgent as an AI backend server to control the Chrome browser via Chrome DevTools Protocol.
+* [2024-11-01] We refactored LiteWebAgent's tree search into a new repository called [LLMWebAgentTreeSearch](https://github.com/PathOnAI/LLMWebAgentTreeSearch).
 * [2024-10-01] Completed a major refactoring of LiteWebAgent to make it flexible for importing the package, enabling the addition of web browsing capabilities to any AI agent.
 * [2024-09-20] We reimplemented the paper Tree Search for Language Model Agents in the LiteWebAgent framework. Now, the search agent is capable of exploring different trajectories for accomplishing web browsing tasks and returning the most promising one. This is useful for finding the optimal path to complete complex web browsing tasks in an offline manner.
 * [2024-08-22] The initial version of LiteWebAgent was released, providing a robust framework for using natural language to control a web agent.
@@ -105,10 +106,15 @@ python3.11 load_state.py save
 | [Mind2Web](https://osu-nlp-group.github.io/Mind2Web/)                    | [ContextAwarePlanningAgent](https://github.com/PathOnAI/LiteWebAgent/blob/main/litewebagent/agents/FunctionCallingAgents/ContextAwarePlanningAgent.py) |
 | [Tree Search for Language Model Agents](https://jykoh.com/search-agents) | [PromptSearchAgent](https://github.com/PathOnAI/LiteWebAgent/blob/main/litewebagent/agents/SearchAgents/PromptSearchAgent.py)                          |
 
-## 🚀 4. Contributions
+## 4. Chrome Extension
+Check [how to set up a Chrome extension using LiteWebAgent as an AI backend server](https://github.com/PathOnAI/LiteWebAgent/tree/main/chrome_extension)
+
+https://www.loom.com/share/d2b03e39c13044d8b25fcf1644e88867
+
+## 🚀 5. Contributions
 [![LiteWebiAgent contributors](https://contrib.rocks/image?repo=PathOnAI/LiteWebAgent)](https://github.com/PathOnAI/LiteWebAgent/graphs/contributors)
 
-## 5. Citing LiteWebAgent
+## 6. Citing LiteWebAgent
 ```
 @misc{zhang2024litewebagent,
   title={LiteWebAgent: The Library for LLM-based web-agent applications},
