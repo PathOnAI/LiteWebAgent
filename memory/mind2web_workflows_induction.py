@@ -10,6 +10,10 @@ client = OpenAI()
 def induce_single_website(data_dict, website: str, output_dir: str, **kwargs):
     """Pipeline to induce, filter, and save workflows on a single website."""
     examples = get_examples(data_dict, website)
+    if examples is None:
+        print(f"No training examples found for {website}. Skipping processing.")
+        return
+
     print(f"Split {website} with #{len(examples)} examples")
     response = llm_generate(website, examples, **kwargs)
     workflows = filter_workflows(response, website)
@@ -56,8 +60,8 @@ def get_data_dict(paths: list[str]) -> dict:
     print(f"Finished loading {len(paths)} files!")
     return data_dict
 
-def get_examples(data_dict: dict, website: str) -> list[dict]:
-    return data_dict[website]
+def get_examples(data_dict: dict, website: str) -> list[dict]: 
+    return data_dict.get(website, None)
 
 def format_examples(examples: list[dict]) -> str:
     lines = []
