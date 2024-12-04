@@ -98,6 +98,16 @@ Then run the load_state.py script and log into the websites to enable auto-login
 ```
 python3.11 load_state.py save
 ```
+### (5) memory
+
+Induce workflows from mind2web datasets
+`python memory/mind2web_workflows_induction.py --websites amazon`
+
+Embed and store workflows
+`python memory/update_vector_store.py`
+
+Run function calling agent with memory
+`python -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.amazon.com/ --goal 'add a bag of dog food to the cart.' --workflow_memory_website amazon`
 
 ## 3. Paper reimplementation
 | Paper                                                                    | Agent                                                                                                                                                  |

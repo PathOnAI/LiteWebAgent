@@ -3,6 +3,8 @@ import os
 import logging
 from dotenv import load_dotenv
 from openai import OpenAI
+
+from litewebagent.memory.workflow_memory import WorkflowMemory
 from ..agents.FunctionCallingAgents.FunctionCallingAgent import FunctionCallingAgent
 from ..agents.FunctionCallingAgents.HighLevelPlanningAgent import HighLevelPlanningAgent
 from ..agents.FunctionCallingAgents.ContextAwarePlanningAgent import ContextAwarePlanningAgent
@@ -36,12 +38,17 @@ def create_function_wrapper(func, **kwargs):
 
 def setup_function_calling_web_agent(starting_url, goal, playwright_manager, model_name="gpt-4o-mini", agent_type="DemoAgent", tool_names = ["navigation", "select_option", "upload_file", "webscraping"],
                                      features=['axtree'], elements_filter=None,
-                                     branching_factor=None, log_folder="log"):
+                                     branching_factor=None, log_folder="log", workflow_memory_website=None):
     logger = setup_logger()
 
     if features is None:
         features = DEFAULT_FEATURES
 
+    memory = None
+    if workflow_memory_website is not None:
+        memory = WorkflowMemory()
+        memory.setup(website=workflow_memory_website)
+    print(f"Memory: {memory}")
     tool_registry = ToolRegistry()
     available_tools = {}
     tools = []
@@ -83,8 +90,9 @@ def setup_function_calling_web_agent(starting_url, goal, playwright_manager, mod
 
     try:
         agent_class = AGENT_CLASSES[agent_type]
-        agent = agent_class(model_name=model_name, tools=tools, available_tools=available_tools,
-                                       messages=messages, goal=goal, playwright_manager=playwright_manager,
+        agent = agent_class(model_name=model_name, tools=tools, 
+        available_tools=available_tools,
+                                       messages=messages, goal=goal, memory=memory, playwright_manager=playwright_manager,
                                        log_folder=log_folder)
     except KeyError:
         error_message = f"Unsupported agent type: {agent_type}. Please use 'FunctionCallingAgent', 'HighLevelPlanningAgent', 'ContextAwarePlanningAgent', 'PromptAgent' or 'PromptSearchAgent' ."

@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from typing import List, Dict
 
 logger = logging.getLogger(__name__)
@@ -12,7 +13,7 @@ client = OpenAI()
 
 
 class BaseAgent:
-    def __init__(self, model_name, tools, available_tools, messages, goal, playwright_manager, log_folder):
+    def __init__(self, model_name, tools, available_tools, messages, goal, memory, playwright_manager, log_folder):
         self.model_name = model_name
         self.tools = tools
         self.available_tools = available_tools
@@ -21,15 +22,22 @@ class BaseAgent:
         self.playwright_manager = playwright_manager
         self.messages.append({"role": "user", "content": "The goal is:{}".format(self.goal)})
         self.log_folder = log_folder
+        self.memory = memory
 
     def make_plan(self):
         messages = [{"role": "system",
-                     "content": "You are are helpful assistant to make a plan for a task or user request. Please provide a plan in the next few sentences."}]
-        messages.append({"role": "assistant", "content": "The goal is{}".format(self.goal)})
+                     "content": "You are are helpful assistant to make a plan for navigating the web. Please provide a plan in the next few sentences."}]
+        if self.memory != None:
+            memory_txt = self.memory.retrieve(self.goal)
+            messages.append({"role": "user", "content": memory_txt})
+        messages.append({"role": "user", "content": "The goal is{}".format(self.goal)})
         chat_completion = client.chat.completions.create(
             model=self.model_name, messages=messages,
         )
         plan = chat_completion.choices[0].message.content
+        with open(os.path.join(self.log_folder, 'plan.txt'), 'a', encoding='utf8') as f:
+            f.write(plan)
+            f.write('\n\n')
         return plan
 
     def process_tool_calls(self, tool_calls: List[Dict]) -> List[Dict]:

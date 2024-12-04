@@ -15,7 +15,7 @@ def main(args):
 
     playwright_manager = setup_playwright(log_folder=args.log_folder, storage_state='state.json', headless=False)
     agent = setup_function_calling_web_agent(starting_url=args.starting_url, goal=args.goal, playwright_manager=playwright_manager, model_name=args.model, agent_type=args.agent_type,
-                            features=features, elements_filter=args.elements_filter,tool_names=tool_names, branching_factor=branching_factor, log_folder=args.log_folder)
+                            features=features, elements_filter=args.elements_filter,tool_names=tool_names, branching_factor=branching_factor, log_folder=args.log_folder, workflow_memory_website=args.workflow_memory_website)
 
     response = agent.send_prompt(args.plan)
     print(response)
@@ -30,7 +30,7 @@ if __name__ == "__main__":
                         help="Model to use for the agent (default: gpt-4o-mini)")
     parser.add_argument('--starting_url', type=str, required=True,
                         help="Starting URL for the web automation task")
-    parser.add_argument('--plan', type=str, required=True,
+    parser.add_argument('--plan', type=str, required=False,
                         help="Plan for the web automation task")
     parser.add_argument('--goal', type=str, required=True,
                         help="Goal for the web automation task")
@@ -46,5 +46,6 @@ if __name__ == "__main__":
                         help="Comma-separated list of tool names to use (default: navigation,select_option,upload_file,webscraping)")
     parser.add_argument('--branching_factor', type=int, default=None)
     parser.add_argument('--log_folder', type=str, default='log', help='Path to the log folder')
+    parser.add_argument('--workflow_memory_website', type=str, default=None, help='Website name for filtering memory')
     args = parser.parse_args()
     main(args)
