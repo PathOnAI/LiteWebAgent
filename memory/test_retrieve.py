@@ -10,7 +10,7 @@ from llama_index.core.vector_stores import (
     FilterOperator,
 )
 
-from memory.workflow_memory import WorkflowMemory
+from litewebagent.memory.workflow_memory import WorkflowMemory
 
 def main(website: str, task: str):
     memory = WorkflowMemory()
@@ -19,5 +19,5 @@ def main(website: str, task: str):
     print(memory_txt)
     
 if __name__ == '__main__':
-    main('aa', 'find a flight for two')
+    main('amazon', 'add a bag of dog food to the cart.')
  

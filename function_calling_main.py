@@ -15,7 +15,7 @@ def main(args):
 
     playwright_manager = setup_playwright(log_folder=args.log_folder, storage_state='state.json', headless=False)
     agent = setup_function_calling_web_agent(starting_url=args.starting_url, goal=args.goal, playwright_manager=playwright_manager, model_name=args.model, agent_type=args.agent_type,
-                            features=features, elements_filter=args.elements_filter,tool_names=tool_names, branching_factor=branching_factor, log_folder=args.log_folder, website=args.website)
+                            features=features, elements_filter=args.elements_filter,tool_names=tool_names, branching_factor=branching_factor, log_folder=args.log_folder, workflow_memory_website=args.workflow_memory_website)
 
     response = agent.send_prompt(args.plan)
     print(response)
@@ -46,6 +46,6 @@ if __name__ == "__main__":
                         help="Comma-separated list of tool names to use (default: navigation,select_option,upload_file,webscraping)")
     parser.add_argument('--branching_factor', type=int, default=None)
     parser.add_argument('--log_folder', type=str, default='log', help='Path to the log folder')
-    parser.add_argument('--website', type=str, default=None, help='Website name for filtering memory')
+    parser.add_argument('--workflow_memory_website', type=str, default=None, help='Website name for filtering memory')
     args = parser.parse_args()
     main(args)

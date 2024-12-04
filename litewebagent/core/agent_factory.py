@@ -4,7 +4,7 @@ import logging
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from memory.workflow_memory import WorkflowMemory
+from litewebagent.memory.workflow_memory import WorkflowMemory
 from ..agents.FunctionCallingAgents.FunctionCallingAgent import FunctionCallingAgent
 from ..agents.FunctionCallingAgents.HighLevelPlanningAgent import HighLevelPlanningAgent
 from ..agents.FunctionCallingAgents.ContextAwarePlanningAgent import ContextAwarePlanningAgent
@@ -38,16 +38,16 @@ def create_function_wrapper(func, **kwargs):
 
 def setup_function_calling_web_agent(starting_url, goal, playwright_manager, model_name="gpt-4o-mini", agent_type="DemoAgent", tool_names = ["navigation", "select_option", "upload_file", "webscraping"],
                                      features=['axtree'], elements_filter=None,
-                                     branching_factor=None, log_folder="log", website=None):
+                                     branching_factor=None, log_folder="log", workflow_memory_website=None):
     logger = setup_logger()
 
     if features is None:
         features = DEFAULT_FEATURES
 
     memory = None
-    if website is not None:
+    if workflow_memory_website is not None:
         memory = WorkflowMemory()
-        memory.setup(website=website)
+        memory.setup(website=workflow_memory_website)
     print(f"Memory: {memory}")
     tool_registry = ToolRegistry()
     available_tools = {}
