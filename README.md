@@ -126,7 +126,8 @@ python -m function_calling_main --agent_type FunctionCallingAgent --starting_url
 |--------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [SoM (Set-of-Mark) Agent](https://github.com/web-arena-x/visualwebarena)            | [PromptAgent](https://github.com/PathOnAI/LiteWebAgent/blob/main/litewebagent/agents/PromptAgents/PromptAgent.py)                                      |
 | [Mind2Web](https://osu-nlp-group.github.io/Mind2Web/)                    | [ContextAwarePlanningAgent](https://github.com/PathOnAI/LiteWebAgent/blob/main/litewebagent/agents/FunctionCallingAgents/ContextAwarePlanningAgent.py) |
-| [Tree Search for Language Model Agents](https://jykoh.com/search-agents) | [PromptSearchAgent](https://github.com/PathOnAI/LiteWebAgent/blob/main/litewebagent/agents/SearchAgents/PromptSearchAgent.py)                          |
+| [Tree Search for Language Model Agents](https://jykoh.com/search-agents) | [LLMWebAgentTreeSearch](https://github.com/PathOnAI/LLMWebAgentTreeSearch)                       |
+| [Agent Workflow Memory](https://github.com/zorazrw/agent-workflow-memory) | [memory module](https://github.com/PathOnAI/LiteWebAgent/blob/main/litewebagent/memory/workflow_memory.py)                       |
 
 ## 4. Chrome Extension
 Check [how to set up a Chrome extension using LiteWebAgent as an AI backend server](https://github.com/PathOnAI/LiteWebAgent/tree/main/chrome_extension)
