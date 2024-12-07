@@ -104,21 +104,21 @@ We integrated [AWM (Agent Workflow Memory)](https://github.com/zorazrw/agent-wor
 
 Step 1: Induce workflows from mind2web datasets
 ```
-python memory/mind2web_workflows_induction.py --websites amazon
+python3.11 memory/mind2web_workflows_induction.py --websites amazon
 ```
 Please note that you can induce workflows for multiple websites by passing a comma-separated list of website names to the `--websites` parameter:
 ```
-python memory/mind2web_workflows_induction.py --websites amazon,aa
+python3.11 memory/mind2web_workflows_induction.py --websites amazon,aa
 ```
 
 Step 2: Embed and store workflows in DB for retrieval
 ```
-python memory/update_vector_store.py
+python3.11 memory/update_vector_store.py
 ```
 
 Step 3: Run function calling agent with memory
 ```
-python -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.amazon.com/ --goal 'add a bag of dog food to the cart.' --workflow_memory_website amazon
+python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.amazon.com/ --goal 'add a bag of dog food to the cart.' --workflow_memory_website amazon
 ```
 
 ## 3. Paper reimplementation

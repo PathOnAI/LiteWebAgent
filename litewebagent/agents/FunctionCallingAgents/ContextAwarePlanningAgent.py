@@ -7,9 +7,9 @@ import logging
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
-from ...utils.utils import encode_image
+from webagent_utils_sync.utils.utils import encode_image
 import time
-from ...browser_env.observation import (
+from webagent_utils_sync.browser_env.observation import (
     _pre_extract,
     extract_dom_snapshot,
     extract_merged_axtree,

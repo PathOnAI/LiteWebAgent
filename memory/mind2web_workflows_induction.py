@@ -5,6 +5,9 @@ import json
 import argparse
 
 from openai import OpenAI
+from dotenv import load_dotenv
+
+_ = load_dotenv()
 client = OpenAI()
 
 def induce_single_website(data_dict, website: str, output_dir: str, **kwargs):

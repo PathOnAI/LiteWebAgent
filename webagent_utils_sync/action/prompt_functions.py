@@ -1,6 +1,6 @@
-from litewebagent.utils.utils import encode_image
-from litewebagent.action.utils import prepare_prompt
-from litewebagent.action.utils import build_highlevel_action_parser
+from ..utils.utils import encode_image
+from .utils import prepare_prompt
+from .utils import build_highlevel_action_parser
 from collections import defaultdict
 import base64
 
