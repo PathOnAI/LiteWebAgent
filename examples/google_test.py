@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 
 _ = load_dotenv()
 from litewebagent.core.agent_factory import setup_function_calling_web_agent
-from litewebagent.utils.playwright_manager import setup_playwright
+from webagent_utils_sync.utils.playwright_manager import setup_playwright
 
 agent_type = "FunctionCallingAgent"
 starting_url = "https://www.google.com"

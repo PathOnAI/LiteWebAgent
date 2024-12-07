@@ -9,9 +9,9 @@ from ..agents.FunctionCallingAgents.FunctionCallingAgent import FunctionCallingA
 from ..agents.FunctionCallingAgents.HighLevelPlanningAgent import HighLevelPlanningAgent
 from ..agents.FunctionCallingAgents.ContextAwarePlanningAgent import ContextAwarePlanningAgent
 from ..agents.PromptAgents.PromptAgent import PromptAgent
-from ..utils.utils import setup_logger
-from ..utils.playwright_manager import setup_playwright
-from ..tools.registry import ToolRegistry
+from webagent_utils_sync.utils.utils import setup_logger
+from webagent_utils_sync.utils.playwright_manager import setup_playwright
+from webagent_utils_sync.tools.registry import ToolRegistry
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

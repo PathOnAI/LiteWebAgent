@@ -1,10 +1,10 @@
 from typing import Dict
 from openai import OpenAI
-from litewebagent.action.highlevel import HighLevelActionSet
-from litewebagent.action.utils import execute_action
-from litewebagent.action.prompt_functions import extract_top_actions, is_goal_finished
-from litewebagent.browser_env.observation import extract_page_info
-from litewebagent.evaluation.feedback import capture_post_action_feedback
+from webagent_utils_sync.action.highlevel import HighLevelActionSet
+from webagent_utils_sync.action.utils import execute_action
+from webagent_utils_sync.action.prompt_functions import extract_top_actions, is_goal_finished
+from webagent_utils_sync.browser_env.observation import extract_page_info
+from webagent_utils_sync.evaluation.feedback import capture_post_action_feedback
 import time
 import logging
 

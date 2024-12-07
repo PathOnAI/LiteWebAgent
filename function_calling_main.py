@@ -3,7 +3,7 @@ import argparse
 
 _ = load_dotenv()
 from litewebagent.core.agent_factory import setup_function_calling_web_agent
-from litewebagent.utils.playwright_manager import setup_playwright
+from webagent_utils_sync.utils.playwright_manager import setup_playwright
 
 def main(args):
     # Use the features from command-line arguments
