@@ -1,6 +1,5 @@
 # copied and modified from https://github.com/ServiceNow/BrowserGym
 import playwright.sync_api
-import playwright.sync_api
 from abc import ABC, abstractmethod
 import ast
 import sys
@@ -11,7 +10,6 @@ from typing import Any, Callable, Optional, Tuple
 from pathlib import Path
 import ast
 from typing import Any, Callable, Dict, Optional
-import playwright.sync_api
 import os
 from datetime import datetime
 import sys
