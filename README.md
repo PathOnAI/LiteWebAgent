@@ -121,6 +121,13 @@ Step 3: Run function calling agent with memory
 python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting_url https://www.amazon.com/ --goal 'add a bag of dog food to the cart.' --workflow_memory_website amazon
 ```
 
+### (6) Use LiteWebAgent AI backend
+
+Start the Python backend server:
+```bash
+python3.11 -m api.server --port 5001
+```
+
 ## 3. Paper reimplementation
 | Paper                                                                    | Agent                                                                                                                                                  |
 |--------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|

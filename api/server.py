@@ -2,8 +2,8 @@ from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
-from ..core.agent_factory import setup_prompting_web_agent
-from ..webagent_utils_sync.utils.playwright_manager import setup_playwright
+from litewebagent.core.agent_factory import setup_prompting_web_agent
+from litewebagent.webagent_utils_sync.utils.playwright_manager import setup_playwright
 import argparse
 
 app = FastAPI()
