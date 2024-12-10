@@ -8,6 +8,9 @@ from deepgram import (
 from typing import Optional, Callable
 from threading import Event, Lock
 import queue
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 class VoiceClient:
     def __init__(self, api_key: str):
@@ -105,7 +108,7 @@ class VoiceClient:
 # Example usage:
 if __name__ == "__main__":
     # Initialize the client
-    client = VoiceClient(api_key='33f6d8a92671a841d055852e00603a1c3ada57de')
+    client = VoiceClient(api_key=os.getenv('DEEPGRAM_API_KEY'))
     
     try:
         # Start listening

@@ -11,7 +11,7 @@ from pathlib import Path
 _ = load_dotenv()
 
 from litewebagent.core.agent_factory import setup_function_calling_web_agent
-from litewebagent.utils.playwright_manager import setup_playwright
+from litewebagent.webagent_utils_sync.utils.playwright_manager import setup_playwright
 
 
 import json
@@ -314,7 +314,7 @@ from typing import Optional
 _ = load_dotenv()
 
 from litewebagent.core.agent_factory import setup_function_calling_web_agent
-from litewebagent.utils.playwright_manager import setup_playwright
+from litewebagent.webagent_utils_sync.utils.playwright_manager import setup_playwright
 
 # Initialize Rich console
 console = Console()
