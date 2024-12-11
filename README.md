@@ -137,7 +137,7 @@ python3.11 -m api.server --port 5001
 | [Agent Workflow Memory](https://github.com/zorazrw/agent-workflow-memory) | [memory module](https://github.com/PathOnAI/LiteWebAgent/blob/main/litewebagent/memory/workflow_memory.py)                       |
 
 ## 4. Chrome Extension
-Check [how to set up a Chrome extension using LiteWebAgent as an AI backend server](https://github.com/PathOnAI/LiteWebAgent/tree/main/chrome_extension)
+Check [how to set up a Chrome extension using LiteWebAgent as an AI backend server](https://github.com/PathOnAI/LiteWebAgent-frontend-chrome-extension/tree/main/extension)
 
 https://www.loom.com/share/d2b03e39c13044d8b25fcf1644e88867
 
