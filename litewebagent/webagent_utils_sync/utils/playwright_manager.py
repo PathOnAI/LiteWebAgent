@@ -57,6 +57,7 @@ class PlaywrightManager:
                 if self.mode == "cdp":
                     chrome_url = "http://localhost:9222"
                     self.browser = self.playwright.chromium.connect_over_cdp(chrome_url)
+                    print('debug mode enteredx')
                     debug_browser_state(self.browser)
                     
                     # Get non-extension context and page

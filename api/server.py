@@ -1,3 +1,5 @@
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -7,6 +9,13 @@ from litewebagent.webagent_utils_sync.utils.playwright_manager import setup_play
 import argparse
 
 app = FastAPI()
+
+thread_pool = ThreadPoolExecutor(max_workers=3)  # Adjust max_workers as needed
+
+# Add this to clean up the thread pool when the application shuts down
+@app.on_event("shutdown")
+async def shutdown_event():
+    thread_pool.shutdown(wait=True)
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,6 +38,7 @@ class AutomationConfig(BaseModel):
     log_folder: str
 
 def run_automation(config: AutomationConfig):
+    print('here')
     features = config.features.split(',') if config.features else None
     
     playwright_manager = setup_playwright(
@@ -37,6 +47,8 @@ def run_automation(config: AutomationConfig):
         headless=False,
         mode="cdp"
     )
+
+    print('there')
     
     agent = setup_prompting_web_agent(
         config.starting_url,
@@ -54,10 +66,10 @@ def run_automation(config: AutomationConfig):
     return agent.send_prompt(config.plan)
 
 @app.post("/automate")
-async def start_automation(config: AutomationConfig, background_tasks: BackgroundTasks):
-    print(config)
-    background_tasks.add_task(run_automation, config)
+def start_automation(config: AutomationConfig, background_tasks: BackgroundTasks):
+    run_automation(config)
     return {"status": "Automation started"}
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -65,4 +77,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=args.port)
+    uvicorn.run(app, host="127.0.0.1", port=args.port, reload=True)
