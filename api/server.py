@@ -38,7 +38,6 @@ class AutomationConfig(BaseModel):
     log_folder: str
 
 def run_automation(config: AutomationConfig):
-    print('here')
     features = config.features.split(',') if config.features else None
     
     playwright_manager = setup_playwright(
@@ -47,8 +46,6 @@ def run_automation(config: AutomationConfig):
         headless=False,
         mode="cdp"
     )
-
-    print('there')
     
     agent = setup_prompting_web_agent(
         config.starting_url,
