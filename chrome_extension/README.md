@@ -23,7 +23,7 @@ pkill -f "Google Chrome"
 
 1. Start the Python backend server:
 ```bash
-python3.11 -m api.server --port 5001
+python3.11 -m uvicorn api.server:app --reload --port=5001
 ```
 
 ## 2. Usage
