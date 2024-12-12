@@ -1,5 +1,4 @@
 # LiteWebAgent Chrome Extension
-
 Chrome extension frontend for LiteWebAgent web automation tool.
 
 ## 1. Configuration 
@@ -10,12 +9,15 @@ pkill -f "Google Chrome"
 ```
 
 ### 1.2 Install chrome extension
+1. Build chrome extension with [WXT](https://wxt.dev/) framework
+    - npm install
+    - npm run dev
 
-1. Enable Chrome Developer Mode:
+2. Enable Chrome Developer Mode:
    - Open Chrome and navigate to `chrome://extensions/`
    - Enable "Developer mode" in the top right
 
-2. Load the Extension:
+3. Load the Extension:
    - Click "Load unpacked"
    - Select this `chrome_extension` directory
 
@@ -48,4 +50,13 @@ Default settings can be modified in `popup.js`. Available options:
 
 
 ## 5. Debug
-If Playwright cannot detect the correct page, restart Chrome and the Python backend server. Keep only one active tab open for this browser automation task.
+* If Playwright cannot detect the correct page, restart Chrome and the Python backend server. Keep only one active tab open for this browser automation task.
+* If the AI backend is not processing requests, try uninstalling Playwright and clearing the cache:
+```
+python3.11 -m pip uninstall playwright 
+rm -rf ~/Library/Caches/ms-playwright 
+playwright install chromium
+```
+
+
+
