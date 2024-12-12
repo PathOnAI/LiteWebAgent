@@ -148,7 +148,7 @@ https://www.loom.com/share/d2b03e39c13044d8b25fcf1644e88867
 ```
 @misc{zhang2024litewebagent,
   title={LiteWebAgent: The Library for LLM-based web-agent applications},
-  author={Zhang, Danqing and Rama, Balaji and He, Shiying and Ni, Jingyi},
+  author={Danqing Zhang, Balaji Rama, Zhao Fu, Shiying He, Kunyu Chen, Jingyi Ni},
   journal={https://github.com/PathOnAI/LiteWebAgent},
   year={2024}
 }
