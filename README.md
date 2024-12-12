@@ -8,6 +8,8 @@
 </p>
 
 ## 📰 News
+* [2024-12-12] Released an async version of LiteWebAgent for improved compatibility with FastAPI AI backends.
+* [2024-12-11] Deployed LiteWebAgent’s frontend and backend on Vercel.
 * [2024-12-03] [zzfoo](https://github.com/zzfoo) integrated [AWM (Agent Workflow Memory)](https://github.com/zorazrw/agent-workflow-memory) into the LiteWebAgent framework.
 * [2024-11-25] We set up a Chrome extension prototype using LiteWebAgent as an AI backend server to control the Chrome browser via Chrome DevTools Protocol.
 * [2024-11-01] We refactored LiteWebAgent's tree search into a new repository called [LLMWebAgentTreeSearch](https://github.com/PathOnAI/LLMWebAgentTreeSearch).
