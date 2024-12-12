@@ -1,2 +1,2 @@
 # LiteWebAgent Async Version
-This is a placeholder for the async version of LiteWebAgent. The async version is currently used in our backend repository at https://github.com/PathOnAI/LiteWebAgent-backend and is deployed on Vercel. We plan to open-source and release it in the future.
+This asynchronous implementation of LiteWebAgent is optimized for FastAPI backends. We've added API routes and adapted the async version for our backend repository at https://github.com/PathOnAI/LiteWebAgent-backend, which we deploy using Vercel.

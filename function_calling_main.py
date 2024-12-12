@@ -3,7 +3,7 @@ import argparse
 
 _ = load_dotenv()
 from litewebagent.core.agent_factory import setup_function_calling_web_agent
-from webagent_utils_sync.utils.playwright_manager import setup_playwright
+from litewebagent.webagent_utils_sync.utils.playwright_manager import setup_playwright
 
 def main(args):
     # Use the features from command-line arguments
@@ -13,7 +13,7 @@ def main(args):
     # Use the tool_names from command-line arguments
     tool_names = args.tool_names.split(',') if args.tool_names else ["navigation", "select_option", "upload_file", "webscraping"]
 
-    playwright_manager = setup_playwright(log_folder=args.log_folder, storage_state='state.json', headless=False)
+    playwright_manager = setup_playwright(storage_state='state.json', headless=False)
     agent = setup_function_calling_web_agent(starting_url=args.starting_url, goal=args.goal, playwright_manager=playwright_manager, model_name=args.model, agent_type=args.agent_type,
                             features=features, elements_filter=args.elements_filter,tool_names=tool_names, branching_factor=branching_factor, log_folder=args.log_folder, workflow_memory_website=args.workflow_memory_website)
 
