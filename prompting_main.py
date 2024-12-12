@@ -3,7 +3,7 @@ import argparse
 
 _ = load_dotenv()
 from litewebagent.core.agent_factory import setup_prompting_web_agent
-from webagent_utils_sync.utils.playwright_manager import setup_playwright
+from litewebagent.webagent_utils_sync.utils.playwright_manager import setup_playwright
 
 
 def main(args):
@@ -11,7 +11,7 @@ def main(args):
     features = args.features.split(',') if args.features else None
     branching_factor = args.branching_factor if args.branching_factor else None
 
-    playwright_manager = setup_playwright(log_folder=args.log_folder, storage_state='state.json', headless=False)
+    playwright_manager = setup_playwright(storage_state='state.json', headless=False)
     agent = setup_prompting_web_agent(args.starting_url, args.goal, playwright_manager=playwright_manager, model_name=args.model, agent_type=args.agent_type,
                             features=features, elements_filter=args.elements_filter, branching_factor=branching_factor, log_folder=args.log_folder,
                             storage_state=args.storage_state)

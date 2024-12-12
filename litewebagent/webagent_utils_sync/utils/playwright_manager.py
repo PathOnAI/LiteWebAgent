@@ -111,7 +111,7 @@ class PlaywrightManager:
             self.browser = None
             self.playwright = None
 
-def setup_playwright(log_folder, storage_state='state.json', headless=False, mode="chromium"):
+def setup_playwright(storage_state='state.json', headless=False, mode="chromium"):
     playwright_manager = PlaywrightManager(storage_state=storage_state, headless=headless, mode=mode)
     browser = playwright_manager.get_browser()
     context = playwright_manager.get_context()
