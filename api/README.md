@@ -1,5 +1,12 @@
 # README
-## async backend
+
+## 1. sync backend
+start fastapi server
+```
+python -m uvicorn api.server_async:app --reload --port=5001
+```
+
+## 2. async backend
 start fastapi server
 ```
 python -m uvicorn api.server_async:app --reload --port=5001
