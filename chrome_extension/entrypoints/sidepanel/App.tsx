@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Settings, Filter, GitBranch, Target, Map } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {AiChat, useAsBatchAdapter, ChatAdapterExtras} from '@nlux/react';
+import {AiChat, AssistantPersona, PersonaOptions, useAsBatchAdapter, ChatAdapterExtras} from '@nlux/react';
 import '@nlux/themes/nova.css';
+import iconUrl from '@/assets/icon.jpeg';
 
 interface AutomationConfig {
   starting_url: string;
@@ -19,9 +20,13 @@ interface AutomationConfig {
 
 type ElementsFilterType = 'som' | 'visibility' | 'none';
 
-const App: React.FC = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+const assistantPersona: AssistantPersona = {
+  name: 'LiteWebAgent',
+  avatar: iconUrl,
+  tagline: 'A powerful LLM-based web agent!',
+};
 
+const App: React.FC = () => {
   const [form, setForm] = useState({
     model: 'gpt-4o-mini',
     features: 'axtree',
@@ -165,7 +170,7 @@ const App: React.FC = () => {
         </form>
       </div>
       <div>
-        <AiChat displayOptions={{colorScheme: 'dark'}} adapter={nluxCustomAdapter} />
+        <AiChat displayOptions={{colorScheme: 'dark'}} personaOptions={{assistant: assistantPersona}} adapter={nluxCustomAdapter} />
       </div>
     </div>
   );
