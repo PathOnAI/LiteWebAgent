@@ -25,4 +25,7 @@ export default defineConfig({
   runner: {
     disabled: true,
   },
+  build: {
+    minify: false,
+    },
 });
