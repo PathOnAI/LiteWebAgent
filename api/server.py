@@ -41,7 +41,6 @@ def run_automation(config: AutomationConfig):
     features = config.features.split(',') if config.features else None
     
     playwright_manager = setup_playwright(
-        log_folder=config.log_folder,
         storage_state=config.storage_state,
         headless=False,
         mode="cdp"
