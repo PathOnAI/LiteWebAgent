@@ -32,7 +32,8 @@ npm run dev
    - Navigate to `chrome://extensions/`
    - Enable "Developer mode"
    - Select "Load unpacked"
-   - Navigate to and select the `chrome_extension` directory
+   - Navigate to and select the `chrome_extension/.output/chrome-mv3` directory
+      - On MacOS, use `Command ⌘ + Shift ⇧ + .` to show hidden folder `.output`
 
 ### Backend Setup
 1. Install required Python packages
