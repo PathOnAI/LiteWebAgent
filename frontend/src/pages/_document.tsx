@@ -7,7 +7,7 @@ export default function Document() {
       <body className="antialiased">
         <Main />
         <NextScript />
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script async src="https://cdn.tailwindcss.com"></script>
       </body>
     </Html>
   );
