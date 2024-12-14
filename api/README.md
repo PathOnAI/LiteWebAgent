@@ -1,13 +1,13 @@
 # README
 
 ## 1. sync backend
-start fastapi server
+start fastapi server from root
 ```
-python -m uvicorn api.server_async:app --reload --port=5001
+python -m uvicorn api.server_sync:app --reload --port=5001
 ```
 
 ## 2. async backend
-start fastapi server
+start fastapi server from root
 ```
 python -m uvicorn api.server_async:app --reload --port=5001
 ```
