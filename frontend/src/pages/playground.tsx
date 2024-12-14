@@ -208,10 +208,8 @@ export default function Playground({
                             <Command className="w-5 h-5" />
                         </div>
                         <div className="flex items-center space-x-2">
-                            <span className="font-semibold text-lg text-gray-800">Multion</span>
-                            <span className="bg-blue-100 text-blue-600 text-xs px-2.5 py-1 rounded-full font-medium">
-                                20
-                            </span>
+                            <span className="font-semibold text-lg text-gray-800">Lite Web Agent</span>
+                            
                         </div>
                     </div>
 
@@ -354,7 +352,7 @@ export default function Playground({
                             <div className="bg-blue-500 text-white p-4 rounded-xl mb-6">
                                 <Command className="w-8 h-8" />
                             </div>
-                            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Playground</h2>
+                            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Live Demo</h2>
                             <p className="text-gray-600">Your live preview will start here. To get started:</p>
 
                             <div className="mt-8 space-y-8 max-w-xl">
