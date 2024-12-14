@@ -27,11 +27,11 @@ export const startBrowserBase = async (storageStateS3Path = null) => {
         const data = await response.json();
 
         // Extract all fields from the updated response
-        const { 
-            live_browser_url, 
-            session_id, 
-            status, 
-            storage_state_path 
+        const {
+            live_browser_url,
+            session_id,
+            status,
+            storage_state_path
         } = data;
 
         // Return all the fields from the updated API response
@@ -57,7 +57,7 @@ export const runAdditionalSteps = async (body: WebAgentRequestBody, onNewMessage
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ "goal": body.goal , "session_id": body.session_id}),
+            body: JSON.stringify({ "goal": body.goal, "session_id": body.session_id }),
         });
 
         const reader = response?.body?.getReader();
@@ -91,7 +91,7 @@ export const runInitialSteps = async (body: WebAgentRequestBody, onNewMessage: (
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ "starting_url": body.starting_url, "goal": body.goal , "plan": body.plan, "session_id": body.session_id}),
+            body: JSON.stringify({ "starting_url": body.starting_url, "goal": body.goal, "plan": body.plan, "session_id": body.session_id }),
         });
 
         const reader = response?.body?.getReader();
@@ -116,23 +116,23 @@ export const runInitialSteps = async (body: WebAgentRequestBody, onNewMessage: (
     }
 };
 
-export const endWebagentSession = async (id: string) => {    
+export const endWebagentSession = async (id: string) => {
     console.log(id);
     try {
-      const response = await fetch(
-        `${WEBAGENT_SERVER_URL_BASE}/terminate-browserbase?session_id=${encodeURIComponent(id)}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        }
-      );
-      
-      console.log(response);
-      return await response.json();
+        const response = await fetch(
+            `${WEBAGENT_SERVER_URL_BASE}/terminate-browserbase?session_id=${encodeURIComponent(id)}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }
+        );
+
+        console.log(response);
+        return await response.json();
     } catch (error) {
-      console.error('Error:', error);
-      throw error;
+        console.error('Error:', error);
+        throw error;
     }
-  };
+};
