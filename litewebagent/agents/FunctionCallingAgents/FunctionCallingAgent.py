@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-# very basic chain of thought by providing the message list to OpenAI API
+# very basic recursive function calling
 class FunctionCallingAgent(BaseAgent):
     def send_completion_request(self, plan: str, depth: int = 0, emitter=None) -> Dict:
         if plan is None and depth == 0:
