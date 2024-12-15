@@ -101,6 +101,10 @@ export default function Playground({
     const [browserUrl, setBrowserUrl] = useState('');
     const [sessionId, setSessionId] = useState('');
 
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const messageQueue = useRef<WebAgentMessage[]>([]);
+    const isProcessingQueue = useRef(false);
+
     // Deepgram and Microphone Setup
     const { connection, connectToDeepgram, connectionState } = useDeepgram();
     const {
@@ -141,7 +145,7 @@ export default function Playground({
         const onTranscript = (data: LiveTranscriptionEvent) => {
 
             const { is_final: isFinal, speech_final: speechFinal } = data;
-            let thisCaption = data.channel.alternatives[0].transcript;
+            const thisCaption = data.channel.alternatives[0].transcript;
             console.log(thisCaption)
 
             if (thisCaption !== "" && isFinal && speechFinal) {
@@ -215,52 +219,97 @@ export default function Playground({
         };
     }, [initialSteps_]);
 
-    const handleNewMessage = (message: string) => {
+    // Function to speak text and return a promise
+    const speakText = async (text: string): Promise<void> => {
+        setIsSpeaking(true);
+        
         try {
-            const parsedMessage: WebAgentMessage = JSON.parse(message);
+            const response = await fetch("/api/voice", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: "aura-asteria-en",
+                    text: text,
+                })
+            });
 
-            // Format message based on type
-            let displayMessage = '';
-            switch (parsedMessage.type) {
-                case 'tool_result':
-                    const toolResult = parsedMessage.message as { content: string };
-                    displayMessage = toolResult.content;
-                    break;
+            if (!response.ok) throw new Error("Voice API error");
 
-                case 'complete':
-                    const completeMsg = parsedMessage.message as {
-                        response: Array<{ message: { content: string } }>;
+            const blob = await response.blob();
+            const audioUrl = URL.createObjectURL(blob);
+            const audioPlayer = document.getElementById("audio-player") as HTMLAudioElement;
+
+            return new Promise((resolve) => {
+                if (audioPlayer) {
+                    audioPlayer.src = audioUrl;
+                    audioPlayer.onended = () => {
+                        setIsSpeaking(false);
+                        resolve();
                     };
-                    displayMessage = completeMsg.response?.[0]?.message?.content || 'Task completed';
-                    break;
+                    audioPlayer.play();
+                } else {
+                    setIsSpeaking(false);
+                    resolve();
+                }
+            });
+        } catch (error) {
+            console.error("Error in speech synthesis:", error);
+            setIsSpeaking(false);
+        }
+    };
 
-                default:
-                    displayMessage = parsedMessage.message as string;
+    // Process message queue
+    const processMessageQueue = async () => {
+        if (isProcessingQueue.current || messageQueue.current.length === 0) return;
+        
+        isProcessingQueue.current = true;
+        
+        while (messageQueue.current.length > 0) {
+            const message = messageQueue.current[0];
+            
+            // Only speak "thinking" type messages
+            if (message.type === 'thinking') {
+                const textToSpeak = typeof message.message === 'string' 
+                    ? message.message 
+                    : JSON.stringify(message.message);
+                await speakText(textToSpeak);
             }
-
+            
+            // Add message to steps after speaking (or immediately if not speaking)
             setSteps(prev => {
-                // Complete previous running steps
                 const updatedSteps = prev.map(step => ({
                     ...step,
                     status: step.status === 'running' ? 'complete' : step.status
                 }));
 
-                // Special handling for 'complete' type
-                if (parsedMessage.type === 'complete') {
-                    return [...updatedSteps];
-                }
+                if (message.type === 'complete') return [...updatedSteps];
 
-                // Add new step
                 return [...updatedSteps, {
                     id: Date.now().toString(),
-                    action: displayMessage,
+                    action: typeof message.message === 'string' 
+                        ? message.message 
+                        : message.message.content || JSON.stringify(message.message),
                     status: 'running',
                     isInitializing: false,
-                    type: parsedMessage.type,
+                    type: message.type,
                     source: 'system'
                 }];
             });
 
+            messageQueue.current.shift();
+        }
+        
+        isProcessingQueue.current = false;
+    };
+
+    // Modified handleNewMessage to use queue
+    const handleNewMessage = (message: string) => {
+        try {
+            const parsedMessage: WebAgentMessage = JSON.parse(message);
+            messageQueue.current.push(parsedMessage);
+            if (!isProcessingQueue.current) {
+                processMessageQueue();
+            }
         } catch (e) {
             console.error('Error parsing message:', e);
         }
@@ -508,22 +557,77 @@ export default function Playground({
         }
     };
 
+    function stopAudio() {
+        const audioPlayer = document.getElementById("audio-player");
+        if (audioPlayer) {
+            //@ts-ignore
+            audioPlayer.pause();
+            //@ts-ignore
+            audioPlayer.currentTime = 0;
+        }
+    }
+
+    function speakTextV2(text: string) {
+        const modelSelect = "aura-asteria-en";
+
+        const data = {
+            model: modelSelect,
+            text: text,
+        };
+
+        // fetch("https://www.sciencefair.io/api/voice", {
+        fetch("/api/voice", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+
+                stopAudio();
+
+                return response.blob();
+            })
+            .then((blob) => {
+                const audioUrl = URL.createObjectURL(blob);
+                const audioPlayer = document.getElementById("audio-player");
+
+                if (audioPlayer) {
+                    //@ts-ignore
+                    audioPlayer!.src = audioUrl;
+                    //@ts-ignore
+                    audioPlayer!.play();
+                }
+
+                //@ts-ignore 
+                audioPlayer.addEventListener("ended", () => {
+                    // setIsSynthesizing(false);
+                });
+            })
+            .catch((error) => {
+                console.error("Error fetching audio:", error);
+            });
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            <header className="border-b bg-white/80 backdrop-blur-sm supports-[backdrop-filter]:bg-white/60">
+            <header className="border-b bg-white/90 backdrop-blur-sm supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50">
                 <div className="flex items-center justify-between px-8 py-4">
                     <div className="flex items-center space-x-3">
-                        <div className="bg-blue-500 text-white p-2 rounded-lg">
+                        <div className="bg-indigo-600 text-white p-2 rounded-lg shadow-md">
                             <Command className="w-5 h-5" />
                         </div>
-                        <span className="font-semibold text-gray-800">Live Demo</span>
+                        <span className="font-semibold text-gray-800">Web Agent Demo</span>
                     </div>
                     <div className="flex items-center space-x-4">
                         <ActivityMonitor
                             onInactive={handleReset}
                             isRunning={isRunning}
                             isSessionActive={sessionStarted}
-                        // optionally you can add timeoutDuration={60} to change the default timeout
                         />
                         <Button
                             variant="ghost"
@@ -579,8 +683,8 @@ export default function Playground({
                                     <Card
                                         key={step.id}
                                         className={`p-4 border shadow-sm transition-all duration-300 hover:shadow-md ${step.source === 'user'
-                                                ? 'border-gray-200 bg-white'
-                                                : getMessageTypeStyle(step.type)
+                                            ? 'border-gray-200 bg-white'
+                                            : getMessageTypeStyle(step.type)
                                             }`}
                                     >
                                         <div className="flex justify-between items-start mb-2">
@@ -680,6 +784,8 @@ export default function Playground({
                     )}
                 </div>
             </div>
+            <audio id='audio-player' className='hidden'></audio>
         </div>
+
     );
 }
