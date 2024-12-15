@@ -11,6 +11,7 @@ import {
   useThreadConfig,
 } from "@assistant-ui/react";
 import "@assistant-ui/react/styles/index.css";
+import iconUrl from '@/assets/icon.jpeg';
 
 interface AutomationConfig {
   starting_url: string;
@@ -186,9 +187,15 @@ const App: React.FC = () => {
           </div>
         </form>
       </div>
-      <div className="h-full">
+      <div>
         <AssistantRuntimeProvider runtime={useLocalRuntime(CustomModelAdapter)}>
-          <Thread.Root config={useThreadConfig()}>
+          <Thread.Root config={
+              {
+                ...useThreadConfig(),
+                assistantAvatar: { src: iconUrl },
+                welcome: { message: 'A powerful LLM-based web agent!' },
+              }
+          }>
             <Thread.Viewport>
               <ThreadWelcome />
               <Thread.Messages />
