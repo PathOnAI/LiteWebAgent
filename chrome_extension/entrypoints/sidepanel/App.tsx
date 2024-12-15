@@ -5,7 +5,7 @@ import {
   GitBranch,
   AudioLines,
   Loader,
-  CircleStop,
+  Circle,
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
@@ -259,7 +259,7 @@ const App: React.FC = () => {
                 <Composer.Root>
                   <Composer.Input autoFocus />
                   <button
-                    className=" mt-2.5 mb-2.5 w-8 h-8 p-2 flex items-center"
+                    className="focus:outline-none mt-2.5 mb-2.5 w-8 h-8 p-2 flex items-center"
                     onClick={(e) => {
                       e.preventDefault();
                       if (transcribing) return;
@@ -274,7 +274,7 @@ const App: React.FC = () => {
                     {transcribing ? (
                       <Loader size={16} className="animate-spin" />
                     ) : recording ? (
-                      <CircleStop color="#f50000" size={16} />
+                      <Circle fill="#f50000" color="#f50000" strokeWidth={3} size={16} className="animate-pulse"/>
                     ) : (
                       <AudioLines size={16} />
                     )}
