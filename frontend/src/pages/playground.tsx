@@ -41,11 +41,43 @@ import {
     useMicrophone,
 } from '@/context/MicrophoneContextProvider'
 
+type MessageType =
+    | 'status'
+    | 'browser'
+    | 'thinking'
+    | 'tool_calls'
+    | 'tool_execution'
+    | 'tool_result'
+    | 'action'
+    | 'complete';
+
+interface WebAgentMessage {
+    type: MessageType;
+    message: string | {
+        tool_call_id?: string;
+        role?: string;
+        name?: string;
+        content?: string;
+        response?: Array<{
+            finish_reason: string;
+            index: number;
+            message: {
+                content: string;
+                role: string;
+                tool_calls: null;
+                function_call: null;
+            }
+        }>;
+    };
+}
+
 interface PlaygroundStep {
     id: string;
     action: string;
     status: 'pending' | 'running' | 'complete' | 'error';
     isInitializing: boolean;
+    type?: string;  // Add this for message type
+    source: 'user' | 'system'; // Add this to distinguish between user and system messages
 }
 
 interface PlaygroundProps {
@@ -107,7 +139,7 @@ export default function Playground({
         };
 
         const onTranscript = (data: LiveTranscriptionEvent) => {
-            
+
             const { is_final: isFinal, speech_final: speechFinal } = data;
             let thisCaption = data.channel.alternatives[0].transcript;
             console.log(thisCaption)
@@ -132,7 +164,7 @@ export default function Playground({
             clearTimeout(captionTimeout.current);
         };
 
-        
+
     }, [connectionState]);
 
     // Keep-alive connection management
@@ -184,17 +216,54 @@ export default function Playground({
     }, [initialSteps_]);
 
     const handleNewMessage = (message: string) => {
-        setSteps(prev => {
-            const lastStep = prev[prev.length - 1];
-            if (lastStep && lastStep.status === 'running') {
-                return prev.map(step =>
-                    step.id === lastStep.id
-                        ? { ...step, action: step.action + '\n' + message }
-                        : step
-                );
+        try {
+            const parsedMessage: WebAgentMessage = JSON.parse(message);
+
+            // Format message based on type
+            let displayMessage = '';
+            switch (parsedMessage.type) {
+                case 'tool_result':
+                    const toolResult = parsedMessage.message as { content: string };
+                    displayMessage = toolResult.content;
+                    break;
+
+                case 'complete':
+                    const completeMsg = parsedMessage.message as {
+                        response: Array<{ message: { content: string } }>;
+                    };
+                    displayMessage = completeMsg.response?.[0]?.message?.content || 'Task completed';
+                    break;
+
+                default:
+                    displayMessage = parsedMessage.message as string;
             }
-            return prev;
-        });
+
+            setSteps(prev => {
+                // Complete previous running steps
+                const updatedSteps = prev.map(step => ({
+                    ...step,
+                    status: step.status === 'running' ? 'complete' : step.status
+                }));
+
+                // Special handling for 'complete' type
+                if (parsedMessage.type === 'complete') {
+                    return [...updatedSteps];
+                }
+
+                // Add new step
+                return [...updatedSteps, {
+                    id: Date.now().toString(),
+                    action: displayMessage,
+                    status: 'running',
+                    isInitializing: false,
+                    type: parsedMessage.type,
+                    source: 'system'
+                }];
+            });
+
+        } catch (e) {
+            console.error('Error parsing message:', e);
+        }
     };
 
     const handleSessionStart = async () => {
@@ -218,14 +287,16 @@ export default function Playground({
     const handleCommandSubmit = async () => {
         if (!command.trim() || !sessionId) return;
 
-        const newStep: PlaygroundStep = {
+        // Add user message
+        const userStep: PlaygroundStep = {
             id: Date.now().toString(),
             action: command,
-            status: 'running',
-            isInitializing: false
+            status: 'complete',
+            isInitializing: false,
+            source: 'user'
         };
 
-        setSteps(prev => [...prev, newStep]);
+        setSteps(prev => [...prev, userStep]);
         setCommand('');
         setIsRunning(true);
 
@@ -242,15 +313,15 @@ export default function Playground({
             } else {
                 await runAdditionalSteps(requestBody, handleNewMessage);
             }
-
-            setSteps(prev => prev.map(step =>
-                step.id === newStep.id ? { ...step, status: 'complete' } : step
-            ));
         } catch (error) {
             console.error('Command execution failed:', error);
-            setSteps(prev => prev.map(step =>
-                step.id === newStep.id ? { ...step, status: 'error' } : step
-            ));
+            setSteps(prev => [...prev, {
+                id: Date.now().toString(),
+                action: 'Error executing command',
+                status: 'error',
+                isInitializing: false,
+                source: 'system'
+            }]);
         } finally {
             setIsRunning(false);
         }
@@ -353,8 +424,8 @@ export default function Playground({
                     variant="ghost"
                     size="icon"
                     className={`rounded-full w-10 h-10 ${transcriber === null
-                            ? 'bg-blue-500 hover:bg-blue-600'
-                            : 'bg-red-500 hover:bg-red-600'
+                        ? 'bg-blue-500 hover:bg-blue-600'
+                        : 'bg-red-500 hover:bg-red-600'
                         }`}
                     onClick={handleMicrophoneToggle}
                     disabled={isRunning}
@@ -376,6 +447,66 @@ export default function Playground({
             </div>
         </div>
     );
+
+    // Helper functions
+    const getMessageTypeStyle = (type?: string) => {
+        switch (type) {
+            case 'status':
+                return 'border-blue-100 bg-blue-50/30';
+            case 'browser':
+                return 'border-purple-100 bg-purple-50/30';
+            case 'thinking':
+                return 'border-yellow-100 bg-yellow-50/30';
+            case 'tool_calls':
+            case 'tool_execution':
+            case 'tool_result':
+                return 'border-green-100 bg-green-50/30';
+            case 'action':
+                return 'border-orange-100 bg-orange-50/30';
+            default:
+                return 'border-gray-100';
+        }
+    };
+
+    const getMessageTypeBadgeStyle = (type?: string) => {
+        switch (type) {
+            case 'status':
+                return 'bg-blue-100 text-blue-700';
+            case 'browser':
+                return 'bg-purple-100 text-purple-700';
+            case 'thinking':
+                return 'bg-yellow-100 text-yellow-700';
+            case 'tool_calls':
+            case 'tool_execution':
+            case 'tool_result':
+                return 'bg-green-100 text-green-700';
+            case 'action':
+                return 'bg-orange-100 text-orange-700';
+            default:
+                return 'bg-gray-100 text-gray-700';
+        }
+    };
+
+    const getMessageTypeLabel = (type?: string) => {
+        switch (type) {
+            case 'status':
+                return 'Status Update';
+            case 'browser':
+                return 'Browser';
+            case 'thinking':
+                return 'Thinking';
+            case 'tool_calls':
+                return 'Tool Calls';
+            case 'tool_execution':
+                return 'Executing';
+            case 'tool_result':
+                return 'Result';
+            case 'action':
+                return 'Action';
+            default:
+                return 'System';
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -447,23 +578,21 @@ export default function Playground({
                                 {steps.map((step) => (
                                     <Card
                                         key={step.id}
-                                        className={`p-4 border shadow-sm transition-all duration-300 hover:shadow-md ${step.status === 'running' ? 'border-blue-200 bg-blue-50/50 animate-pulse' :
-                                            step.status === 'complete' ? 'border-green-100 bg-green-50/20' :
-                                                step.status === 'error' ? 'border-red-100 bg-red-50/50' :
-                                                    'border-gray-100'
+                                        className={`p-4 border shadow-sm transition-all duration-300 hover:shadow-md ${step.source === 'user'
+                                                ? 'border-gray-200 bg-white'
+                                                : getMessageTypeStyle(step.type)
                                             }`}
                                     >
                                         <div className="flex justify-between items-start mb-2">
                                             <span className="text-sm font-medium text-gray-700">
-                                                {steps.indexOf(step) === 0 ? 'Goal' : `Step ${steps.indexOf(step)}`}
+                                                {getMessageTypeLabel(step.type)}
                                             </span>
-                                            <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${step.status === 'running' ? 'bg-blue-100 text-blue-700' :
-                                                step.status === 'complete' ? 'bg-green-100 text-green-700' :
-                                                    step.status === 'error' ? 'bg-red-100 text-red-700' :
-                                                        'bg-gray-100 text-gray-700'
-                                                }`}>
-                                                {step.status}
-                                            </span>
+                                            <div className="flex gap-2">
+                                                <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${getMessageTypeBadgeStyle(step.type)
+                                                    }`}>
+                                                    {step.type}
+                                                </span>
+                                            </div>
                                         </div>
                                         <p className="text-sm text-gray-800 whitespace-pre-wrap">{step.action}</p>
                                     </Card>
@@ -505,7 +634,7 @@ export default function Playground({
                                     size="sm"
                                     className="text-gray-600 hover:text-gray-900"
                                     onClick={handleReset}
-                                    disabled={isRunning}
+                                // disabled={isRunning}
                                 >
                                     <RefreshCcw className="w-4 h-4 mr-2" />
                                     Start Over

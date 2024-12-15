@@ -82,37 +82,72 @@ export const runAdditionalSteps = async (body: WebAgentRequestBody, onNewMessage
     }
 };
 
-export const runInitialSteps = async (body: WebAgentRequestBody, onNewMessage: (message: string) => void): Promise<void> => {
+export const runInitialSteps = async (
+    body: WebAgentRequestBody, 
+    onNewMessage: (message: string) => void
+): Promise<void> => {
     try {
-        console.log(body);
-
         const response = await fetch(`${WEBAGENT_SERVER_URL_BASE}/run-agent-initial-steps-stream`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'text/event-stream',
+                'Cache-Control': 'no-cache',
             },
-            body: JSON.stringify({ "starting_url": body.starting_url, "goal": body.goal, "plan": body.plan, "session_id": body.session_id }),
+            body: JSON.stringify({
+                starting_url: body.starting_url,
+                goal: body.goal,
+                plan: body.plan,
+                session_id: body.session_id
+            }),
         });
 
-        const reader = response?.body?.getReader();
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const reader = response.body?.getReader();
+        if (!reader) {
+            throw new Error('No readable stream available');
+        }
+
         const decoder = new TextDecoder();
+        let buffer = '';
 
         while (true) {
-            const { value, done } = await reader!.read();
+            const { value, done } = await reader.read();
             if (done) break;
 
-            const chunk = decoder.decode(value);
-            const lines = chunk.split('\n');
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            
+            buffer = lines.pop() || '';
 
-            lines.forEach(line => {
-                if (line.startsWith('data:')) {
-                    const newMessage = line.slice(5).trim();
-                    onNewMessage(newMessage)
+            for (const line of lines) {
+                if (line.trim() === '') continue;
+                
+                if (line.startsWith('data: ')) {
+                    const data = line.slice(5).trim();
+                    try {
+                        const parsedData = JSON.parse(data);
+                        console.log(`[${new Date().toISOString()}] SSE packet:`, parsedData);
+                        
+                        onNewMessage(data);
+
+                        // Check for completion message and close connection
+                        if (parsedData.type === 'complete') {
+                            reader.cancel();
+                            return;
+                        }
+                    } catch (e) {
+                        console.error('Error parsing SSE data:', e);
+                    }
                 }
-            });
+            }
         }
     } catch (error) {
         console.error('Error:', error);
+        throw error;
     }
 };
 
