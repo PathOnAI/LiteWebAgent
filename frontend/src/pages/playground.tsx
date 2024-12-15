@@ -499,6 +499,18 @@ export default function Playground({
                                 <div className="text-sm font-medium text-gray-900 truncate">{startingUrl}</div>
                             </div>
                             {renderCommandInput()}
+                            <div className="flex justify-between mt-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-gray-600 hover:text-gray-900"
+                                    onClick={handleReset}
+                                    disabled={isRunning}
+                                >
+                                    <RefreshCcw className="w-4 h-4 mr-2" />
+                                    Start Over
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </div>
