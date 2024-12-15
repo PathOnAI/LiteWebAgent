@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -15,7 +15,9 @@ import {
     Loader,
     CircleStop,
     AudioLines,
-    Circle
+    Circle,
+    Mic,
+    Square
 } from 'lucide-react';
 import {
     startBrowserBase,
@@ -26,6 +28,18 @@ import {
 } from '@/services/webagentService'
 import ActivityMonitor from '@/components/ActivityMonitor';
 import { useTranscriber } from '@/transcriber/use-transcriber';
+
+import {
+    LiveConnectionState,
+    LiveTranscriptionEvent,
+    LiveTranscriptionEvents,
+    useDeepgram,
+} from '@/context/DeepgramContextProvider'
+import {
+    MicrophoneEvents,
+    MicrophoneState,
+    useMicrophone,
+} from '@/context/MicrophoneContextProvider'
 
 interface PlaygroundStep {
     id: string;
@@ -49,27 +63,114 @@ export default function Playground({
     const [startingUrl, setStartingUrl] = useState('');
     const [command, setCommand] = useState('');
     const [longTermMemory, setLongTermMemory] = useState(false);
-    const [sessionStarted, setSessionStarted] = useState(true);
+    const [sessionStarted, setSessionStarted] = useState(false);
     const [steps, setSteps] = useState<PlaygroundStep[]>([]);
     const [isRunning, setIsRunning] = useState(false);
     const [browserUrl, setBrowserUrl] = useState('');
     const [sessionId, setSessionId] = useState('');
 
+    // Deepgram and Microphone Setup
+    const { connection, connectToDeepgram, connectionState } = useDeepgram();
     const {
-        startSpeaking,
-        stopSpeaking,
-        recording,
-        transcribing,
-        transcription,
-        transcriptionError,
-    } = useTranscriber();
+        setupMicrophone,
+        microphone,
+        startMicrophone,
+        microphoneState,
+        stopMicrophone,
+    } = useMicrophone();
 
+    // Additional State for Mic Control
+    const [transcriber, setTranscriber] = useState<boolean | null>(null);
+    const [firstTimeListening, setFirstTimeListening] = useState<boolean | null>(null);
+    const captionTimeout = useRef<any>();
+    const keepAliveInterval = useRef<any>();
+
+    // Set up Deepgram when microphone is ready
     useEffect(() => {
-        console.log(transcription);
-        if (transcription) {
-            setCommand(transcription);
+        if (microphoneState === MicrophoneState.Ready) {
+            connectToDeepgram({
+                model: "nova-2",
+                interim_results: true,
+                smart_format: true,
+                filler_words: true,
+                utterance_end_ms: 3000,
+            });
         }
-    }, [transcription]);
+    }, [microphoneState]);
+
+    // Handle microphone data streaming
+    useEffect(() => {
+        if (!microphone || !connection) return;
+
+        const onData = (e: BlobEvent) => {
+            connection?.send(e.data);
+        };
+
+        const onTranscript = (data: LiveTranscriptionEvent) => {
+            
+            const { is_final: isFinal, speech_final: speechFinal } = data;
+            let thisCaption = data.channel.alternatives[0].transcript;
+            console.log(thisCaption)
+
+            if (thisCaption !== "" && isFinal && speechFinal) {
+                setCommand(prev => prev + ' ' + thisCaption);
+            }
+        };
+
+        if (connectionState === 1) {
+            console.log('her??')
+            connection.addListener(LiveTranscriptionEvents.Transcript, onTranscript);
+            microphone.addEventListener(MicrophoneEvents.DataAvailable, onData);
+            startMicrophone();
+        }
+
+        console.log('connection state is', connectionState == 1)
+
+        return () => {
+            connection?.removeListener(LiveTranscriptionEvents.Transcript, onTranscript);
+            microphone?.removeEventListener(MicrophoneEvents.DataAvailable, onData);
+            clearTimeout(captionTimeout.current);
+        };
+
+        
+    }, [connectionState]);
+
+    // Keep-alive connection management
+    useEffect(() => {
+        if (!connection) return;
+
+        if (microphoneState !== MicrophoneState.Open) {
+            connection.keepAlive();
+            keepAliveInterval.current = setInterval(() => {
+                connection.keepAlive();
+            }, 10000);
+        } else {
+            clearInterval(keepAliveInterval.current);
+        }
+
+        return () => {
+            clearInterval(keepAliveInterval.current);
+        };
+    }, [microphoneState, connectionState]);
+
+    // Handle Microphone Toggle
+    const handleMicrophoneToggle = async () => {
+        if (transcriber === null) {
+            if (firstTimeListening === null) {
+                setupMicrophone();
+                await new Promise(resolve => setTimeout(resolve, 2500));
+                setFirstTimeListening(false);
+            } else {
+                setCommand("");
+                startMicrophone();
+            }
+            setTranscriber(true);
+        } else {
+            stopMicrophone();
+            setTranscriber(null);
+        }
+    };
+
 
     useEffect(() => {
         if (initialSteps_ && initialSteps_.length > 0) {
@@ -236,6 +337,46 @@ export default function Playground({
         }
     };
 
+    // Modified Input Section with Microphone Integration
+    const renderCommandInput = () => (
+        <div className="relative">
+            <Input
+                value={command}
+                onChange={(e) => setCommand(e.target.value)}
+                placeholder="Write a command..."
+                className="h-12 pr-24 bg-gray-50/50 border-gray-200 focus:bg-white transition-all"
+                onKeyPress={(e) => e.key === 'Enter' && handleCommandSubmit()}
+                disabled={isRunning}
+            />
+            <div className="absolute right-1 top-1/2 -translate-y-1/2 flex space-x-1">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`rounded-full w-10 h-10 ${transcriber === null
+                            ? 'bg-blue-500 hover:bg-blue-600'
+                            : 'bg-red-500 hover:bg-red-600'
+                        }`}
+                    onClick={handleMicrophoneToggle}
+                    disabled={isRunning}
+                >
+                    {transcriber === null ? (
+                        <Mic className="h-5 w-5 text-white" />
+                    ) : (
+                        <Square className="h-5 w-5 text-white" />
+                    )}
+                </Button>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleCommandSubmit}
+                    disabled={isRunning}
+                >
+                    <Play className="w-5 h-5" />
+                </Button>
+            </div>
+        </div>
+    );
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
             <header className="border-b bg-white/80 backdrop-blur-sm supports-[backdrop-filter]:bg-white/60">
@@ -351,79 +492,15 @@ export default function Playground({
                         )}
                     </div>
 
-                    {sessionStarted ? (
+                    {sessionStarted && (
                         <div className="mt-auto pt-6 border-t border-gray-100">
                             <div className="mb-4 px-1">
                                 <div className="text-sm text-gray-500">Starting URL:</div>
                                 <div className="text-sm font-medium text-gray-900 truncate">{startingUrl}</div>
                             </div>
-                            <div className="relative">
-                                <Input
-                                    value={command}
-                                    onChange={(e) => setCommand(e.target.value)}
-                                    placeholder="Write a command..."
-                                    className="h-12 pr-20 bg-gray-50/50 border-gray-200 focus:bg-white transition-all"
-                                    onKeyPress={(e) => e.key === 'Enter' && handleCommandSubmit()}
-                                    disabled={isRunning}
-                                />
-                                <div className="absolute right-1 top-1/2 -translate-y-1/2 flex space-x-1">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="px-1 py-1 rounded-xl bg-whiteflex items-center gap-1"
-                                        onClick={() => {
-                                        if (transcribing) return;
-
-                                        if (recording) {
-                                            stopSpeaking();
-                                        } else {
-                                            startSpeaking();
-                                        }
-                                        }}
-                                    >
-                                        {transcribing ? (
-                                        <Loader
-                                            color="#000000"
-                                            strokeWidth={3}
-                                            size={22}
-                                            className="animate-spin"
-                                        />
-                                        ) : recording ? (
-                                        <Circle fill="#f50000" color="#f50000" strokeWidth={3} size={22} className="animate-pulse"/>
-                                        ) : (
-                                        <AudioLines color="#000000" strokeWidth={3} size={22} />
-                                        )}
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="px-1 py-1 rounded-xl bg-whiteflex items-center gap-1"
-                                        onClick={handleCommandSubmit}
-                                        disabled={isRunning} 
-                                    >
-                                        <Play className="w-4 h-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                            
-                            {transcriptionError && (
-                                <div className="text-red-500 text-sm mt-2 h-4">{transcriptionError}</div>
-                            )}
-
-                            <div className="flex justify-between mt-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-gray-600 hover:text-gray-900"
-                                    onClick={handleReset}
-                                    disabled={isRunning}
-                                >
-                                    <RefreshCcw className="w-4 h-4 mr-2" />
-                                    Start Over
-                                </Button>
-                            </div>
+                            {renderCommandInput()}
                         </div>
-                    ) : null}
+                    )}
                 </div>
 
                 <div className="flex-1 bg-white">
