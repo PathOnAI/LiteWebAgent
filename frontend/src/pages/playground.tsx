@@ -147,30 +147,72 @@ export default function Playground({
         setBrowserUrl('');
         setSessionId('');
         onSessionEnd();
+        setStartingUrl('')
     };
 
     const exampleCommands = [
         {
             icon: <Command className="w-6 h-6" />,
-            title: "Book a one-way flight",
-            description: "from SFO to NYC for this Sat on Google Flights"
+            title: "Search dining table",
+            description: "https://google.com"
         },
-        {
-            icon: <Rocket className="w-6 h-6" />,
-            title: "Add the book Zero to One in Hardcover",
-            description: "to my Amazon cart"
-        },
-        {
-            icon: <ArrowRight className="w-6 h-6" />,
-            title: "What's the top post",
-            description: "on Hackernews"
-        },
-        {
-            icon: <Command className="w-6 h-6" />,
-            title: "How much did NVIDIA stock",
-            description: "gain today?"
-        }
+        // {
+        //     icon: <Rocket className="w-6 h-6" />,
+        //     title: "Add the book Zero to One in Hardcover",
+        //     description: "to my Amazon cart"
+        // },
+        // {
+        //     icon: <ArrowRight className="w-6 h-6" />,
+        //     title: "What's the top post",
+        //     description: "on Hackernews"
+        // },
+        // {
+        //     icon: <Command className="w-6 h-6" />,
+        //     title: "How much did NVIDIA stock",
+        //     description: "gain today?"
+        // }
     ];
+
+    const handleExampleClick = async (command: any) => {
+        setStartingUrl(command.description);
+        // Start the session
+        try {
+            setIsRunning(true);
+            const browserData = await startBrowserBase();
+            if (browserData.live_browser_url && browserData.session_id) {
+                setBrowserUrl(browserData.live_browser_url);
+                setSessionId(browserData.session_id);
+                setSessionStarted(true);
+
+                // After session starts, submit the command
+                const newStep = {
+                    id: Date.now().toString(),
+                    action: command.title,
+                    status: 'running',
+                    isInitializing: false
+                };
+
+                setSteps((prev: any) => [...prev, newStep]);
+
+                const requestBody = {
+                    goal: command.title,
+                    starting_url: command.description,
+                    plan: '',
+                    session_id: browserData.session_id
+                };
+
+                await runInitialSteps(requestBody, handleNewMessage);
+
+                setSteps(prev => prev.map(step =>
+                    step.id === newStep.id ? { ...step, status: 'complete' } : step
+                ));
+            }
+        } catch (error) {
+            console.error('Failed to start session or run command:', error);
+        } finally {
+            setIsRunning(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -180,7 +222,7 @@ export default function Playground({
                         <div className="bg-blue-500 text-white p-2 rounded-lg">
                             <Command className="w-5 h-5" />
                         </div>
-                        <span className="font-semibold text-gray-800">Playground</span>
+                        <span className="font-semibold text-gray-800">Live Demo</span>
                     </div>
                     <div className="flex items-center space-x-4">
                         <ActivityMonitor
@@ -209,7 +251,7 @@ export default function Playground({
                         </div>
                         <div className="flex items-center space-x-2">
                             <span className="font-semibold text-lg text-gray-800">Lite Web Agent</span>
-                            
+
                         </div>
                     </div>
 
@@ -266,11 +308,11 @@ export default function Playground({
                             </>
                         ) : (
                             <>
-                                {exampleCommands.map((command, index) => (
+                                {!isRunning && exampleCommands.map((command, index) => (
                                     <Card
                                         key={index}
                                         className="p-4 cursor-pointer hover:bg-gray-50/80 transition-all duration-200 border border-gray-100 shadow-sm hover:shadow-md"
-                                        onClick={() => setCommand(command.title + " " + command.description)}
+                                        onClick={() => handleExampleClick(command)}
                                     >
                                         <div className="flex space-x-3">
                                             <div className="text-blue-500">
