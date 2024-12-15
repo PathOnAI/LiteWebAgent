@@ -11,7 +11,11 @@ import {
     AlertCircle,
     Command,
     Rocket,
-    ArrowRight
+    ArrowRight,
+    Loader,
+    CircleStop,
+    AudioLines,
+    Circle
 } from 'lucide-react';
 import {
     startBrowserBase,
@@ -21,6 +25,7 @@ import {
     WebAgentRequestBody
 } from '@/services/webagentService'
 import ActivityMonitor from '@/components/ActivityMonitor';
+import { useTranscriber } from '@/transcriber/use-transcriber';
 
 interface PlaygroundStep {
     id: string;
@@ -40,14 +45,31 @@ export default function Playground({
     processId,
     onSessionEnd
 }: PlaygroundProps) {
+
     const [startingUrl, setStartingUrl] = useState('');
     const [command, setCommand] = useState('');
     const [longTermMemory, setLongTermMemory] = useState(false);
-    const [sessionStarted, setSessionStarted] = useState(false);
+    const [sessionStarted, setSessionStarted] = useState(true);
     const [steps, setSteps] = useState<PlaygroundStep[]>([]);
     const [isRunning, setIsRunning] = useState(false);
     const [browserUrl, setBrowserUrl] = useState('');
     const [sessionId, setSessionId] = useState('');
+
+    const {
+        startSpeaking,
+        stopSpeaking,
+        recording,
+        transcribing,
+        transcription,
+        transcriptionError,
+    } = useTranscriber();
+
+    useEffect(() => {
+        console.log(transcription);
+        if (transcription) {
+            setCommand(transcription);
+        }
+    }, [transcription]);
 
     useEffect(() => {
         if (initialSteps_ && initialSteps_.length > 0) {
@@ -340,32 +362,55 @@ export default function Playground({
                                     value={command}
                                     onChange={(e) => setCommand(e.target.value)}
                                     placeholder="Write a command..."
-                                    className="pr-20 bg-gray-50/50 border-gray-200 focus:bg-white transition-all"
+                                    className="h-12 pr-20 bg-gray-50/50 border-gray-200 focus:bg-white transition-all"
                                     onKeyPress={(e) => e.key === 'Enter' && handleCommandSubmit()}
                                     disabled={isRunning}
                                 />
-                                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex space-x-1">
+                                <div className="absolute right-1 top-1/2 -translate-y-1/2 flex space-x-1">
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        disabled={isRunning}
-                                        className="text-gray-500 hover:text-gray-700"
+                                        className="px-1 py-1 rounded-xl bg-whiteflex items-center gap-1"
+                                        onClick={() => {
+                                        if (transcribing) return;
+
+                                        if (recording) {
+                                            stopSpeaking();
+                                        } else {
+                                            startSpeaking();
+                                        }
+                                        }}
                                     >
-                                        <Mic2 className="w-4 h-4" />
+                                        {transcribing ? (
+                                        <Loader
+                                            color="#000000"
+                                            strokeWidth={3}
+                                            size={22}
+                                            className="animate-spin"
+                                        />
+                                        ) : recording ? (
+                                        <Circle fill="#f50000" color="#f50000" strokeWidth={3} size={22} className="animate-pulse"/>
+                                        ) : (
+                                        <AudioLines color="#000000" strokeWidth={3} size={22} />
+                                        )}
                                     </Button>
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="bg-blue-500 text-white hover:bg-blue-600 transition-all"
+                                        className="px-1 py-1 rounded-xl bg-whiteflex items-center gap-1"
                                         onClick={handleCommandSubmit}
-                                        disabled={isRunning}
+                                        disabled={isRunning} 
                                     >
                                         <Play className="w-4 h-4" />
                                     </Button>
                                 </div>
                             </div>
+                            
+                            {transcriptionError && (
+                                <div className="text-red-500 text-sm mt-2 h-4">{transcriptionError}</div>
+                            )}
 
-                            <div className="flex justify-between mt-4">
+                            <div className="flex justify-between mt-2">
                                 <Button
                                     variant="outline"
                                     size="sm"
