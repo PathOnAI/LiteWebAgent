@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { Settings, Filter, GitBranch, Target, Map } from 'lucide-react';
+import { Settings, Filter, GitBranch, AudioLines } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {AiChat, AssistantPersona, PersonaOptions, useAsBatchAdapter, ChatAdapterExtras} from '@nlux/react';
-import '@nlux/themes/nova.css';
-import iconUrl from '@/assets/icon.jpeg';
+import {
+  AssistantRuntimeProvider,
+  type ChatModelAdapter,
+  useLocalRuntime,
+  Thread,
+  ThreadWelcome,
+  Composer,
+  useThreadConfig,
+} from "@assistant-ui/react";
+import "@assistant-ui/react/styles/index.css";
 
 interface AutomationConfig {
   starting_url: string;
@@ -20,12 +27,6 @@ interface AutomationConfig {
 
 type ElementsFilterType = 'som' | 'visibility' | 'none';
 
-const assistantPersona: AssistantPersona = {
-  name: 'LiteWebAgent',
-  avatar: iconUrl,
-  tagline: 'A powerful LLM-based web agent!',
-};
-
 const App: React.FC = () => {
   const [form, setForm] = useState({
     model: 'gpt-4o-mini',
@@ -36,14 +37,22 @@ const App: React.FC = () => {
 
   const [error, setError] = useState<string>('');
 
-  const nluxCustomAdapter = useAsBatchAdapter(
-    async (message: string, extras: ChatAdapterExtras): Promise<string> => {
+  const CustomModelAdapter: ChatModelAdapter = {
+    async run({ messages, abortSignal }) {
+
       const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
       if (!tab.url) throw new Error('No active tab URL found');
 
+      const lastUserMessage = messages
+                                .filter(message => message.role === 'user')
+                                .flatMap(message => message.content)
+                                .filter(content => content.type === 'text')
+                                .map(textContent => textContent.text)
+                                .slice(-1).join();
+
       const config: AutomationConfig = {
         starting_url: tab.url,
-        goal: message,
+        goal: lastUserMessage,
         plan: '',
         model: form.model,
         features: form.features,
@@ -58,13 +67,21 @@ const App: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         mode: 'cors',
-        body: JSON.stringify(config)
+        body: JSON.stringify(config),
+        signal: abortSignal,
       });
 
-      const json = await response.json();
-      return json.message
-    }
-  );
+      const data = await response.json();
+      return {
+        content: [
+          {
+            type: "text",
+            text: data,
+          },
+        ],
+      };
+    },
+  };
   
   return (
     <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100 min-h-screen p-6">
@@ -169,8 +186,24 @@ const App: React.FC = () => {
           </div>
         </form>
       </div>
-      <div>
-        <AiChat displayOptions={{colorScheme: 'dark'}} personaOptions={{assistant: assistantPersona}} adapter={nluxCustomAdapter} />
+      <div className="h-full">
+        <AssistantRuntimeProvider runtime={useLocalRuntime(CustomModelAdapter)}>
+          <Thread.Root config={useThreadConfig()}>
+            <Thread.Viewport>
+              <ThreadWelcome />
+              <Thread.Messages />
+              <Thread.FollowupSuggestions />
+              <Thread.ViewportFooter>
+                <Thread.ScrollToBottom />
+                <Composer.Root>
+                  <Composer.Input autoFocus />
+                  <button className="aui-composer-send"><AudioLines size={16} /></button>
+                  <Composer.Action />
+                </Composer.Root>
+              </Thread.ViewportFooter>
+            </Thread.Viewport>
+          </Thread.Root>
+        </AssistantRuntimeProvider>
       </div>
     </div>
   );
