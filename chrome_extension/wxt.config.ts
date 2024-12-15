@@ -19,7 +19,20 @@ export default defineConfig({
     },
     side_panel: {
       default_path: "sidepanel.html",
-    }
+    },
+    web_accessible_resources: [
+      {
+        resources: ['permission.html'],
+        matches: ['*://*/*'],
+      },
+    ],
+    content_scripts: [
+      {
+        js: ['/content-scripts/content.js'],
+        matches: ['*://*/*'],
+        run_at: 'document_idle',
+      },
+    ],
   },
   modules: ['@wxt-dev/module-react'],
   runner: {
