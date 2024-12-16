@@ -17,7 +17,10 @@ import {
     AudioLines,
     Circle,
     Mic,
-    Square
+    Square,
+    Globe,
+    MessageSquare,
+    BrainCircuit
 } from 'lucide-react';
 import {
     startBrowserBase,
@@ -40,6 +43,9 @@ import {
     MicrophoneState,
     useMicrophone,
 } from '@/context/MicrophoneContextProvider'
+
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { useRouter } from 'next/router';
 
 type MessageType =
     | 'status'
@@ -95,6 +101,7 @@ export default function Playground({
     const [startingUrl, setStartingUrl] = useState('');
     const [command, setCommand] = useState('');
     const [longTermMemory, setLongTermMemory] = useState(false);
+    const [isResetting, setIsResetting] = useState(false);
     const [sessionStarted, setSessionStarted] = useState(false);
     const [steps, setSteps] = useState<PlaygroundStep[]>([]);
     const [isRunning, setIsRunning] = useState(false);
@@ -222,7 +229,7 @@ export default function Playground({
     // Function to speak text and return a promise
     const speakText = async (text: string): Promise<void> => {
         setIsSpeaking(true);
-        
+
         try {
             const response = await fetch("/api/voice", {
                 method: "POST",
@@ -261,21 +268,13 @@ export default function Playground({
     // Process message queue
     const processMessageQueue = async () => {
         if (isProcessingQueue.current || messageQueue.current.length === 0) return;
-        
+
         isProcessingQueue.current = true;
-        
+
         while (messageQueue.current.length > 0) {
             const message = messageQueue.current[0];
-            
-            // Only speak "thinking" type messages
-            if (message.type === 'thinking') {
-                const textToSpeak = typeof message.message === 'string' 
-                    ? message.message 
-                    : JSON.stringify(message.message);
-                await speakText(textToSpeak);
-            }
-            
-            // Add message to steps after speaking (or immediately if not speaking)
+
+            // First, display the message immediately
             setSteps(prev => {
                 const updatedSteps = prev.map(step => ({
                     ...step,
@@ -286,8 +285,8 @@ export default function Playground({
 
                 return [...updatedSteps, {
                     id: Date.now().toString(),
-                    action: typeof message.message === 'string' 
-                        ? message.message 
+                    action: typeof message.message === 'string'
+                        ? message.message
                         : message.message.content || JSON.stringify(message.message),
                     status: 'running',
                     isInitializing: false,
@@ -296,16 +295,38 @@ export default function Playground({
                 }];
             });
 
+            // Then, if it's a thinking message, speak it and wait
+            if (message.type != 'browser' && message.type != 'complete') {
+                const textToSpeak = typeof message.message === 'string'
+                    ? message.message
+                    : message.message.content!;
+                await speakText(textToSpeak);
+            }
+
             messageQueue.current.shift();
         }
-        
+
         isProcessingQueue.current = false;
     };
+
+    function extractLiveBrowserUrl(input: string): string | null {
+        const keyword = "at ";
+        const index = input.indexOf(keyword);
+        if (index !== -1) {
+            return input.substring(index + keyword.length).trim();
+        }
+        return null; // Return null if "at " is not found
+    }
 
     // Modified handleNewMessage to use queue
     const handleNewMessage = (message: string) => {
         try {
             const parsedMessage: WebAgentMessage = JSON.parse(message);
+
+            if (parsedMessage.type == 'browser') {
+                setBrowserUrl(extractLiveBrowserUrl(parsedMessage.message! as string)!)
+                return
+            }
             messageQueue.current.push(parsedMessage);
             if (!isProcessingQueue.current) {
                 processMessageQueue();
@@ -376,7 +397,21 @@ export default function Playground({
         }
     };
 
+    const router = useRouter();
+
     const handleReset = async () => {
+        setIsResetting(true);
+        
+        // Force stop all audio and clear queue
+        stopAudio();
+        
+        // Stop transcription if active
+        if (transcriber !== null) {
+            stopMicrophone();
+            setTranscriber(null);
+        }
+        
+        // End web agent session
         if (sessionId) {
             try {
                 await endWebagentSession(sessionId);
@@ -384,13 +419,19 @@ export default function Playground({
                 console.error('Failed to end session:', error);
             }
         }
+        
+        // Reset all state variables
         setCommand('');
         setSteps([]);
         setSessionStarted(false);
         setBrowserUrl('');
         setSessionId('');
+        setStartingUrl('');
         onSessionEnd();
-        setStartingUrl('')
+        
+        setIsResetting(false);
+
+        router.reload();
     };
 
     const exampleCommands = [
@@ -399,21 +440,6 @@ export default function Playground({
             title: "Search dining table",
             description: "https://google.com"
         },
-        // {
-        //     icon: <Rocket className="w-6 h-6" />,
-        //     title: "Add the book Zero to One in Hardcover",
-        //     description: "to my Amazon cart"
-        // },
-        // {
-        //     icon: <ArrowRight className="w-6 h-6" />,
-        //     title: "What's the top post",
-        //     description: "on Hackernews"
-        // },
-        // {
-        //     icon: <Command className="w-6 h-6" />,
-        //     title: "How much did NVIDIA stock",
-        //     description: "gain today?"
-        // }
     ];
 
     const handleExampleClick = async (command: any) => {
@@ -557,71 +583,36 @@ export default function Playground({
         }
     };
 
-    function stopAudio() {
-        const audioPlayer = document.getElementById("audio-player");
+    const stopAudio = () => {
+        // Stop the audio player
+        const audioPlayer = document.getElementById("audio-player") as HTMLAudioElement;
         if (audioPlayer) {
-            //@ts-ignore
             audioPlayer.pause();
-            //@ts-ignore
             audioPlayer.currentTime = 0;
+            audioPlayer.src = ''; // Clear the source completely
         }
-    }
+    
+        // Clear any queued messages
+        messageQueue.current = [];
+        isProcessingQueue.current = false;
+        
+        // Reset speaking state
+        setIsSpeaking(false);
+    };
 
-    function speakTextV2(text: string) {
-        const modelSelect = "aura-asteria-en";
-
-        const data = {
-            model: modelSelect,
-            text: text,
-        };
-
-        // fetch("https://www.sciencefair.io/api/voice", {
-        fetch("/api/voice", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-
-                stopAudio();
-
-                return response.blob();
-            })
-            .then((blob) => {
-                const audioUrl = URL.createObjectURL(blob);
-                const audioPlayer = document.getElementById("audio-player");
-
-                if (audioPlayer) {
-                    //@ts-ignore
-                    audioPlayer!.src = audioUrl;
-                    //@ts-ignore
-                    audioPlayer!.play();
-                }
-
-                //@ts-ignore 
-                audioPlayer.addEventListener("ended", () => {
-                    // setIsSynthesizing(false);
-                });
-            })
-            .catch((error) => {
-                console.error("Error fetching audio:", error);
-            });
-    }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            <header className="border-b bg-white/90 backdrop-blur-sm supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50">
-                <div className="flex items-center justify-between px-8 py-4">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-blue-50">
+            <header className="border-b bg-white/90 backdrop-blur-lg supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50 shadow-sm">
+                <div className="flex items-center justify-between px-8 py-4 max-w-screen-2xl mx-auto">
                     <div className="flex items-center space-x-3">
-                        <div className="bg-indigo-600 text-white p-2 rounded-lg shadow-md">
-                            <Command className="w-5 h-5" />
+                        <div className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white p-2.5 rounded-xl shadow-md">
+                            <BrainCircuit className="w-5 h-5" />
                         </div>
-                        <span className="font-semibold text-gray-800">Web Agent Demo</span>
+                        <div>
+                            <span className="font-semibold text-gray-800 text-lg">Web Agent Demo</span>
+                            <p className="text-sm text-gray-500">Interactive Browser Assistant</p>
+                        </div>
                     </div>
                     <div className="flex items-center space-x-4">
                         <ActivityMonitor
@@ -630,10 +621,10 @@ export default function Playground({
                             isSessionActive={sessionStarted}
                         />
                         <Button
-                            variant="ghost"
+                            variant="outline"
                             size="icon"
                             onClick={handleReset}
-                            className="text-gray-600 hover:text-gray-900"
+                            className="text-gray-600 hover:text-gray-900 border-gray-200"
                         >
                             <AlertCircle className="w-5 h-5" />
                         </Button>
@@ -641,64 +632,82 @@ export default function Playground({
                 </div>
             </header>
 
-            <div className="flex h-[calc(100vh-64px)]">
-                <div className="w-96 border-r bg-white/80 backdrop-blur-sm p-6 flex flex-col">
-                    <div className="flex items-center space-x-3 mt-6 mb-6">
-                        <div className="bg-blue-500 text-white p-2 rounded-lg">
-                            <Command className="w-5 h-5" />
+            <div className="flex h-[calc(100vh-73px)]">
+                <div className="w-96 border-r bg-white shadow-lg relative flex flex-col">
+                    <div className="p-6 border-b bg-gradient-to-br from-gray-50 to-gray-100">
+                        <div className="flex items-center space-x-3 mb-6">
+                            <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-2.5 rounded-xl shadow-md">
+                                <MessageSquare className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <span className="font-semibold text-lg text-gray-800">Command Center</span>
+                                <p className="text-sm text-gray-500">Control your web assistant</p>
+                            </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                            <span className="font-semibold text-lg text-gray-800">Lite Web Agent</span>
 
-                        </div>
+                        {!sessionStarted && (
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-gray-700">Starting URL</label>
+                                    <Input
+                                        value={startingUrl}
+                                        onChange={(e) => setStartingUrl(e.target.value)}
+                                        placeholder="Enter starting URL..."
+                                        className="bg-white/90 border-gray-200 focus:bg-white transition-all"
+                                    />
+                                </div>
+                                <Button
+                                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md"
+                                    onClick={handleSessionStart}
+                                    disabled={!startingUrl || isRunning}
+                                >
+                                    {isRunning ? (
+                                        <div className="flex items-center space-x-2">
+                                            <Loader className="w-4 h-4 animate-spin" />
+                                            <span>Starting Session...</span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center space-x-2">
+                                            <Globe className="w-4 h-4" />
+                                            <span>Start Browser Session</span>
+                                        </div>
+                                    )}
+                                </Button>
+                            </div>
+                        )}
                     </div>
 
-                    {!sessionStarted && (
-                        <div className="space-y-4 mb-6">
-                            <Input
-                                value={startingUrl}
-                                onChange={(e) => setStartingUrl(e.target.value)}
-                                placeholder="Enter starting URL..."
-                                className="bg-gray-50/50 border-gray-200 focus:bg-white transition-all"
-                            />
-                            <Button
-                                className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-                                onClick={handleSessionStart}
-                                disabled={!startingUrl || isRunning}
-                            >
-                                {isRunning ? 'Starting...' : 'Start Session'}
-                            </Button>
-                        </div>
-                    )}
-
-                    <div className="flex-1 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-gray-200">
+                    <div className="flex-1 overflow-y-auto space-y-3 p-4 scrollbar-thin scrollbar-thumb-gray-200">
                         {sessionStarted ? (
                             <>
-                                {/* {steps.length === 0 && (
-                                    <div className="text-sm text-gray-500 text-center p-8 bg-gray-50/50 rounded-lg">
-                                        Enter your goal to begin the automated browsing session
-                                    </div>
-                                )} */}
                                 {steps.map((step) => (
                                     <Card
                                         key={step.id}
                                         className={`p-4 border shadow-sm transition-all duration-300 hover:shadow-md ${step.source === 'user'
-                                            ? 'border-gray-200 bg-white'
+                                            ? 'border-blue-200 bg-blue-50/30'
                                             : getMessageTypeStyle(step.type)
                                             }`}
                                     >
                                         <div className="flex justify-between items-start mb-2">
-                                            <span className="text-sm font-medium text-gray-700">
-                                                {getMessageTypeLabel(step.type)}
-                                            </span>
-                                            <div className="flex gap-2">
-                                                <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${getMessageTypeBadgeStyle(step.type)
-                                                    }`}>
-                                                    {step.type}
+                                            <div className="flex items-center space-x-2">
+                                                {step.source === 'user' ? (
+                                                    <div className="bg-blue-100 p-1 rounded-md">
+                                                        <MessageSquare className="w-4 h-4 text-blue-600" />
+                                                    </div>
+                                                ) : (
+                                                    <div className="bg-gray-100 p-1 rounded-md">
+                                                        <BrainCircuit className="w-4 h-4 text-gray-600" />
+                                                    </div>
+                                                )}
+                                                <span className="text-sm font-medium text-gray-700">
+                                                    {getMessageTypeLabel(step.type)}
                                                 </span>
                                             </div>
+                                            <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${getMessageTypeBadgeStyle(step.type)}`}>
+                                                {step.type}
+                                            </span>
                                         </div>
-                                        <p className="text-sm text-gray-800 whitespace-pre-wrap">{step.action}</p>
+                                        <p className="text-sm text-gray-800 whitespace-pre-wrap pl-7 break-words">{step.action}</p>
                                     </Card>
                                 ))}
                             </>
@@ -707,11 +716,11 @@ export default function Playground({
                                 {!isRunning && exampleCommands.map((command, index) => (
                                     <Card
                                         key={index}
-                                        className="p-4 cursor-pointer hover:bg-gray-50/80 transition-all duration-200 border border-gray-100 shadow-sm hover:shadow-md"
+                                        className="p-4 cursor-pointer hover:bg-gray-50/80 transition-all duration-200 border border-gray-200 shadow-sm hover:shadow-md"
                                         onClick={() => handleExampleClick(command)}
                                     >
                                         <div className="flex space-x-3">
-                                            <div className="text-blue-500">
+                                            <div className="bg-blue-100 p-2 rounded-lg">
                                                 {command.icon}
                                             </div>
                                             <div>
@@ -726,29 +735,30 @@ export default function Playground({
                     </div>
 
                     {sessionStarted && (
-                        <div className="mt-auto pt-6 border-t border-gray-100">
+                        <div className="p-4 border-t bg-white">
                             <div className="mb-4 px-1">
-                                <div className="text-sm text-gray-500">Starting URL:</div>
-                                <div className="text-sm font-medium text-gray-900 truncate">{startingUrl}</div>
+                                <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Active Session</div>
+                                <div className="text-sm font-medium text-gray-900 truncate mt-1">{startingUrl}</div>
                             </div>
-                            {renderCommandInput()}
-                            <div className="flex justify-between mt-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-gray-600 hover:text-gray-900"
-                                    onClick={handleReset}
-                                // disabled={isRunning}
-                                >
-                                    <RefreshCcw className="w-4 h-4 mr-2" />
-                                    Start Over
-                                </Button>
+                            <div className="space-y-3">
+                                {renderCommandInput()}
+                                <div className="flex justify-between">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-gray-600 hover:text-gray-900 border-gray-200"
+                                        onClick={handleReset}
+                                    >
+                                        <RefreshCcw className="w-4 h-4 mr-2" />
+                                        Reset Session
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     )}
                 </div>
 
-                <div className="flex-1 bg-white">
+                <div className="flex-1 bg-white relative">
                     {browserUrl ? (
                         <iframe
                             src={browserUrl}
@@ -757,27 +767,36 @@ export default function Playground({
                             allow="clipboard-read; clipboard-write"
                         />
                     ) : (
-                        <div className="flex flex-col items-center justify-center h-full bg-gradient-to-br from-gray-50 to-gray-100">
-                            <div className="bg-blue-500 text-white p-4 rounded-xl mb-6">
-                                <Command className="w-8 h-8" />
+                        <div className="flex flex-col items-center justify-center h-full bg-gradient-to-br from-gray-50 to-blue-50/30">
+                            <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg mb-8">
+                                <Globe className="w-12 h-12" />
                             </div>
-                            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Live Demo</h2>
-                            <p className="text-gray-600">Your live preview will start here. To get started:</p>
+                            <h2 className="text-3xl font-semibold text-gray-800 mb-3">Web Browser Preview</h2>
+                            <p className="text-gray-600 mb-12">Your automated browsing session will appear here</p>
 
-                            <div className="mt-8 space-y-8 max-w-xl">
-                                <div className="flex items-start space-x-4">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-semibold">1</span>
-                                    <p className="text-gray-600 mt-1">Enter your starting URL and goal to begin</p>
+                            <div className="space-y-8 max-w-xl">
+                                <div className="flex items-start space-x-6">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-100 text-blue-600 font-semibold">1</div>
+                                    <div>
+                                        <h3 className="font-medium text-gray-800 mb-1">Enter Starting URL</h3>
+                                        <p className="text-gray-600">Begin by providing the website URL you want to navigate</p>
+                                    </div>
                                 </div>
 
-                                <div className="flex items-start space-x-4">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-semibold">2</span>
-                                    <p className="text-gray-600 mt-1">Once initialized, you can enter commands in the chat</p>
+                                <div className="flex items-start space-x-6">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-100 text-blue-600 font-semibold">2</div>
+                                    <div>
+                                        <h3 className="font-medium text-gray-800 mb-1">Issue Commands</h3>
+                                        <p className="text-gray-600">Use natural language to tell the agent what to do</p>
+                                    </div>
                                 </div>
 
-                                <div className="flex items-start space-x-4">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-semibold">3</span>
-                                    <p className="text-gray-600 mt-1">Watch as the automated browser follows your instructions</p>
+                                <div className="flex items-start space-x-6">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-100 text-blue-600 font-semibold">3</div>
+                                    <div>
+                                        <h3 className="font-medium text-gray-800 mb-1">Watch & Interact</h3>
+                                        <p className="text-gray-600">See the automated browser follow your instructions in real-time</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -785,7 +804,24 @@ export default function Playground({
                 </div>
             </div>
             <audio id='audio-player' className='hidden'></audio>
-        </div>
 
+            <AlertDialog open={isResetting}>
+                <AlertDialogContent className="max-w-md !bg-white/80">
+                    <div className="flex items-center space-x-4">
+                        <div className="bg-blue-100 p-3 rounded-full">
+                            <Loader className="w-6 h-6 text-blue-600 animate-spin" />
+                        </div>
+                        <div>
+                            <AlertDialogTitle className="text-lg font-semibold text-gray-900">
+                                Resetting Session
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-gray-600 mt-1">
+                                Cleaning up resources and preparing a fresh session...
+                            </AlertDialogDescription>
+                        </div>
+                    </div>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div>
     );
 }
