@@ -50,7 +50,6 @@ const App: React.FC = () => {
     model: 'gpt-4o-mini',
     features: 'axtree',
     elementsFilter: 'som',
-    branchingFactor: '5',
   });
 
   const [error, setError] = useState<string>('');
@@ -82,7 +81,7 @@ const App: React.FC = () => {
         model: form.model,
         features: form.features,
         elements_filter: form.elementsFilter as ElementsFilterType,
-        branching_factor: parseInt((form.branchingFactor as string) || '5', 10),
+        branching_factor: 5,
         agent_type: 'PromptAgent',
         storage_state: 'state.json',
         log_folder: 'log',
@@ -213,29 +212,6 @@ const App: React.FC = () => {
                 <option value="visibility">Visibility</option>
                 <option value="none">None</option>
               </select>
-            </div>
-
-            <div className="space-y-2 group">
-              <label
-                htmlFor="branchingFactor"
-                className="flex items-center gap-2 text-sm font-medium text-slate-300 group-focus-within:text-blue-400 transition-colors"
-              >
-                <GitBranch className="h-4 w-4" />
-                Branching Factor
-              </label>
-              <input
-                id="branchingFactor"
-                type="number"
-                name="branchingFactor"
-                value={form.branchingFactor}
-                onChange={(e) => {
-                  setForm({
-                    ...form,
-                    branchingFactor: e.target.value,
-                  });
-                }}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/50 focus:border-blue-500/50 focus:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all duration-200"
-              />
             </div>
           </div>
         </form>
