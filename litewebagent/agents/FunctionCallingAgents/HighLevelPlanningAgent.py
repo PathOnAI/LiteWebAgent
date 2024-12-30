@@ -18,6 +18,7 @@ class HighLevelPlanningAgent(BaseAgent):
     def send_completion_request(self, plan: str, depth: int = 0, emitter=None) -> Dict:
         if plan is None and depth == 0:
             plan = self.make_plan()
+            self.messages.append({"role": "user", "content": "The plan is: {}".format(plan)})
         if depth >= 8:
             return None
 

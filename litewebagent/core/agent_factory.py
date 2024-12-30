@@ -67,6 +67,7 @@ def setup_function_calling_web_agent(starting_url, goal, playwright_manager, mod
     4. Once the current task is completed, stop and wait for further instructions.
 
     Critical guidelines:
+    - Assume that the user is already logged into their account when performing tasks involving account-specific information or history. Use this assumption to access and retrieve the necessary data if the functionality is available.
     - Strictly limit your actions to the current task. Do not attempt additional tasks or next steps.
     - Use only the functions provided to you. Do not attempt to use functions or methods that are not explicitly available.
     - For navigation or interaction with page elements, always use the appropriate bid (browser element ID) when required by a function.

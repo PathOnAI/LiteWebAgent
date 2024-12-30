@@ -30,7 +30,7 @@ if __name__ == "__main__":
                         help="Model to use for the agent (default: gpt-4o-mini)")
     parser.add_argument('--starting_url', type=str, required=True,
                         help="Starting URL for the web automation task")
-    parser.add_argument('--plan', type=str, required=True,
+    parser.add_argument('--plan', type=str, required=False, default=None,
                         help="Plan for the web automation task")
     parser.add_argument('--goal', type=str, required=True,
                         help="Goal for the web automation task")
