@@ -18,4 +18,15 @@ Updated Plan:\n1. Confirm the first purchase date from the detailed order view.\
 
 ## prompting agent
 The web agent instructed navigating to "My Orders" and clicking the link, resulting in the identification of the first purchase date as February 11, 2023.
+
+
+## visual webarena prompt agent
+2024-12-30 00:54:23,174 - INFO - [Config file]: config_files/wa/test_webarena/117.json
+2024-12-30 00:54:23,174 - INFO - [Intent]: What is the date when I made my first purchase on this site?
+/Users/danqingzhang/Desktop/LLMWebAgentTreeSearch/shopping.json
+2024-12-30 00:54:41,318 - INFO - {'action_type': <ActionTypes.CLICK: 6>, 'coords': array([0., 0.], dtype=float32), 'element_role': 31, 'element_name': '', 'text': [], 'page_number': 0, 'url': '', 'nth': 0, 'pw_code': '', 'element_id': '1129', 'key_comb': '', 'direction': '', 'answer': '', 'raw_prediction': 'To find the date of your first purchase on this site, you\'ll typically need to check your account history or order history. The relevant link to access that information is "My Account." \n\nIn summary, the next action I will perform is ```click [1129]``` to navigate to your account details.'}
+[env.step()] get_obs() time taken 4.150367021560669
+2024-12-30 00:54:55,337 - INFO - {'action_type': <ActionTypes.STOP: 17>, 'coords': array([0., 0.], dtype=float32), 'element_role': 0, 'element_name': '', 'text': [], 'page_number': 0, 'url': '', 'nth': 0, 'pw_code': '', 'element_id': '', 'key_comb': '', 'direction': '', 'answer': '3/11/23', 'raw_prediction': 'Let\'s analyze the available information. The table under "Recent Orders" shows several orders made with their corresponding dates. \n\nThe earliest order listed is on **3/11/23**. This indicates the date of your first purchase on the site. \n\nIn summary, the next action I will perform is ```stop [3/11/23]```'}
+2024-12-30 00:54:56,441 - INFO - [Result] (FAIL) config_files/wa/test_webarena/117.json
+2024-12-30 00:54:56,677 - INFO - Average score: 0.0
 ```
