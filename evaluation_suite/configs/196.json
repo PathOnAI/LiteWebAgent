@@ -1,0 +1,40 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 196,
+  "require_login": false,
+  "storage_state": "evaluation_suite/auth/shopping.json",
+  "start_url": "http://128.105.146.86:7770/grocery-gourmet-food/food-beverage-gifts/herb-spice-seasoning-gifts.html?product_list_mode=list",
+  "geolocation": null,
+  "intent_template": "Can you add the item {{offset}} the {{item}} to my cart?",
+  "instantiation_dict": {
+    "offset": "two rows below",
+    "item": "bagel seasoning"
+  },
+  "intent": "Can you add the item Yemeni Hawayij to my cart?",
+  "require_reset": false,
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://128.105.146.86:7770/checkout/cart",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "Yemeni Hawayij"
+          ]
+        }
+      }
+    ]
+  },
+  "intent_template_id": 62,
+  "reasoning_difficulty": "easy",
+  "visual_difficulty": "easy",
+  "overall_difficulty": "easy",
+  "comments": ""
+}
