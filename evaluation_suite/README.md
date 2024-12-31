@@ -1,6 +1,20 @@
 # Evaluation
 
+## evaluation script
+```
+export DATASET=visualwebarena
+export CLASSIFIEDS="http://128.105.146.86:9980"
+export CLASSIFIEDS_RESET_TOKEN="4b61655535e7ed388f0d40a93600254c"
+export SHOPPING="http://128.105.146.86:7770"
+export REDDIT="http://128.105.146.86:9999"
+export WIKIPEDIA="http://128.105.146.86:8888"
+export HOMEPAGE="http://128.105.146.86:4399"
+
+python3.11 -m run_webarena_evaluate --agent_type ContextAwarePlanningAgent --log_folder log
+```
+
 ## WebArena
+### WebArena 117
 ```
 python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --log_folder log
 
@@ -30,3 +44,11 @@ The web agent instructed navigating to "My Orders" and clicking the link, result
 2024-12-30 00:54:56,441 - INFO - [Result] (FAIL) config_files/wa/test_webarena/117.json
 2024-12-30 00:54:56,677 - INFO - Average score: 0.0
 ```
+
+### WebArena 118
+
+### WebArena 124
+
+### WebArena 125
+
+### WebArena 126
