@@ -16,7 +16,7 @@ def main(args):
                             features=features, elements_filter=args.elements_filter, branching_factor=branching_factor, log_folder=args.log_folder,
                             storage_state=args.storage_state)
 
-    response = agent.send_prompt(args.plan)
+    rresponse = agent.send_prompt(args.plan if args.plan is not None else args.goal)
     print(response)
     print(agent.messages)
 

@@ -11,17 +11,17 @@ export REDDIT="http://128.105.146.86:9999"
 export WIKIPEDIA="http://128.105.146.86:8888"
 export HOMEPAGE="http://128.105.146.86:4399"
 
-python3.11 -m run_webarena_evaluate --agent_type ContextAwarePlanningAgent --log_folder log
+python3.11 -m run_webarena_evaluate --agent_type FunctionCallingAgent --log_folder log
 ```
 
 ## WebArena
 ### WebArena 117
 ```
-python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --log_folder log
+python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --plan 'What is the date when I made my first purchase on this site?' --log_folder log
 
-python3.11 -m function_calling_main --agent_type ContextAwarePlanningAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --log_folder log
+python3.11 -m function_calling_main --agent_type ContextAwarePlanningAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --plan 'What is the date when I made my first purchase on this site?' --log_folder log
 
-python3.11 -m prompting_main --agent_type PromptAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --plan None --log_folder log
+python3.11 -m prompting_main --agent_type PromptAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --plan 'What is the date when I made my first purchase on this site?' --log_folder log
 ```
 
 ```

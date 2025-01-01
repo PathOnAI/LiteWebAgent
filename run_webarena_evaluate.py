@@ -58,7 +58,7 @@ def main(args):
     agent = setup_function_calling_web_agent(starting_url=starting_url, goal=goal, playwright_manager=playwright_manager, model_name=args.model, agent_type=args.agent_type,
                             features=features, elements_filter=args.elements_filter,tool_names=tool_names, branching_factor=branching_factor, log_folder=args.log_folder, workflow_memory_website=args.workflow_memory_website)
 
-    response = agent.send_prompt(None)
+    response = agent.send_prompt(goal)
     print(response)
         # NOTE: eval_caption_image_fn is used for running eval_vqa functions.
     evaluator = evaluator_router(
@@ -81,7 +81,7 @@ if __name__ == "__main__":
                         help="Model to use for the agent (default: gpt-4o-mini)")
     parser.add_argument('--features', type=str, default="axtree",
                         help="Comma-separated list of features to use (default: axtree, which uses accessibility tree)")  
-    parser.add_argument('--elements_filter', type=str, default="som",
+    parser.add_argument('--elements_filter', type=str, default="none",
                     choices=["som", "visibility", "none"],
                     help="Filter for dom elements"
                     )

@@ -12,7 +12,7 @@
     "offset": "two rows below",
     "item": "bagel seasoning"
   },
-  "intent": "Can you add the item Yemeni Hawayij to my cart?",
+  "intent": "Can you add the item Yemeni Hawayij on this page, to my cart?",
   "require_reset": false,
   "eval": {
     "eval_types": [

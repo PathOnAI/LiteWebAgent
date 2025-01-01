@@ -17,7 +17,7 @@ def main(args):
     agent = setup_function_calling_web_agent(starting_url=args.starting_url, goal=args.goal, playwright_manager=playwright_manager, model_name=args.model, agent_type=args.agent_type,
                             features=features, elements_filter=args.elements_filter,tool_names=tool_names, branching_factor=branching_factor, log_folder=args.log_folder, workflow_memory_website=args.workflow_memory_website)
 
-    response = agent.send_prompt(args.plan)
+    response = agent.send_prompt(args.plan if args.plan is not None else args.goal)
     print(response)
     #print(agent.messages)
 
