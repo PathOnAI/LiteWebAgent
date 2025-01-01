@@ -77,17 +77,18 @@ def setup_function_calling_web_agent(starting_url, goal, playwright_manager, mod
     Remember: Your role is to execute the given task precisely as instructed, using only the provided functions and within the confines of the current web page. Do not exceed these boundaries under any circumstances."""
         }
     ]
-    # file_path = os.path.join(log_folder, 'flow', 'steps.json')
-    # os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    
+    file_path = os.path.join(log_folder, 'flow', 'steps.json')
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
     page = playwright_manager.get_page()
     if starting_url!=None:
         page.goto(starting_url)
     # Maximize the window on macOS
     # page.set_viewport_size({"width": 1440, "height": 900})
 
-    # with open(file_path, 'w') as file:
-    #     file.write(goal + '\n')
-    #     file.write(starting_url + '\n')
+    with open(file_path, 'w') as file:
+        file.write(goal + '\n')
+        file.write(starting_url + '\n')
 
     try:
         agent_class = AGENT_CLASSES[agent_type]

@@ -15,6 +15,7 @@ import PIL.Image
 import pkgutil
 import re
 import base64
+from datetime import datetime
 
 MARK_FRAMES_MAX_TRIES = 3
 
@@ -86,7 +87,9 @@ import time
 def extract_page_info(page, log_folder):
     page_info = {}
     _pre_extract(page)
-    screenshot_path = os.path.join(log_folder, 'screenshots', 'screenshot.png')
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    filename = f"screenshot_{timestamp}.png"
+    screenshot_path = os.path.join(log_folder, 'screenshots', filename)
     page.screenshot(path=screenshot_path)
     # Capture screenshot as bytes
     # Wait for 3 seconds (if this wait is necessary)
@@ -101,7 +104,9 @@ def extract_page_info(page, log_folder):
     page_info['extra_properties'] = extract_dom_extra_properties(page_info.get('dom'))
     page_info['interactive_elements'] = extract_interactive_elements(page)
     highlight_elements(page, page_info['interactive_elements'])
-    screenshot_path = os.path.join(log_folder, 'screenshots', 'screenshot_som.png')
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    filename = f"screenshot_som_{timestamp}.png"
+    screenshot_path = os.path.join(log_folder, 'screenshots', filename)
     page.screenshot(path=screenshot_path)
     time.sleep(3)
     screenshot_bytes = page.screenshot()

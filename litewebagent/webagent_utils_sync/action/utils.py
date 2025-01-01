@@ -25,6 +25,8 @@ def execute_action(action, action_set, page, context, task_description, interact
         result['task_description'] = task_description
         logger.info(result)
         results.append(result)
+        file_path = os.path.join(log_folder, 'flow', 'steps.json')
+        append_to_steps_json(result, file_path)
 
     logger.info("Executing action script")
     remove_highlights(page)
