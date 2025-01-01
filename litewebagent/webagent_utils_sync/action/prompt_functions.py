@@ -37,7 +37,7 @@ def extract_top_actions(trajectory, goal, page_info, action_set, openai_client,
 
     prompt = prepare_prompt(page_info, action_set, features, elements_filter, log_folder)
     # base64_image = encode_image(page_info['screenshot'])
-    base64_image = base64.b64encode(page_info['screenshot']).decode('utf-8')
+    base64_image = base64.b64encode(page_info['screenshot_som']).decode('utf-8')
 
     response = openai_client.chat.completions.create(
         model="gpt-4o",

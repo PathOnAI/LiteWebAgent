@@ -86,9 +86,8 @@ import time
 def extract_page_info(page, log_folder):
     page_info = {}
     _pre_extract(page)
-    # screenshot_path = os.path.join(log_folder, 'screenshots', 'screenshot_pre.png')
-    # page.screenshot(path=screenshot_path)
-    # page_info['screenshot'] = screenshot_path
+    screenshot_path = os.path.join(log_folder, 'screenshots', 'screenshot.png')
+    page.screenshot(path=screenshot_path)
     # Capture screenshot as bytes
     # Wait for 3 seconds (if this wait is necessary)
     time.sleep(3)
@@ -102,8 +101,11 @@ def extract_page_info(page, log_folder):
     page_info['extra_properties'] = extract_dom_extra_properties(page_info.get('dom'))
     page_info['interactive_elements'] = extract_interactive_elements(page)
     highlight_elements(page, page_info['interactive_elements'])
-    # screenshot_path = os.path.join(log_folder, 'screenshots', 'screenshot_SoM.png')
-    # page.screenshot(path=screenshot_path)
+    screenshot_path = os.path.join(log_folder, 'screenshots', 'screenshot_som.png')
+    page.screenshot(path=screenshot_path)
+    time.sleep(3)
+    screenshot_bytes = page.screenshot()
+    page_info['screenshot_som'] = screenshot_bytes
     _post_extract(page)
     return page_info
 

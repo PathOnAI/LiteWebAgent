@@ -66,9 +66,9 @@ async def take_action(task_description, agent_type, features=None, branching_fac
         
         # Query OpenAI model
         if branching_factor == None:
-            responses = query_openai_model(system_msg, prompt, page_info['screenshot'], num_outputs=20)
+            responses = query_openai_model(system_msg, prompt, page_info['screenshot_som'], num_outputs=20)
         else:
-            responses = query_openai_model(system_msg, prompt, page_info['screenshot'],
+            responses = query_openai_model(system_msg, prompt, page_info['screenshot_som'],
                                          num_outputs=max(branching_factor * 2, 20))
         
         updated_actions = get_action_probability(responses, branching_factor)

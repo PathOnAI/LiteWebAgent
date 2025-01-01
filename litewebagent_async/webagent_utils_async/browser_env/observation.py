@@ -70,7 +70,6 @@ async def extract_page_info(page, log_folder):
     await _pre_extract(page)
     await asyncio.sleep(3)
     screenshot_bytes = await page.screenshot()
-
     page_info['screenshot'] = screenshot_bytes
     page_info['dom'] = await extract_dom_snapshot(page)
     page_info['axtree'] = await extract_merged_axtree(page)
@@ -84,6 +83,8 @@ async def extract_page_info(page, log_folder):
     # flatten_interactive_elements_to_str
     # page are all async page
     await highlight_elements(page, page_info['interactive_elements'])
+    screenshot_bytes = await page.screenshot()
+    page_info['screenshot_som'] = screenshot_bytes
     await _post_extract(page)
     return page_info
 
