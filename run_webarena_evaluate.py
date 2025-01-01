@@ -89,7 +89,7 @@ if __name__ == "__main__":
                         help="Comma-separated list of tool names to use (default: navigation,select_option,upload_file,webscraping)")
     parser.add_argument('--branching_factor', type=int, default=None)
     parser.add_argument('--log_folder', type=str, default='log', help='Path to the log folder')
-    parser.add_argument('--config_file', type=str, default='evaluation_suite/configs/196.json', help='Path to the config file')
+    parser.add_argument('--config_file', type=str, default='evaluation_suite/configs/vwa_196.json', help='Path to the config file')
     parser.add_argument('--workflow_memory_website', type=str, default=None, help='Website name for filtering memory')
     args = parser.parse_args()
     main(args)
