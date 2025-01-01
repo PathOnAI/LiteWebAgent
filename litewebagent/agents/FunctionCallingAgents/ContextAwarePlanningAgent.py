@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 
 class ContextAwarePlanningAgent(BaseAgent):
-
     def send_completion_request(self, plan: str, depth: int = 0, emitter=None) -> Dict:
         if plan is None and depth == 0:
             plan = self.make_plan()
