@@ -1,0 +1,31 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 3,
+  "require_login": true,
+  "storage_state": "evaluation_suite/auth/shopping.json",
+  "start_url": "http://128.105.146.86:7770",
+  "geolocation": null,
+  "intent_template": "I am doing a market survey for one stop market, show me the most expensive {{product}} from \"{{product_category}}\" category",
+  "intent": "I am doing a market survey for one stop market, show me the most expensive red controller from \"PS4 accessories\" category",
+  "instantiation_dict": {
+    "product": "red controller",
+    "product_category": "PS4 accessories"
+  },
+  "require_reset": false,
+  "eval": {
+    "eval_types": [
+      "url_match"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://128.105.146.86:7770/dualshock-4-wireless-controller-for-playstation-4-magma-red.html",
+    "program_html": [],
+    "url_note": "EXACT"
+  },
+  "intent_template_id": 1,
+  "reasoning_difficulty": "medium",
+  "visual_difficulty": "easy",
+  "comments": "",
+  "overall_difficulty": "medium"
+}
