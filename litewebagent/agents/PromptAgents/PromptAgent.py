@@ -54,7 +54,7 @@ class PromptAgent:
 
     def send_completion_request(self, plan: str, depth: int = 0, trajectory=[]) -> Dict:
         if depth >= 8:
-            return None
+            return "max depth reached, agent stops execution"
 
         context = self.playwright_manager.get_context()
         page = self.playwright_manager.get_page()

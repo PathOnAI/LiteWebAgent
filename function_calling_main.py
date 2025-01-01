@@ -4,6 +4,8 @@ import argparse
 _ = load_dotenv()
 from litewebagent.core.agent_factory import setup_function_calling_web_agent
 from litewebagent.webagent_utils_sync.utils.playwright_manager import setup_playwright
+import os
+from litewebagent.webagent_utils_sync.utils.utils import parse_task_file
 
 def main(args):
     # Use the features from command-line arguments
@@ -19,7 +21,11 @@ def main(args):
 
     response = agent.send_prompt(args.plan if args.plan is not None else args.goal)
     print(response)
-    #print(agent.messages)
+    print(agent.messages)
+    file_path = os.path.join(args.log_folder, 'flow', 'steps.json')
+    flow = parse_task_file(file_path)
+    print(flow)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run web automation tasks with different agent types.")

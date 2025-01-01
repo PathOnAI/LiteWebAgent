@@ -19,7 +19,7 @@ class HighLevelPlanningAgent(BaseAgent):
             plan = self.make_plan()
             self.messages.append({"role": "user", "content": "The plan is: {}".format(plan)})
         if depth >= 8:
-            return None
+            return "max depth reached,  agent stops execution"
 
         if not self.tools:
             response = completion(model=self.model_name, messages=self.messages)
@@ -28,7 +28,7 @@ class HighLevelPlanningAgent(BaseAgent):
             logger.info('agent: %s, depth: %s, response: %s', self.model_name, depth, response)
             message = response.choices[0].message.model_dump()
             self.messages.append(message)
-            return response
+            return response.choices[0].message.content
 
         logger.info("last message: %s", json.dumps(self.messages[-1]))
         logger.info('current plan: %s', plan)
@@ -76,7 +76,7 @@ class HighLevelPlanningAgent(BaseAgent):
             goal_finished = message.goal_finished
             if goal_finished:
                 logger.info("goal finished")
-                return response
+                return response.choices[0].message.content
             else:
                 self.messages.append({"role": "user", "content": plan})
 
@@ -92,12 +92,12 @@ class HighLevelPlanningAgent(BaseAgent):
         else:
             message = response.choices[0].message.model_dump()
             self.messages.append(message)
-            return response
+            return response.choices[0].message.content
 
         if tool_calls is None or len(tool_calls) == 0:
             message = response.choices[0].message.model_dump()
             self.messages.append(message)
-            return response
+            return response.choices[0].message.content
         # limit one function calling at a time
         tool_calls = [tool_calls[0]]
 

@@ -20,6 +20,48 @@ def setup_logger():
     )
     return logging.getLogger(__name__)
 
+def parse_task_file(file_name):
+    """
+    Load and parse task information from a file.
+    
+    Args:
+        file_name (str): Name of the file to read
+        
+    Returns:
+        dict: Dictionary containing:
+            - goal: The task goal (str)
+            - starting_url: The initial URL (str)
+            - step_info: Parsed JSON step information (dict)
+            
+    Raises:
+        FileNotFoundError: If the file cannot be found
+        ValueError: If file format is invalid or JSON parsing fails
+    """
+    try:
+        with open(file_name, 'r', encoding='utf-8') as f:
+            # Split content into lines and remove empty lines
+            lines = [line.strip() for line in f.readlines() if line.strip()]
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Could not find file: {file_name}")
+    
+    # Extract goal and starting URL
+    goal = lines[0]
+    starting_url = lines[1]
+    
+    # Parse each remaining line as a separate JSON step
+    steps = []
+    for i, line in enumerate(lines[2:]):
+        try:
+            step_info = json.loads(line)
+            steps.append(step_info)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON format on line {i}: {str(e)}")
+    
+    return {
+        "goal": goal,
+        "starting_url": starting_url,
+        "step_info": steps
+    }
 
 def query_openai_model(system_msg, prompt, screenshot, num_outputs):
     # base64_image = encode_image(screenshot_path)

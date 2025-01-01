@@ -13,7 +13,7 @@ class FunctionCallingAgent(BaseAgent):
             plan = self.make_plan()
             self.messages.append({"role": "user", "content": "The plan is: {}".format(plan)})
         if depth >= 8:
-            return None
+            return "max depth reached, agent stops execution"
         logger.info("plan is %s", plan)
 
         if not self.tools:
@@ -23,7 +23,7 @@ class FunctionCallingAgent(BaseAgent):
             logger.info('agent: %s, depth: %s, response: %s', self.model_name, depth, response)
             message = response.choices[0].message.model_dump()
             self.messages.append(message)
-            return response
+            return response.choices[0].message.content
 
         response = completion(model=self.model_name, messages=self.messages, tools=self.tools, tool_choice="auto")
 
@@ -36,12 +36,12 @@ class FunctionCallingAgent(BaseAgent):
         else:
             message = response.choices[0].message.model_dump()
             self.messages.append(message)
-            return response
+            return response.choices[0].message.content
 
         if tool_calls is None or len(tool_calls) == 0:
             message = response.choices[0].message.model_dump()
             self.messages.append(message)
-            return response
+            return response.choices[0].message.content
 
         tool_call_message = {"content": response.choices[0].message.content,
                              "role": response.choices[0].message.role,
