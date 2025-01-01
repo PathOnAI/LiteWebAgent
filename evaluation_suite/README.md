@@ -17,11 +17,11 @@ python3.11 -m run_webarena_evaluate --agent_type FunctionCallingAgent --log_fold
 ## WebArena
 ### WebArena 117
 ```
-python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --plan 'What is the date when I made my first purchase on this site?' --log_folder log
+python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --plan 'What is the date when I made my first purchase on this site?' --log_folder log --storage_state evaluation_suite/auth/shopping.json
 
-python3.11 -m function_calling_main --agent_type ContextAwarePlanningAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --plan 'What is the date when I made my first purchase on this site?' --log_folder log
+python3.11 -m function_calling_main --agent_type ContextAwarePlanningAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --plan 'What is the date when I made my first purchase on this site?' --log_folder log --storage_state evaluation_suite/auth/shopping.json
 
-python3.11 -m prompting_main --agent_type PromptAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --plan 'What is the date when I made my first purchase on this site?' --log_folder log
+python3.11 -m prompting_main --agent_type PromptAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --plan 'What is the date when I made my first purchase on this site?' --log_folder log --storage_state evaluation_suite/auth/shopping.json
 ```
 
 ```
