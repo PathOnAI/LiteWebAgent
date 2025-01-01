@@ -1,4 +1,5 @@
 # Evaluation
+The evaluation suite is a standalone module, extracted and modified from the VisualWebArena and Tree Search Agent repository: https://github.com/kohjingyu/search-agents/tree/main/evaluation_harness.
 
 ## evaluation script
 ```
