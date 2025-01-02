@@ -12,6 +12,7 @@ export WIKIPEDIA="http://128.105.146.86:8888"
 export HOMEPAGE="http://128.105.146.86:4399"
 
 python3.11 -m run_webarena_evaluate --agent_type FunctionCallingAgent --log_folder log
+python3.11 -m run_webarena_evaluate --agent_type FunctionCallingAgent --log_folder log --config_file evaluation_suite/configs/wa_117.json
 ```
 
 ## WebArena

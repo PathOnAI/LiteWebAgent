@@ -23,31 +23,6 @@ from typing import Any, TypedDict, Union, cast, Dict
 import numpy as np
 import numpy.typing as npt
 
-class Action(TypedDict):
-    action_type: int
-    coords: npt.NDArray[np.float32]
-    element_role: int
-    element_name: str
-    text: list[int]
-    page_number: int
-    url: str
-    nth: int
-    element_id: str
-    direction: str
-    key_comb: str
-    pw_code: str
-    answer: str
-    raw_prediction: str  # raw prediction from the model
-
-# from browser_env.utils import StateInfo
-
-Observation = str | npt.NDArray[np.uint8]
-
-class StateInfo(TypedDict):
-    observation: dict[str, Observation]
-    info: Dict[str, Any]
-
-
 from evaluation_suite import image_utils
 from evaluation_suite.helper_functions import (
     PseudoPage,
@@ -73,7 +48,11 @@ from evaluation_suite.helper_functions import (
     shopping_get_sku_latest_review_text,
 )
 
-Trajectory = list[Union[Action, StateInfo]]
+# Trajectory = list[Union[Action, StateInfo]]
+from typing import Dict
+
+Trajectory = Dict
+
 
 class Evaluator(object):
     def __init__(self, eval_tag: str = "") -> None:
@@ -87,29 +66,6 @@ class Evaluator(object):
     ) -> float:
         raise NotImplementedError
 
-    @staticmethod
-    def get_last_action(trajectory: Trajectory) -> Action:
-        try:
-            is_bearable(trajectory[-1], Action)
-            last_action = trajectory[-1]
-        except Exception:
-            raise ValueError(
-                "The last element of trajectory should be an action, add a fake stop action if needed"
-            )
-
-        return last_action  # type: ignore[return-value]
-
-    @staticmethod
-    def get_last_state(trajectory: Trajectory) -> StateInfo:
-        try:
-            is_bearable(trajectory[-2], StateInfo)
-            last_state = trajectory[-2]
-        except Exception:
-            raise ValueError(
-                "The second last element of trajectory should be a state, add a fake stop action if needed"
-            )
-
-        return last_state  # type: ignore[return-value]
 
 class NumericEvaluator(Evaluator):
     """Check if the numerical relationship is correct"""
@@ -228,8 +184,9 @@ class StringEvaluator(Evaluator):
         with open(config_file, "r") as f:
             configs = json.load(f)
 
-        last_action = self.get_last_action(trajectory)
-        pred = self.clean_answer(last_action["answer"])
+        # last_action = self.get_last_action(trajectory)
+        # pred = self.clean_answer(last_action["answer"])
+        pred = trajectory["response"]
 
         score = 1.0
         for approach, value in configs["eval"]["reference_answers"].items():
@@ -307,8 +264,7 @@ class StringSoftEvaluator(Evaluator):
         with open(config_file, "r") as f:
             configs = json.load(f)
 
-        last_action = self.get_last_action(trajectory)
-        pred = last_action["answer"]
+        pred = trajectory["response"]
         ref = configs["eval"]["reference_answers"]
         # rouge
         m = evaluate.load("rouge")
