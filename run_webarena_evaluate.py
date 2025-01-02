@@ -8,9 +8,8 @@ import json
 from PIL import Image
 import requests
 from evaluation_suite import evaluator_router, image_utils
-## first make it work for function calling agent
-## load json config file
-## add evaluate suite to evaluate agent performance
+from litewebagent.webagent_utils_sync.utils.utils import parse_task_file
+import os
 
 def main(args):
     # Use the features from command-line arguments
@@ -64,8 +63,12 @@ def main(args):
     evaluator = evaluator_router(
         config_file, captioning_fn=None
     )
+    file_path = os.path.join(args.log_folder, 'flow', 'steps.json')
+    flow = parse_task_file(file_path)
+    trajectory = {"response": response, "flow": flow, "messages":agent.messages}
+    print(trajectory)
     score = evaluator(
-        trajectory=[],
+        trajectory=trajectory,
         config_file=config_file,
         page=playwright_manager.page
     )
