@@ -2,6 +2,7 @@
 The evaluation suite is a standalone module, extracted and modified from the VisualWebArena and Tree Search Agent repository: https://github.com/kohjingyu/search-agents/tree/main/evaluation_harness.
 
 ## evaluation script
+After setting the virtual environment, define below environment variables
 ```
 export DATASET=visualwebarena
 export CLASSIFIEDS="http://128.105.146.86:9980"
@@ -10,12 +11,23 @@ export SHOPPING="http://128.105.146.86:7770"
 export REDDIT="http://128.105.146.86:9999"
 export WIKIPEDIA="http://128.105.146.86:8888"
 export HOMEPAGE="http://128.105.146.86:4399"
+export OPENAI_API_KEY=your_key
+```
+There are three types of evaluators. Here is an example of each type.
 
-python3.11 -m run_webarena_evaluate --agent_type FunctionCallingAgent --log_folder log
+
+```
+## string_match
 python3.11 -m run_webarena_evaluate --agent_type FunctionCallingAgent --log_folder log --config_file evaluation_suite/configs/wa_117.json
+
+## program_html
+python3.11 -m run_webarena_evaluate --agent_type FunctionCallingAgent --log_folder log --config_file evaluation_suite/configs/vwa_196.json
+
+## url_match
+python3.11 -m run_webarena_evaluate --agent_type FunctionCallingAgent --log_folder log --config_file evaluation_suite/configs/vwa_3.json
 ```
 
-## WebArena
+## WebArena Test Case Results
 ### WebArena 117
 ```
 python3.11 -m function_calling_main --agent_type FunctionCallingAgent --starting_url http://128.105.146.86:7770 --goal 'What is the date when I made my first purchase on this site?' --plan 'What is the date when I made my first purchase on this site?' --log_folder log --storage_state evaluation_suite/auth/shopping.json
@@ -46,11 +58,3 @@ The web agent instructed navigating to "My Orders" and clicking the link, result
 2024-12-30 00:54:56,441 - INFO - [Result] (FAIL) config_files/wa/test_webarena/117.json
 2024-12-30 00:54:56,677 - INFO - Average score: 0.0
 ```
-
-### WebArena 118
-
-### WebArena 124
-
-### WebArena 125
-
-### WebArena 126
