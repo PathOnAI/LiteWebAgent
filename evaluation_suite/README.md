@@ -18,13 +18,13 @@ There are three types of evaluators. Here is an example of each type.
 
 ```
 ## string_match
-python3.11 -m run_webarena_evaluate --agent_type FunctionCallingAgent --log_folder log --config_file evaluation_suite/configs/wa_117.json
+python3.11 -m run_xwebarena_evaluate --agent_type FunctionCallingAgent --log_folder log --config_file evaluation_suite/configs/wa_117.json
 
 ## program_html
-python3.11 -m run_webarena_evaluate --agent_type FunctionCallingAgent --log_folder log --config_file evaluation_suite/configs/vwa_196.json
+python3.11 -m run_xwebarena_evaluate --agent_type FunctionCallingAgent --log_folder log --config_file evaluation_suite/configs/vwa_196.json
 
 ## url_match
-python3.11 -m run_webarena_evaluate --agent_type FunctionCallingAgent --log_folder log --config_file evaluation_suite/configs/vwa_3.json
+python3.11 -m run_xwebarena_evaluate --agent_type FunctionCallingAgent --log_folder log --config_file evaluation_suite/configs/vwa_3.json
 ```
 
 ## WebArena Test Case Results
