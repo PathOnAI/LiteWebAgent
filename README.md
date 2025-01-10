@@ -8,6 +8,8 @@
 </p>
 
 ## 📰 News
+* [2025-01-09] We reused LiteWebAgent infrastructure to build [LiteWebAgent Tree Search](https://github.com/PathOnAI/LiteWebAgentTreeSearch), which is set for release on 02/15.
+* [2025-01-01] We built a standalone evaluation suite for [X-WebArena](https://webarena.dev/) evaluation and integrated it with LiteWebAgent.
 * [2024-12-12] Released an async version of LiteWebAgent for improved compatibility with FastAPI AI backends.
 * [2024-12-11] Deployed LiteWebAgent’s frontend and backend on Vercel.
 * [2024-12-03] [zzfoo](https://github.com/zzfoo) integrated [AWM (Agent Workflow Memory)](https://github.com/zorazrw/agent-workflow-memory) into the LiteWebAgent framework.
