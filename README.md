@@ -7,7 +7,7 @@
         <img src="https://img.shields.io/badge/Community-Discord-8A2BE2" height="28"></a>
 </p>
 
-Please note that we are actively adding new tree search algorithms to the [LiteWebAgent Tree Search](https://github.com/PathOnAI/LiteWebAgentTreeSearch). LiteWebAgent serves as the baseline for these tree search algorithms, as all infrastructure is shared. After we release LiteWebAgent Tree Search, we will move the agents from LiteWebAgent to that repo and archive the LiteWebAgent repo.
+Please note that we are actively adding new tree search algorithms to the [LiteWebAgent Tree Search](https://github.com/PathOnAI/LiteWebAgentTreeSearch). The Tree Search repository uses LiteWebAgent's infrastructure, with LiteWebAgent serving as the baseline for these tree search algorithms. After we release LiteWebAgent Tree Search, we will move all the existing agents from LiteWebAgent to that repo and archive the LiteWebAgent repo.
 
 ## 📰 News
 * [2025-01-09] We reused LiteWebAgent infrastructure to build [LiteWebAgent Tree Search](https://github.com/PathOnAI/LiteWebAgentTreeSearch), which is set for release on 02/15.
