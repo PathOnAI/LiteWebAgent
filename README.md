@@ -162,4 +162,4 @@ https://www.loom.com/share/d2b03e39c13044d8b25fcf1644e88867
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=PathOnAI/LiteWebAgent&type=Date)](https://star-history.com/#PathOnAI/LiteWebAgent&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=PathOnAI-org/LiteWebAgent&type=Date)](https://star-history.com/#PathOnAI-org/LiteWebAgent&Date)
