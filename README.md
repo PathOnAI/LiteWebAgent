@@ -1,12 +1,5 @@
 # LiteWebAgent
 
-<p align="left">
-    <a href='https://litewebagent.readthedocs.io/en/latest/'>
-        <img src='https://img.shields.io/badge/Documentation-green?style=for-the-badge' height="28"></a>
-    <a href="https://discord.gg/XwvEyVhdw3">
-        <img src="https://img.shields.io/badge/Community-Discord-8A2BE2" height="28"></a>
-</p>
-
 Please note that we are actively adding new tree search algorithms to the [LiteWebAgent Tree Search](https://github.com/PathOnAI/LiteWebAgentTreeSearch). The Tree Search repository uses LiteWebAgent's infrastructure, with LiteWebAgent serving as the baseline for these tree search algorithms. After we release LiteWebAgent Tree Search, we will move all the existing agents from LiteWebAgent to that repo and archive the LiteWebAgent repo.
 
 ## 📰 News
