@@ -11,7 +11,6 @@ litewebagent/screenshots/screenshot_pre.png
 litewebagent/screenshots/screenshot_post.png
 log.txt
 app.log
-state.json
 .DS_Store
 cache
 __pycache__
