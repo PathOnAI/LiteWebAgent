@@ -10,7 +10,7 @@ export interface WebAgentRequestBody {
 // Browser base API functions
 export const startBrowserBase = async (storageStateS3Path = null) => {
     try {
-        const response = await fetch('https://loggia-webagent.vercel.app/start-browserbase', {
+        const response = await fetch(`${WEBAGENT_SERVER_URL_BASE}/start-browserbase`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
