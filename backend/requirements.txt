@@ -1,0 +1,12 @@
+openai==1.42.0
+playwright==1.39.0
+watchdog==4.0.2
+python-dotenv==1.0.1
+pyparsing==3.1.2
+litellm==1.42.1
+Pillow>=10.1
+beautifulsoup4>=4.12
+fastapi
+uvicorn
+boto3==1.35.44
+httpx==0.27.2
