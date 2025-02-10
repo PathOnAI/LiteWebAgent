@@ -108,18 +108,18 @@ curl -X POST "http://0.0.0.0:8000/terminate-browserbase?session_id=f525ba67-c88e
 
 ### 3. Production
 ```
-curl -X POST 'https://lite-web-agent-backend.vercel.app/start-browserbase' \
+curl -X POST 'https://lite-web-agent-api.vercel.app/start-browserbase' \
 -H 'Content-Type: application/json' \
 -d '{"storage_state_s3_path": null}'  
-{"live_browser_url":"https://www.browserbase.com/devtools-fullscreen/inspector.html?wss=connect.browserbase.com/debug/3744d2f6-4ba5-4d98-a44c-5b03fc7b33a3/devtools/page/30A3CDBECAE2E9B96FCE5A6FAD83D6BA?debug=true","session_id":"3744d2f6-4ba5-4d98-a44c-5b03fc7b33a3","status":"started","storage_state_path":null}
+{"live_browser_url":"https://www.browserbase.com/devtools-fullscreen/inspector.html?wss=connect.browserbase.com/debug/f30e33eb-7b69-43e8-9ab1-08ff03f05d9b/devtools/page/FEF8DEA969FE6436296849C7C072569F?debug=true","session_id":"f30e33eb-7b69-43e8-9ab1-08ff03f05d9b","status":"started","storage_state_path":null}
 ```
 
 
 ```
-curl -X POST 'https://lite-web-agent-backend.vercel.app/run-agent-initial-steps-stream' \
+curl -X POST 'https://lite-web-agent-api.vercel.app/run-agent-initial-steps-stream' \
 -H 'Content-Type: application/json' \
 -d '{
-  "session_id": "3744d2f6-4ba5-4d98-a44c-5b03fc7b33a3",
+  "session_id": "9b234e25-e24e-4726-b55d-896419aec6a4",
   "starting_url": "https://www.google.com",
   "goal": "type dining table in text box",
   "s3_path": "s3://loggia-tests/loggia-test/tests/2/flow.json",
@@ -128,6 +128,6 @@ curl -X POST 'https://lite-web-agent-backend.vercel.app/run-agent-initial-steps-
 ```
 
 ```
-curl -X POST "https://lite-web-agent-backend.vercel.app/terminate-browserbase?session_id=3744d2f6-4ba5-4d98-a44c-5b03fc7b33a3"
+curl -X POST "https://lite-web-agent-api.vercel.app/terminate-browserbase?session_id=9b234e25-e24e-4726-b55d-896419aec6a4"
 {"status":"terminated"}%
 ```
