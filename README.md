@@ -3,6 +3,7 @@
 Please note that we are actively adding new tree search algorithms to the [LiteWebAgent Tree Search](https://github.com/PathOnAI/LiteWebAgentTreeSearch). The Tree Search repository uses LiteWebAgent's infrastructure, with LiteWebAgent serving as the baseline for these tree search algorithms. After we release LiteWebAgent Tree Search, we will move all the existing agents from LiteWebAgent to that repo and archive the LiteWebAgent repo.
 
 ## 📰 News
+* [2025-02-28] "LiteWebAgent: The Open-Source Suite for VLM-Based Web-Agent Applications" was accepted by 2025 Annual Conference of the North American Chapter of the Association for Computational Linguistics -- System Demonstration Track (NAACL 2025).
 * [2025-01-09] We reused LiteWebAgent infrastructure to build [LiteWebAgent Tree Search](https://github.com/PathOnAI/LiteWebAgentTreeSearch), which is set for release on 02/15.
 * [2025-01-01] We built a standalone evaluation suite for [X-WebArena](https://webarena.dev/) evaluation and integrated it with LiteWebAgent.
 * [2024-12-12] Released an async version of LiteWebAgent for improved compatibility with FastAPI AI backends.
