@@ -145,12 +145,22 @@ https://www.loom.com/share/d2b03e39c13044d8b25fcf1644e88867
 [![LiteWebiAgent contributors](https://contrib.rocks/image?repo=PathOnAI/LiteWebAgent)](https://github.com/PathOnAI/LiteWebAgent/graphs/contributors)
 
 ## 6. Citing LiteWebAgent
+cite the repo
 ```
 @misc{zhang2024litewebagent,
   title={LiteWebAgent: The Library for LLM-based web-agent applications},
-  author={Danqing Zhang, Balaji Rama, Zhao Fu, Shiying He, Kunyu Chen, Jingyi Ni},
+  author={Danqing Zhang, Balaji Rama, Shiying He, Jingyi Ni},
   journal={https://github.com/PathOnAI/LiteWebAgent},
   year={2024}
+}
+```
+cite the NAACL paper
+```
+@inproceedings{zhang2025litewebagent,
+  title={LiteWebAgent: The Open-Source Suite for VLM-Based Web-Agent Applications},
+  author={Danqing Zhang, Balaji Rama, Junyu Cao, Fu Zhao, Kunyu Chen, Jingyi Ni, Shiying He, Arnold Chen},
+  booktitle={2025 Annual Conference of the North American Chapter of the Association for Computational Linguistics -- System Demonstration Track},
+  year={2025}
 }
 ```
 
