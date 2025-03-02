@@ -1,5 +1,7 @@
 # LiteWebAgent
 
+**Disclaimer: Please note that LiteWebAgent is not affiliated with any for-profit company. This is a collaborative project from PathOn.ai, an open-source AI research community, where Danqing Zhang is the main contributor and lead author of the NAACL paper. If anyone claims LiteWebAgent is affiliated with any company, please contact Danqing Zhang (danqing.zhang.personal@gmail.com) for verification.**
+
 Please note that we are actively adding new tree search algorithms to the [LiteWebAgent Tree Search](https://github.com/PathOnAI/LiteWebAgentTreeSearch). The Tree Search repository uses LiteWebAgent's infrastructure, with LiteWebAgent serving as the baseline for these tree search algorithms. After we release LiteWebAgent Tree Search, we will move all the existing agents from LiteWebAgent to that repo and archive the LiteWebAgent repo.
 
 ## 📰 News
