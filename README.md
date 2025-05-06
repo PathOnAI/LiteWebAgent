@@ -4,17 +4,14 @@
 
 ## Follow-Up Work: VisualTreeSearch
 
-<p align="center">
-  <img src="https://www.pathonai.org/images/projects/visualtreesearch/visualtreesearch-logo.png" alt="VisualTreeSearch Logo" width="200"/>
-</p>
+[VisualTreeSearch](https://www.pathonai.org/projects/visualtreesearch) is a production-ready system for visualizing and understanding web agent test-time scaling. It builds upon LiteWebAgent to provide an intuitive framework for researchers and users to understand tree search execution in web agents.
 
-VisualTreeSearch is a production-ready system for visualizing and understanding web agent test-time scaling. It builds upon LiteWebAgent to provide an intuitive framework for researchers and users to understand tree search execution in web agents.
-
-## Resources
+### Resources
 - 🌐 **Project Page**: [PathOnAI.org/VisualTreeSearch](https://www.pathonai.org/projects/visualtreesearch)
 - 🎮 **Live Demo**: [visual-tree-search.pathonai.org](https://visual-tree-search.pathonai.org/)
 - 📄 **Paper**: [Read on arXiv](https://arxiv.org/abs/2503.02950)
 - 🎥 **Video Demo**: [Watch on YouTube](https://www.youtube.com/watch?v=lZUDbv5ABkg)
+- 🖼️ **Project Images**: [View Images](https://www.pathonai.org/images/projects/visualtreesearch/)
 
 
 ## Join the community!
