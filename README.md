@@ -13,7 +13,7 @@
 - 🎥 **Video Demo**: [Watch on YouTube](https://www.youtube.com/watch?v=lZUDbv5ABkg)
 
 
-[![Watch the video](https://img.youtube.com/vi/lZUDbv5ABkg/hqdefault.jpg)](https://youtu.be/lZUDbv5ABkg)
+[![Watch the video](https://img.youtube.com/vi/lZUDbv5ABkg/hqdefault.jpg)](https://www.youtube.com/embed/lZUDbv5ABkg)
 
 
 ## Join the community!
