@@ -11,7 +11,6 @@
 - 🎮 **Live Demo**: [visual-tree-search.pathonai.org](https://visual-tree-search.pathonai.org/)
 - 📄 **Paper**: [Read on arXiv](https://arxiv.org/abs/2503.02950)
 - 🎥 **Video Demo**: [Watch on YouTube](https://www.youtube.com/watch?v=lZUDbv5ABkg)
-- 🖼️ **Project Images**: [View Images](https://www.pathonai.org/images/projects/visualtreesearch/)
 
 
 ## Join the community!
