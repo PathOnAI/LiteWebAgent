@@ -2,7 +2,20 @@
 
 **Disclaimer: Please note that LiteWebAgent is not affiliated with any for-profit company. This is a collaborative project from PathOnAI.org, an open-source AI research community, where Danqing Zhang (danqing.zhang.personal@gmail.com) is the main contributor and lead author of the NAACL paper. If anyone claims LiteWebAgent is affiliated with any for-profit company, please contact Danqing Zhang (danqing.zhang.personal@gmail.com) for verification.**
 
-Please note that we are actively adding new tree search algorithms to the [LiteWebAgent Tree Search](https://github.com/PathOnAI/LiteWebAgentTreeSearch). The Tree Search repository uses LiteWebAgent's infrastructure, with LiteWebAgent serving as the baseline for these tree search algorithms. After we release LiteWebAgent Tree Search, we will move all the existing agents from LiteWebAgent to that repo and archive the LiteWebAgent repo.
+## Follow-Up Work: VisualTreeSearch
+
+<p align="center">
+  <img src="https://www.pathonai.org/images/projects/visualtreesearch/visualtreesearch-logo.png" alt="VisualTreeSearch Logo" width="200"/>
+</p>
+
+VisualTreeSearch is a production-ready system for visualizing and understanding web agent test-time scaling. It builds upon LiteWebAgent to provide an intuitive framework for researchers and users to understand tree search execution in web agents.
+
+## Resources
+- 🌐 **Project Page**: [PathOnAI.org/VisualTreeSearch](https://www.pathonai.org/projects/visualtreesearch)
+- 🎮 **Live Demo**: [visual-tree-search.pathonai.org](https://visual-tree-search.pathonai.org/)
+- 📄 **Paper**: [Read on arXiv](https://arxiv.org/abs/2503.02950)
+- 🎥 **Video Demo**: [Watch on YouTube](https://www.youtube.com/watch?v=lZUDbv5ABkg)
+
 
 ## Join the community!
 <p align="left">
