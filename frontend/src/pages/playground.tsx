@@ -89,14 +89,13 @@ interface PlaygroundStep {
 interface PlaygroundProps {
     initialSteps_: PlaygroundStep[];
     processId: string;
-    onSessionEnd: () => void;
 }
 
 export default function Playground({
     initialSteps_,
     processId,
-    onSessionEnd
-}: PlaygroundProps) {
+    onSessionEnd = () => {},
+}: PlaygroundProps & { onSessionEnd?: () => void }) {
 
     const [startingUrl, setStartingUrl] = useState('');
     const [command, setCommand] = useState('');
@@ -606,35 +605,6 @@ export default function Playground({
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-blue-50">
-            <header className="border-b bg-white/90 backdrop-blur-lg supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50 shadow-sm">
-                <div className="flex items-center justify-between px-8 py-4 max-w-screen-2xl mx-auto">
-                    <div className="flex items-center space-x-3">
-                        <div className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white p-2.5 rounded-xl shadow-md">
-                            <BrainCircuit className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <span className="font-semibold text-gray-800 text-lg">Web Agent Demo</span>
-                            <p className="text-sm text-gray-500">Interactive Browser Assistant</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                        <ActivityMonitor
-                            onInactive={handleReset}
-                            isRunning={isRunning}
-                            isSessionActive={sessionStarted}
-                        />
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={handleReset}
-                            className="text-gray-600 hover:text-gray-900 border-gray-200"
-                        >
-                            <AlertCircle className="w-5 h-5" />
-                        </Button>
-                    </div>
-                </div>
-            </header>
-
             <div className="flex h-[calc(100vh-73px)]">
                 <div className="w-96 border-r bg-white shadow-lg relative flex flex-col">
                     <div className="p-6 border-b bg-gradient-to-br from-gray-50 to-gray-100">

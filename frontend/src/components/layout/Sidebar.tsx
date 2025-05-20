@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 export default function Sidebar() {
   const router = useRouter();
   
-  const isActive = (path: string) => {
-    return router.pathname === path;
-  };
+  // Helper to add custom active styles
+  const activeClass =
+    "bg-blue-50 border-l-4 border-blue-600 text-blue-700 font-semibold shadow-sm";
 
   return (
     <div className="w-64 h-full border-r border-foreground/10 bg-background">
@@ -19,8 +19,10 @@ export default function Sidebar() {
       <nav className="p-2">
         <div className="space-y-1">
           <Button
-            variant={isActive("/") ? "secondary" : "ghost"}
-            className="w-full justify-start"
+            variant={router.pathname === "/" ? "secondary" : "ghost"}
+            className={`w-full justify-start ${
+              router.pathname === "/" ? activeClass : ""
+            }`}
             asChild
           >
             <Link href="/">
@@ -30,19 +32,23 @@ export default function Sidebar() {
           </Button>
 
           <Button
-            variant={isActive("/") ? "secondary" : "ghost"}
-            className="w-full justify-start"
+            variant={router.pathname === "/playground" ? "secondary" : "ghost"}
+            className={`w-full justify-start ${
+              router.pathname === "/playground" ? activeClass : ""
+            }`}
             asChild
           >
             <Link href="/playground">
-              <Home className="mr-2 h-4 w-4" />
+              <LineChart className="mr-2 h-4 w-4" />
               Playground
             </Link>
           </Button>
           
           <Button
-            variant={isActive("/login") ? "secondary" : "ghost"}
-            className="w-full justify-start"
+            variant={router.pathname === "/login" ? "secondary" : "ghost"}
+            className={`w-full justify-start ${
+              router.pathname === "/login" ? activeClass : ""
+            }`}
             asChild
           >
             <Link href="/login">
