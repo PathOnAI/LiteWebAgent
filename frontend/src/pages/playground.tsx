@@ -46,6 +46,8 @@ import {
 
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useRouter } from 'next/router';
+import type { GetServerSidePropsContext } from "next";
+import { createClient } from "@/utils/supabase/server-props";
 
 type MessageType =
     | 'status'
@@ -89,15 +91,30 @@ interface PlaygroundStep {
 interface PlaygroundProps {
     initialSteps_: PlaygroundStep[];
     processId: string;
-    onSessionEnd: () => void;
+    user?: any;
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+    const supabase = createClient(context);
+    const { data } = await supabase.auth.getUser();
+
+    return {
+        props: {
+            user: data?.user || null,
+            initialSteps_: [],
+            processId: "x",
+        },
+    };
 }
 
 export default function Playground({
     initialSteps_,
     processId,
-    onSessionEnd
+    user,
 }: PlaygroundProps) {
+    const router = useRouter();
 
+    // All hooks at the top!
     const [startingUrl, setStartingUrl] = useState('');
     const [command, setCommand] = useState('');
     const [longTermMemory, setLongTermMemory] = useState(false);
@@ -128,7 +145,10 @@ export default function Playground({
     const captionTimeout = useRef<any>();
     const keepAliveInterval = useRef<any>();
 
-    // Set up Deepgram when microphone is ready
+    // Add welcome modal state
+    const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+
+    // All useEffect hooks here
     useEffect(() => {
         if (microphoneState === MicrophoneState.Ready) {
             connectToDeepgram({
@@ -141,7 +161,6 @@ export default function Playground({
         }
     }, [microphoneState]);
 
-    // Handle microphone data streaming
     useEffect(() => {
         if (!microphone || !connection) return;
 
@@ -178,7 +197,6 @@ export default function Playground({
 
     }, [connectionState]);
 
-    // Keep-alive connection management
     useEffect(() => {
         if (!connection) return;
 
@@ -196,7 +214,6 @@ export default function Playground({
         };
     }, [microphoneState, connectionState]);
 
-    // Handle Microphone Toggle
     const handleMicrophoneToggle = async () => {
         if (transcriber === null) {
             if (firstTimeListening === null) {
@@ -226,7 +243,6 @@ export default function Playground({
         };
     }, [initialSteps_]);
 
-    // Function to speak text and return a promise
     const speakText = async (text: string): Promise<void> => {
         setIsSpeaking(true);
 
@@ -265,7 +281,6 @@ export default function Playground({
         }
     };
 
-    // Process message queue
     const processMessageQueue = async () => {
         if (isProcessingQueue.current || messageQueue.current.length === 0) return;
 
@@ -318,7 +333,6 @@ export default function Playground({
         return null; // Return null if "at " is not found
     }
 
-    // Modified handleNewMessage to use queue
     const handleNewMessage = (message: string) => {
         try {
             const parsedMessage: WebAgentMessage = JSON.parse(message);
@@ -397,8 +411,6 @@ export default function Playground({
         }
     };
 
-    const router = useRouter();
-
     const handleReset = async () => {
         setIsResetting(true);
         
@@ -427,7 +439,6 @@ export default function Playground({
         setBrowserUrl('');
         setSessionId('');
         setStartingUrl('');
-        onSessionEnd();
         
         setIsResetting(false);
 
@@ -600,38 +611,23 @@ export default function Playground({
         setIsSpeaking(false);
     };
 
+    // Now, after all hooks, check for user
+    if (!user) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-blue-50">
+                <h1 className="text-2xl font-bold mb-4">Please log in to view this page.</h1>
+                <button
+                    onClick={() => router.push("/login")}
+                    className="px-6 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
+                >
+                    Go to Login
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-blue-50">
-            <header className="border-b bg-white/90 backdrop-blur-lg supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50 shadow-sm">
-                <div className="flex items-center justify-between px-8 py-4 max-w-screen-2xl mx-auto">
-                    <div className="flex items-center space-x-3">
-                        <div className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white p-2.5 rounded-xl shadow-md">
-                            <BrainCircuit className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <span className="font-semibold text-gray-800 text-lg">Web Agent Demo</span>
-                            <p className="text-sm text-gray-500">Interactive Browser Assistant</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                        <ActivityMonitor
-                            onInactive={handleReset}
-                            isRunning={isRunning}
-                            isSessionActive={sessionStarted}
-                        />
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={handleReset}
-                            className="text-gray-600 hover:text-gray-900 border-gray-200"
-                        >
-                            <AlertCircle className="w-5 h-5" />
-                        </Button>
-                    </div>
-                </div>
-            </header>
-
             <div className="flex h-[calc(100vh-73px)]">
                 <div className="w-96 border-r bg-white shadow-lg relative flex flex-col">
                     <div className="p-6 border-b bg-gradient-to-br from-gray-50 to-gray-100">
@@ -818,6 +814,29 @@ export default function Playground({
                             <AlertDialogDescription className="text-gray-600 mt-1">
                                 Cleaning up resources and preparing a fresh session...
                             </AlertDialogDescription>
+                        </div>
+                    </div>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Add Welcome Modal */}
+            <AlertDialog open={showWelcomeModal} onOpenChange={setShowWelcomeModal}>
+                <AlertDialogContent className="max-w-xl !bg-white/95">
+                    <div className="space-y-4">
+                        <AlertDialogTitle className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                            <AlertCircle className="w-6 h-6 text-yellow-500" />
+                            Important Notice
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-gray-700 text-base leading-relaxed">
+                            We are using the BrowserBase hobby plan 🔄, which only supports 3 concurrent browsers. If you are not able to get the web agent up and running ⚠️, it is most likely because someone else is using a remote BrowserBase browser 💻. The BrowserBase startup and scale plans 💰 are too expensive for our open source project 🔓.
+                        </AlertDialogDescription>
+                        <div className="flex justify-end pt-4">
+                            <Button 
+                                onClick={() => setShowWelcomeModal(false)}
+                                className="bg-blue-600 hover:bg-blue-700 text-white"
+                            >
+                                I Understand
+                            </Button>
                         </div>
                     </div>
                 </AlertDialogContent>
