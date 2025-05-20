@@ -28,6 +28,17 @@ export default function Sidebar() {
               Home
             </Link>
           </Button>
+
+          <Button
+            variant={isActive("/") ? "secondary" : "ghost"}
+            className="w-full justify-start"
+            asChild
+          >
+            <Link href="/playground">
+              <Home className="mr-2 h-4 w-4" />
+              Playground
+            </Link>
+          </Button>
           
           <Button
             variant={isActive("/login") ? "secondary" : "ghost"}
