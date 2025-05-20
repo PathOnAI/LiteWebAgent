@@ -46,6 +46,8 @@ import {
 
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useRouter } from 'next/router';
+import type { GetServerSidePropsContext } from "next";
+import { createClient } from "@/utils/supabase/server-props";
 
 type MessageType =
     | 'status'
@@ -89,14 +91,30 @@ interface PlaygroundStep {
 interface PlaygroundProps {
     initialSteps_: PlaygroundStep[];
     processId: string;
+    user?: any;
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+    const supabase = createClient(context);
+    const { data } = await supabase.auth.getUser();
+
+    return {
+        props: {
+            user: data?.user || null,
+            initialSteps_: [],
+            processId: "x",
+        },
+    };
 }
 
 export default function Playground({
     initialSteps_,
     processId,
-    onSessionEnd = () => {},
-}: PlaygroundProps & { onSessionEnd?: () => void }) {
+    user,
+}: PlaygroundProps) {
+    const router = useRouter();
 
+    // All hooks at the top!
     const [startingUrl, setStartingUrl] = useState('');
     const [command, setCommand] = useState('');
     const [longTermMemory, setLongTermMemory] = useState(false);
@@ -130,7 +148,7 @@ export default function Playground({
     // Add welcome modal state
     const [showWelcomeModal, setShowWelcomeModal] = useState(true);
 
-    // Set up Deepgram when microphone is ready
+    // All useEffect hooks here
     useEffect(() => {
         if (microphoneState === MicrophoneState.Ready) {
             connectToDeepgram({
@@ -143,7 +161,6 @@ export default function Playground({
         }
     }, [microphoneState]);
 
-    // Handle microphone data streaming
     useEffect(() => {
         if (!microphone || !connection) return;
 
@@ -180,7 +197,6 @@ export default function Playground({
 
     }, [connectionState]);
 
-    // Keep-alive connection management
     useEffect(() => {
         if (!connection) return;
 
@@ -198,7 +214,6 @@ export default function Playground({
         };
     }, [microphoneState, connectionState]);
 
-    // Handle Microphone Toggle
     const handleMicrophoneToggle = async () => {
         if (transcriber === null) {
             if (firstTimeListening === null) {
@@ -228,7 +243,6 @@ export default function Playground({
         };
     }, [initialSteps_]);
 
-    // Function to speak text and return a promise
     const speakText = async (text: string): Promise<void> => {
         setIsSpeaking(true);
 
@@ -267,7 +281,6 @@ export default function Playground({
         }
     };
 
-    // Process message queue
     const processMessageQueue = async () => {
         if (isProcessingQueue.current || messageQueue.current.length === 0) return;
 
@@ -320,7 +333,6 @@ export default function Playground({
         return null; // Return null if "at " is not found
     }
 
-    // Modified handleNewMessage to use queue
     const handleNewMessage = (message: string) => {
         try {
             const parsedMessage: WebAgentMessage = JSON.parse(message);
@@ -399,8 +411,6 @@ export default function Playground({
         }
     };
 
-    const router = useRouter();
-
     const handleReset = async () => {
         setIsResetting(true);
         
@@ -429,7 +439,6 @@ export default function Playground({
         setBrowserUrl('');
         setSessionId('');
         setStartingUrl('');
-        onSessionEnd();
         
         setIsResetting(false);
 
@@ -602,6 +611,20 @@ export default function Playground({
         setIsSpeaking(false);
     };
 
+    // Now, after all hooks, check for user
+    if (!user) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-blue-50">
+                <h1 className="text-2xl font-bold mb-4">Please log in to view this page.</h1>
+                <button
+                    onClick={() => router.push("/login")}
+                    className="px-6 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
+                >
+                    Go to Login
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-blue-50">
