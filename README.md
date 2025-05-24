@@ -1,4 +1,5 @@
 # LiteWebAgent
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15500270.svg)](https://doi.org/10.5281/zenodo.15500270)
 
 **Disclaimer: Please note that LiteWebAgent is not affiliated with any for-profit company. This is a collaborative project from PathOnAI.org, an open-source AI research community, where Danqing Zhang (danqing.zhang.personal@gmail.com) is the main contributor and lead author of the NAACL paper. If anyone claims LiteWebAgent is affiliated with any for-profit company, please contact Danqing Zhang (danqing.zhang.personal@gmail.com) for verification.**
 
@@ -173,10 +174,12 @@ https://www.loom.com/share/d2b03e39c13044d8b25fcf1644e88867
 cite the repo
 ```
 @misc{zhang2024litewebagent,
-  title={LiteWebAgent: The Library for LLM-based web-agent applications},
-  author={Danqing Zhang, Balaji Rama, Shiying He, Jingyi Ni},
-  journal={https://github.com/PathOnAI/LiteWebAgent},
-  year={2024}
+  author       = {Danqing Zhang and Balaji Rama and Shiying He and Jingyi Ni},
+  title        = {LiteWebAgent: The Open-Source Suite for VLM-Based Web-Agent Applications},
+  year         = 2024,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.15500270},
+  url          = {https://doi.org/10.5281/zenodo.15500270}
 }
 ```
 cite the NAACL paper
