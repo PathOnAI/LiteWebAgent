@@ -168,7 +168,7 @@ Check [how to set up a Chrome extension using LiteWebAgent as an AI backend serv
 https://www.loom.com/share/d2b03e39c13044d8b25fcf1644e88867
 
 ## 🚀 5. Contributions
-[![LiteWebiAgent contributors](https://contrib.rocks/image?repo=PathOnAI/LiteWebAgent)](https://github.com/PathOnAI/LiteWebAgent/graphs/contributors)
+[![LiteWebiAgent contributors](https://contrib.rocks/image?repo=PathOnAIOrg/LiteWebAgent)](https://github.com/PathOnAIOrg/LiteWebAgent/graphs/contributors)
 
 ## 6. Citing LiteWebAgent
 cite the repo
@@ -194,4 +194,4 @@ cite the NAACL paper
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=PathOnAI/LiteWebAgent&type=Date)](https://star-history.com/#PathOnAI/LiteWebAgent&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=PathOnAIOrg/LiteWebAgent&type=Date)](https://star-history.com/#PathOnAIOrg/LiteWebAgent&Date)
